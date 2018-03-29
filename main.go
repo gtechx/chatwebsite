@@ -5,7 +5,7 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/gtechx/chatserver/data"
-	_ "github.com/gtechx/website/routers"
+	_ "github.com/gtechx/chatwebsite/routers"
 )
 
 func Add(a, b int) int {
