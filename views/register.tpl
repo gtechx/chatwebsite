@@ -1,5 +1,6 @@
 {{template "header.tpl" .}}
 
+<div class="mx-auto" style="width: 400px;">
 {{if .post}}
     {{if not .error}}
         注册成功
@@ -14,5 +15,6 @@
 {{end}}
 
 <a href="login">点击这里登录</a>
+</div>
 
 {{template "footer.tpl" .}}

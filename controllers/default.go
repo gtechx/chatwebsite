@@ -55,7 +55,7 @@ end:
 func (c *MainController) Login() {
 	if c.Ctx.Request.Method == "POST" {
 		account := c.GetString("account")
-		password := c.GetString("mypassword")
+		password := c.GetString("password")
 
 		c.Data["account"] = account
 		c.Data["post"] = true
