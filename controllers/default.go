@@ -68,7 +68,7 @@ func (c *MainController) Login() {
 		}
 
 		if !flag {
-			c.Data["error"] = "账号存在"
+			c.Data["error"] = "账号不存在！"
 			goto end
 		}
 

@@ -1,6 +1,7 @@
 {{template "header.tpl" .}}
 
-<div class="mx-auto" style="width: 400px;">
+<div style="position:absolute;top:30%;left:50%; transform:translate(-50%, -50%);">  
+
 {{if .post}}
     {{if not .error}}
         注册成功
@@ -14,6 +15,7 @@
     {{template "register_form.tpl" .}}
 {{end}}
 
+<br/>
 <a href="login">点击这里登录</a>
 </div>
 

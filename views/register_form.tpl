@@ -9,12 +9,18 @@
 </script>
 
 <form method="post" action="/main/register" onsubmit="return checkPassword();">
-账号：<input type="text" name="account" />
-<br/>
-密码：<input type="password" name="password1" id="password1" oninput="document.getElementById('password').value = md5(this.value);" onpropertychange="document.getElementById('password').value = md5(this.value);" />
-<br/>
-确认密码：<input type="password" name="password2" id="password2" />
-<input type="hidden" name="password" id="password" />
-<br/>
-<input type="submit" name="login_button" value="提交">
+  <div class="form-group">
+    <label for="account">账号：</label>
+    <input type="text" class="form-control" name="account" id="account" placeholder="Account">
+  </div>
+  <div class="form-group">
+    <label for="password1">密码：</label>
+    <input type="password" class="form-control" name="password1" id="password1" placeholder="Password" oninput="document.getElementById('password').value = md5(this.value);" onpropertychange="document.getElementById('password').value = md5(this.value);">
+    <input type="hidden" name="password" id="password" />
+  </div>
+  <div class="form-group">
+    <label for="password2">确认密码：</label>
+    <input type="password" class="form-control" name="password2" id="password2" placeholder="Password">
+  </div>
+  <button type="submit" class="btn btn-outline-primary btn-lg btn-block">注册</button>
 </form>
