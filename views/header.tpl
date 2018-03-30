@@ -9,7 +9,16 @@
 <script src="/static/js/md5.min.js"></script>
 </head>
 <body>
+<header class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
+  <a class="navbar-brand mr-md-auto" href="/">
+    ChatWebSite
+  </a>
+  
+  {{if .account}}
+  <div class="mr-md-2">
+    欢迎 <a>{{str2html .account}}</a>
+    <a href="/user/logout?{{RandString}}">退出登录</a>
+  </div>
+  {{end}}
+</header>
 <div class="container-fluid">
-<div class="nav">
-<a href="/">首页</a>
-</div>

@@ -4,11 +4,9 @@
 
 {{if .post}}
     {{if not .error}}
-        注册成功
-        <br/>
+        <div class="alert alert-success">恭喜，注册成功</div>
     {{else}}
-        注册失败：{{str2html .error}}
-        <br/>
+        <div class="alert alert-danger">注册失败：{{str2html .error}}</div>
         {{template "register_form.tpl" .}}
     {{end}}
 {{else}}

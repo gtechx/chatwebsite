@@ -2,8 +2,7 @@
 
 {{if .post}}
     {{if .error}}
-    <label class="text-danger">登录失败：{{str2html .error}}</label>
-    <br/>
+    <div class="alert alert-danger">登录失败：{{str2html .error}}</div>
     <br/>
     {{end}}
 {{end}}

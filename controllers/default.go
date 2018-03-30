@@ -10,15 +10,26 @@ type MainController struct {
 	beego.Controller
 }
 
-func (c *MainController) Get() {
+// func (c *MainController) Prepare() {
+// 	account := String(c.GetSession("account"))
+
+// 	println("MainController Index account ", account)
+// 	if account != "" {
+// 		c.Redirect("/user/index", 303)
+// 		return
+// 	}
+// }
+
+func (c *MainController) Index() {
 	// c.Data["Website"] = "beego.me"
 	// c.Data["Email"] = "astaxie@gmail.com"
 	account := String(c.GetSession("account"))
 
 	if account != "" {
-		c.Redirect("/user/index", 301)
+		c.Redirect("/user/index", 302)
 		return
 	}
+
 	c.TplName = "index.tpl"
 }
 
@@ -27,7 +38,6 @@ func (c *MainController) Register() {
 		account := c.GetString("account")
 		password := c.GetString("password")
 
-		c.Data["account"] = account
 		c.Data["post"] = true
 
 		flag, err := gtdata.Manager().IsAccountExists(account)
@@ -57,7 +67,6 @@ func (c *MainController) Login() {
 		account := c.GetString("account")
 		password := c.GetString("password")
 
-		c.Data["account"] = account
 		c.Data["post"] = true
 
 		flag, err := gtdata.Manager().IsAccountExists(account)
@@ -93,11 +102,13 @@ func (c *MainController) Login() {
 
 		println("account ", account, " logined success")
 
+		c.Data["account"] = account
+
 		c.SetSession("account", account)
 		c.SetSession("password", password)
 		c.SetSession("uid", uid)
 
-		c.Redirect("/user/index", 301)
+		c.Redirect("/user/index", 302)
 		return
 	}
 end:
