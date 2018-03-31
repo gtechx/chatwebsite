@@ -6,6 +6,8 @@
 <title>register</title>
 <meta content="GTech Inc." name="Copyright" />
 <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.css">
+<link rel="stylesheet" href="/static/css/open-iconic-bootstrap.min.css">
 <script src="/static/js/md5.min.js"></script>
 </head>
 <body>
