@@ -1,4 +1,5 @@
 {{template "header.tpl" .}}
+
 <div class="row">
 <div class="col-2">
 </div>
@@ -80,5 +81,11 @@
 <div class="col-2">
 </div>
 </div>
+
+<script type="text/javascript">
+  $('#btn_add').on('click', function (e) {
+        $("#table").bootstrapTable("refresh", {url: '/static/data2.json'});
+    });
+</script>
 
 {{template "footer.tpl" .}}
