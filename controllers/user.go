@@ -40,3 +40,15 @@ func (c *UserController) App() {
 func (c *UserController) AppCreate() {
 	c.TplName = "user_appcreate.tpl"
 }
+
+func (c *UserController) AppData() {
+	data := "[{\"id\": 0, \"name\": \"item0\", \"price\": \"$0\", \"amount\": 0}, {\"id\": 1, \"name\": \"item1\", \"price\": \"$1\", \"amount\": 1}]"
+	data1 := "[{\"id\": 2, \"name\": \"item2\", \"price\": \"$2\", \"amount\": 2}, {\"id\": 3, \"name\": \"item3\", \"price\": \"$3\", \"amount\": 3}]"
+
+	index := Int(c.Ctx.Input.Param("0"))
+	if index%2 == 0 {
+		c.Ctx.Output.Body([]byte(data))
+	} else {
+		c.Ctx.Output.Body([]byte(data1))
+	}
+}

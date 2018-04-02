@@ -27,7 +27,7 @@
           data-toolbar="#toolbar"
           data-height="460"
           data-click-to-select="true"
-          data-url="/static/data1.json"
+          data-url="/user/appdata/0"
           >
       <thead>
       <tr>
@@ -39,6 +39,25 @@
       </thead>
 
   </table>
+
+  <nav aria-label="Page navigation example">
+  <ul class="pagination">
+    <li class="page-item">
+      <a class="page-link" id="Previous" href="#" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+        <span class="sr-only">Previous</span>
+      </a>
+    </li>
+    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+    <li class="page-item"><a class="page-link" href="#">2</a></li>
+    <li class="page-item">
+      <a class="page-link" id="Next" href="#" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+        <span class="sr-only">Next</span>
+      </a>
+    </li>
+  </ul>
+</nav>
 
   <table class="table table-striped mt-3">
     <thead>
@@ -83,8 +102,38 @@
 </div>
 
 <script type="text/javascript">
+  var index = 0;
+  $('ul.pagination').children()
   $('#btn_add').on('click', function (e) {
-        $("#table").bootstrapTable("refresh", {url: '/static/data2.json'});
+    index++;
+    index = index % 2;
+    if(index % 2 == 0)
+        $("#table").bootstrapTable("refresh", {url: '/user/appdata/0'});
+      else
+        $("#table").bootstrapTable("refresh", {url: '/user/appdata/1'});
+    });
+    $('#Previous').on('click', function (e) {
+      $('ul.pagination').children().eq(index+1).removeClass("active");
+      index--;
+      if(index < 0)
+        index = 1;
+      if(index % 2 == 0)
+        $("#table").bootstrapTable("refresh", {url: '/user/appdata/0'});
+      else
+        $("#table").bootstrapTable("refresh", {url: '/user/appdata/1'});
+
+      $('ul.pagination').children().eq(index+1).addClass("active");
+    });
+    $('#Next').on('click', function (e) {
+      $('ul.pagination').children().eq(index+1).removeClass("active");
+      index++;
+      index = index % 2;
+      if(index % 2 == 0)
+        $("#table").bootstrapTable("refresh", {url: '/user/appdata/0'});
+      else
+        $("#table").bootstrapTable("refresh", {url: '/user/appdata/1'});
+
+        $('ul.pagination').children().eq(index+1).addClass("active");
     });
 </script>
 
