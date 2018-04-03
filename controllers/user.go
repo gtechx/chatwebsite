@@ -1,8 +1,11 @@
 package controllers
 
 import (
+	"encoding/json"
+
 	"github.com/astaxie/beego"
 	. "github.com/gtechx/base/common"
+	"github.com/gtechx/chatserver/data"
 )
 
 type UserController struct {
@@ -38,17 +41,68 @@ func (c *UserController) App() {
 }
 
 func (c *UserController) AppCreate() {
-	c.TplName = "user_appcreate.tpl"
+	if c.Ctx.Request.Method == "POST" {
+		name := c.GetString("name")
+		desc := c.GetString("desc")
+		apptype := c.GetString("type")
+
+		println("appcreate ", name, desc, apptype)
+		c.Data["post"] = true
+
+		if name != "" {
+			uid := Uint64(c.GetSession("uid"))
+			err := gtdata.Manager().CreateApp(uid, name)
+			if err == nil {
+				c.Redirect("app", 302)
+				return
+			}
+
+			c.Data["error"] = "数据库错误"
+		} else {
+			c.Data["error"] = "应用名字不能为空"
+		}
+		c.TplName = "user_appcreate.tpl"
+	} else {
+		c.TplName = "user_appcreate.tpl"
+	}
 }
 
 func (c *UserController) AppData() {
-	data := "[{\"id\": 0, \"name\": \"item0\", \"price\": \"$0\", \"amount\": 0}, {\"id\": 1, \"name\": \"item1\", \"price\": \"$1\", \"amount\": 1}]"
-	data1 := "[{\"id\": 2, \"name\": \"item2\", \"price\": \"$2\", \"amount\": 2}, {\"id\": 3, \"name\": \"item3\", \"price\": \"$3\", \"amount\": 3}]"
+	// data := "[{\"id\": 0, \"name\": \"item0\", \"price\": \"$0\", \"amount11\": 0, \"amount\": 0}, {\"id\": 1, \"name\": \"item1\", \"price\": \"$1\", \"amount\": 1}]"
+	// data1 := "[{\"id\": 2, \"name\": \"item2\", \"price\": \"$2\", \"amount\": 2}, {\"id\": 3, \"name\": \"item3\", \"price\": \"$3\", \"amount\": 3}]"
+
+	// index := Int(c.Ctx.Input.Param("0"))
+	// if index%2 == 0 {
+	// 	c.Ctx.Output.Body([]byte(data))
+	// } else {
+	// 	c.Ctx.Output.Body([]byte(data1))
+	// }
 
 	index := Int(c.Ctx.Input.Param("0"))
-	if index%2 == 0 {
-		c.Ctx.Output.Body([]byte(data))
-	} else {
-		c.Ctx.Output.Body([]byte(data1))
+	pagesize := Int(c.Ctx.Input.Param("1"))
+
+	appidlist, err := gtdata.Manager().GetAppIDByPage(index*pagesize, index*pagesize+pagesize)
+
+	if err != nil {
+		c.Ctx.Output.Body([]byte("[]"))
+		return
 	}
+
+	applist := []*gtdata.App{}
+	for _, appid := range appidlist {
+		app, err := gtdata.Manager().GetApp(appid)
+		if err != nil {
+			c.Ctx.Output.Body([]byte("[]"))
+			return
+		}
+		applist = append(applist, app)
+	}
+
+	retjson, err := json.Marshal(applist)
+	if err != nil {
+		c.Ctx.Output.Body([]byte("[]"))
+		return
+	}
+
+	c.Ctx.Output.Body(retjson)
 }
