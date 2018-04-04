@@ -13,7 +13,14 @@ type UserController struct {
 }
 
 func (c *UserController) Prepare() {
-	account := String(c.GetSession("account"))
+	datakey, ok := c.GetSession("datakey").(*gtdata.DataKey)
+
+	if !ok {
+		c.Redirect("/", 303)
+		return
+	}
+
+	account := datakey.Account
 
 	if account == "" {
 		c.Redirect("/", 303)
@@ -50,14 +57,22 @@ func (c *UserController) AppCreate() {
 		c.Data["post"] = true
 
 		if name != "" {
-			uid := Uint64(c.GetSession("uid"))
-			err := gtdata.Manager().CreateApp(uid, name)
-			if err == nil {
-				c.Redirect("app", 302)
-				return
-			}
+			account := String(c.GetSession("account"))
+			flag, err := gtdata.Manager().IsAppExists(name)
 
-			c.Data["error"] = "数据库错误"
+			if err != nil {
+				c.Data["error"] = "数据库错误"
+			} else if flag {
+				c.Data["error"] = "应用名字已经存在"
+			} else {
+				err := gtdata.Manager().CreateApp(account, name)
+				if err == nil {
+					c.Redirect("app", 302)
+					return
+				}
+
+				c.Data["error"] = "数据库错误"
+			}
 		} else {
 			c.Data["error"] = "应用名字不能为空"
 		}
@@ -81,7 +96,7 @@ func (c *UserController) AppData() {
 	index := Int(c.Ctx.Input.Param("0"))
 	pagesize := Int(c.Ctx.Input.Param("1"))
 
-	appidlist, err := gtdata.Manager().GetAppIDByPage(index*pagesize, index*pagesize+pagesize)
+	appidlist, err := gtdata.Manager().GetAppByPage(index*pagesize, index*pagesize+pagesize)
 
 	if err != nil {
 		c.Ctx.Output.Body([]byte("[]"))

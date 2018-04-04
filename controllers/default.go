@@ -81,14 +81,14 @@ func (c *MainController) Login() {
 			goto end
 		}
 
-		uid, err := gtdata.Manager().GetUIDByAccount(account)
+		// uid, err := gtdata.Manager().GetUIDByAccount(account)
 
-		if err != nil {
-			c.Data["error"] = "数据库错误"
-			goto end
-		}
+		// if err != nil {
+		// 	c.Data["error"] = "数据库错误"
+		// 	goto end
+		// }
 
-		upass, err := gtdata.Manager().GetPassword(uid)
+		upass, err := gtdata.Manager().GetPassword(account)
 
 		if err != nil {
 			c.Data["error"] = "数据库错误"
@@ -106,7 +106,11 @@ func (c *MainController) Login() {
 
 		c.SetSession("account", account)
 		c.SetSession("password", password)
-		c.SetSession("uid", uid)
+		//c.SetSession("uid", uid)
+
+		datakey := new(gtdata.DataKey)
+		datakey.Init("", "", account, 0, 0)
+		c.SetSession("datakey", datakey)
 
 		c.Redirect("/user/index", 302)
 		return
