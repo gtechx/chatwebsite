@@ -10,6 +10,7 @@ import (
 
 type UserController struct {
 	beego.Controller
+	datakey *gtdata.DataKey
 }
 
 func (c *UserController) Prepare() {
@@ -20,25 +21,18 @@ func (c *UserController) Prepare() {
 		return
 	}
 
-	account := datakey.Account
-
-	if account == "" {
-		c.Redirect("/", 303)
-		return
-	}
-
-	c.Data["account"] = c.GetSession("account")
+	c.datakey = datakey
+	c.Data["account"] = datakey.Account
 }
 
 func (c *UserController) Index() {
-
 	c.TplName = "user.tpl"
 }
 
 func (c *UserController) Logout() {
-	c.DelSession("account")
-	c.DelSession("password")
-	c.DelSession("uid")
+	//c.DelSession("account")
+	//c.DelSession("password")
+	c.DelSession("datakey")
 
 	c.Redirect("/", 302)
 }
@@ -57,20 +51,21 @@ func (c *UserController) AppCreate() {
 		c.Data["post"] = true
 
 		if name != "" {
-			account := String(c.GetSession("account"))
 			flag, err := gtdata.Manager().IsAppExists(name)
 
 			if err != nil {
+				println(err.Error())
 				c.Data["error"] = "数据库错误"
 			} else if flag {
 				c.Data["error"] = "应用名字已经存在"
 			} else {
-				err := gtdata.Manager().CreateApp(account, name)
+				err := gtdata.Manager().CreateApp(c.datakey.Account, name)
 				if err == nil {
 					c.Redirect("app", 302)
 					return
 				}
 
+				println(err.Error())
 				c.Data["error"] = "数据库错误"
 			}
 		} else {
@@ -92,21 +87,23 @@ func (c *UserController) AppData() {
 	// } else {
 	// 	c.Ctx.Output.Body([]byte(data1))
 	// }
-
 	index := Int(c.Ctx.Input.Param("0"))
 	pagesize := Int(c.Ctx.Input.Param("1"))
 
-	appidlist, err := gtdata.Manager().GetAppByPage(index*pagesize, index*pagesize+pagesize)
+	appnamelist, err := gtdata.Manager().GetAppnameByPage(c.datakey, index*pagesize, index*pagesize+pagesize-1)
 
 	if err != nil {
+		println(err.Error())
 		c.Ctx.Output.Body([]byte("[]"))
 		return
 	}
 
 	applist := []*gtdata.App{}
-	for _, appid := range appidlist {
-		app, err := gtdata.Manager().GetApp(appid)
+	for _, appname := range appnamelist {
+		c.datakey.SetAppname(appname)
+		app, err := gtdata.Manager().GetApp(c.datakey)
 		if err != nil {
+			println(err.Error())
 			c.Ctx.Output.Body([]byte("[]"))
 			return
 		}
@@ -115,6 +112,7 @@ func (c *UserController) AppData() {
 
 	retjson, err := json.Marshal(applist)
 	if err != nil {
+		println(err.Error())
 		c.Ctx.Output.Body([]byte("[]"))
 		return
 	}

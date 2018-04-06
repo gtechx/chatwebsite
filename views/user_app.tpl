@@ -34,7 +34,7 @@
           <th data-field="state" data-checkbox="true"></th>
           <th data-field="appid">ID</th>
           <th data-field="name">Name</th>
-          <th data-field="regdate">Regdate</th>
+          <th data-field="sregdate">Regdate</th>
       </tr>
       </thead>
 

@@ -104,12 +104,12 @@ func (c *MainController) Login() {
 
 		c.Data["account"] = account
 
-		c.SetSession("account", account)
-		c.SetSession("password", password)
+		//c.SetSession("account", account)
+		//c.SetSession("password", password)
 		//c.SetSession("uid", uid)
 
 		datakey := new(gtdata.DataKey)
-		datakey.Init("", "", account, 0, 0)
+		datakey.Init("", "", account)
 		c.SetSession("datakey", datakey)
 
 		c.Redirect("/user/index", 302)
