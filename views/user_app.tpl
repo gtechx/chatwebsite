@@ -22,43 +22,8 @@
           <span class="oi oi-x"></span>删除
       </button>
   </div>
-  <table id="table"
-          data-toggle="table"
-          data-toolbar="#toolbar"
-          data-height="460"
-          data-click-to-select="true"
-          data-url="/user/appdata/0/2"
-          >
-      <thead>
-      <tr>
-          <th data-field="state" data-checkbox="true"></th>
-          <th data-field="appid">ID</th>
-          <th data-field="name">Name</th>
-          <th data-field="sregdate">Regdate</th>
-      </tr>
-      </thead>
-
+  <table id="table">
   </table>
-
-  <nav aria-label="Page navigation example">
-  <ul class="pagination">
-    <li class="page-item">
-      <a class="page-link" id="Previous" href="#" aria-label="Previous">
-        <span aria-hidden="true">&laquo;</span>
-        <span class="sr-only">Previous</span>
-      </a>
-    </li>
-    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-    <li class="page-item"><a class="page-link" href="#">2</a></li>
-    <li class="page-item">
-      <a class="page-link" id="Next" href="#" aria-label="Next">
-        <span aria-hidden="true">&raquo;</span>
-        <span class="sr-only">Next</span>
-      </a>
-    </li>
-  </ul>
-</nav>
-
 </div>
 <div class="col-2">
 </div>
@@ -74,29 +39,121 @@
   //     else
   //       $("#table").bootstrapTable("refresh", {url: '/user/appdata/1'});
   //   });
-    $('#Previous').on('click', function (e) {
-      $('ul.pagination').children().eq(index+1).removeClass("active");
-      index--;
-      if(index < 0)
-        index = 1;
-      if(index % 2 == 0)
-        $("#table").bootstrapTable("refresh", {url: '/user/appdata/0/2'});
-      else
-        $("#table").bootstrapTable("refresh", {url: '/user/appdata/1/2'});
+    // $('#Previous').on('click', function (e) {
+    //   $('ul.pagination').children().eq(index+1).removeClass("active");
+    //   index--;
+    //   if(index < 0)
+    //     index = 1;
+    //   if(index % 2 == 0)
+    //     $("#table").bootstrapTable("refresh", {url: '/user/appdata/0/2'});
+    //   else
+    //     $("#table").bootstrapTable("refresh", {url: '/user/appdata/1/2'});
 
-      $('ul.pagination').children().eq(index+1).addClass("active");
-    });
-    $('#Next').on('click', function (e) {
-      $('ul.pagination').children().eq(index+1).removeClass("active");
-      index++;
-      index = index % 2;
-      if(index % 2 == 0)
-        $("#table").bootstrapTable("refresh", {url: '/user/appdata/0/2'});
-      else
-        $("#table").bootstrapTable("refresh", {url: '/user/appdata/1/2'});
+    //   $('ul.pagination').children().eq(index+1).addClass("active");
+    // });
+    // $('#Next').on('click', function (e) {
+    //   $('ul.pagination').children().eq(index+1).removeClass("active");
+    //   index++;
+    //   index = index % 2;
+    //   if(index % 2 == 0)
+    //     $("#table").bootstrapTable("refresh", {url: '/user/appdata/0/2'});
+    //   else
+    //     $("#table").bootstrapTable("refresh", {url: '/user/appdata/1/2'});
 
-        $('ul.pagination').children().eq(index+1).addClass("active");
-    });
+    //     $('ul.pagination').children().eq(index+1).addClass("active");
+    // });
+
+    $("#table").bootstrapTable({ // 对应table标签的id
+      url: "appdata", // 获取表格数据的url
+      cache: false, // 设置为 false 禁用 AJAX 数据缓存， 默认为true
+      clickToSelect: true,
+      pagination: true,
+      height: 460,
+      toolbar: "#toolbar",
+      striped: true,  //表格显示条纹，默认为false
+      pagination: true, // 在表格底部显示分页组件，默认false
+      pageList: [2, 5, 10], // 设置页面可以显示的数据条数
+      pageSize: 2, // 页面数据条数
+      pageNumber: 1, // 首页页码
+      sidePagination: 'server', // 设置为服务器端分页
+      queryParamsType: "",
+      queryParams: function (params) { // 请求服务器数据时发送的参数，可以在这里添加额外的查询参数，返回false则终止请求
+
+          return {
+              pageSize: params.pageSize, // 每页要显示的数据条数
+              //offset: params.offset, // 每页显示数据的开始行号
+              pageNumber: params.pageNumber
+              //sort: params.sort, // 要排序的字段
+              //sortOrder: params.order, // 排序规则
+              //dataId: $("#dataId").val() // 额外添加的参数
+          }
+      },
+      //sortName: 'id', // 要排序的字段
+      //sortOrder: 'desc', // 排序规则
+      columns: [
+          {
+              checkbox: true, // 显示一个勾选框
+              align: 'center' // 居中显示
+          }, {
+              field: 'appid', // 返回json数据中的name
+              title: '应用ID', // 表格表头显示文字
+              align: 'center', // 左右居中
+              valign: 'middle' // 上下居中
+          }, {
+              field: 'name',
+              title: '名称',
+              align: 'center',
+              valign: 'middle'
+          }, {
+              field: 'owner',
+              title: 'owner',
+              align: 'center',
+              valign: 'middle'
+          }, {
+              field: 'desc',
+              title: 'desc',
+              align: 'center',
+              valign: 'middle'
+          }, {
+              field: 'regdate',
+              title: 'regdate',
+              align: 'center',
+              valign: 'middle'
+          }, {
+              field: 'sregdate',
+              title: '创建日期',
+              align: 'center',
+              valign: 'middle'
+          }, {
+              field: 'type',
+              title: 'type',
+              align: 'center',
+              valign: 'middle'
+          }, {
+              field: 'share',
+              title: 'share',
+              align: 'center',
+              valign: 'middle'
+          }, {
+              title: "操作",
+              align: 'center',
+              valign: 'middle',
+              width: 160, // 定义列的宽度，单位为像素px
+              formatter: function (value, row, index) {
+                  return '<button class="btn btn-primary btn-sm" onclick="del(\'' + row.stdId + '\')">删除</button>';
+              }
+          }
+      ],
+      onLoadSuccess: function(data){  //加载成功时执行
+            console.info("加载成功");
+            //console.info(data);
+            //$('#table').bootstrapTable('append', data);
+      },
+      onLoadError: function(status, res){  //加载失败时执行
+            console.info("加载数据失败");
+      }
+
+});
 </script>
 
 {{template "footer.tpl" .}}

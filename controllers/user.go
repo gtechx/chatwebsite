@@ -77,6 +77,11 @@ func (c *UserController) AppCreate() {
 	}
 }
 
+type pageApp struct {
+	Total uint64        `json:"total"`
+	Rows  []*gtdata.App `json:"rows"`
+}
+
 func (c *UserController) AppData() {
 	// data := "[{\"id\": 0, \"name\": \"item0\", \"price\": \"$0\", \"amount11\": 0, \"amount\": 0}, {\"id\": 1, \"name\": \"item1\", \"price\": \"$1\", \"amount\": 1}]"
 	// data1 := "[{\"id\": 2, \"name\": \"item2\", \"price\": \"$2\", \"amount\": 2}, {\"id\": 3, \"name\": \"item3\", \"price\": \"$3\", \"amount\": 3}]"
@@ -87,8 +92,18 @@ func (c *UserController) AppData() {
 	// } else {
 	// 	c.Ctx.Output.Body([]byte(data1))
 	// }
-	index := Int(c.Ctx.Input.Param("0"))
-	pagesize := Int(c.Ctx.Input.Param("1"))
+	index := Int(c.GetString("pageNumber")) - 1 //Int(c.Ctx.Input.Param("0"))
+	pagesize := Int(c.GetString("pageSize"))    //Int(c.Ctx.Input.Param("1"))
+
+	println("pageNumber:", index, " pageSize:", pagesize)
+
+	totalcount, err := gtdata.Manager().GetAppCount(c.datakey)
+
+	if err != nil {
+		println(err.Error())
+		c.Ctx.Output.Body([]byte("[]"))
+		return
+	}
 
 	appnamelist, err := gtdata.Manager().GetAppnameByPage(c.datakey, index*pagesize, index*pagesize+pagesize-1)
 
@@ -110,7 +125,8 @@ func (c *UserController) AppData() {
 		applist = append(applist, app)
 	}
 
-	retjson, err := json.Marshal(applist)
+	pageapp := pageApp{Total: totalcount, Rows: applist}
+	retjson, err := json.Marshal(pageapp)
 	if err != nil {
 		println(err.Error())
 		c.Ctx.Output.Body([]byte("[]"))
