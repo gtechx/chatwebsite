@@ -18,30 +18,30 @@
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="index">主菜单</a></li>
       <li class="breadcrumb-item"><a href="app">应用管理</a></li>
-      <li class="breadcrumb-item active" aria-current="page">应用创建</li>
+      <li class="breadcrumb-item active" aria-current="page">应用修改</li>
     </ol>
   </div>
 
-{{if .post}}
     {{if .error}}
-    <div class="alert alert-danger">创建失败：{{str2html .error}}</div>
+    <div class="alert alert-danger">修改失败：{{str2html .error}}</div>
+    {{else if .post}}
+    <div class="alert alert-success">修改成功</div>
     <br/>
     {{end}}
-{{end}}
-  <form method="post" action="appcreate" onsubmit="return checkData();">
+  <form method="post" action="appmodify" onsubmit="return checkData();">
     <div class="form-group">
-      <label for="name">应用名字：</label>
-      <input type="text" class="form-control" id="name" name="name">
+      <label for="appname">应用名字：</label>
+      <input type="text" class="form-control disable" id="appname" name="appname" value="{{.appname}}">
     </div>
     <div class="form-group">
       <label for="desc">应用介绍：</label>
-      <textarea class="form-control" id="desc" name="desc" rows="3"></textarea>
+      <textarea class="form-control" id="desc" name="desc" rows="3">{{.desc}}</textarea>
     </div>
     <div class="form-group">
       <label for="share">共享数据应用名字：</label>
-      <input type="text" class="form-control" id="share" name="share">
+      <input type="text" class="form-control" id="share" name="share"  value="{{.share}}">
     </div>    
-    <button type="submit" class="btn btn-outline-primary btn-lg btn-block mb-3" style="width:100px;">创建</button>
+    <button type="submit" class="btn btn-outline-primary btn-lg btn-block mb-3" style="width:100px;">修改</button>
   </form>
 
 </div>
