@@ -192,6 +192,23 @@ end:
 	c.TplName = "user_appmodify.tpl"
 }
 
+func (c *UserController) AppDel() {
+	appnames := c.GetStrings("appname[]")
+	println(appnames[0], appnames[1])
+	dataManager := gtdata.Manager()
+
+	errtext := ""
+	for _, appname := range appnames {
+		err := dataManager.DeleteApp(c.datakey.Account, appname)
+
+		if err != nil {
+			errtext = "数据库错误"
+		}
+	}
+
+	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
+}
+
 type pageApp struct {
 	Total uint64        `json:"total"`
 	Rows  []*gtdata.App `json:"rows"`

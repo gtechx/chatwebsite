@@ -18,7 +18,7 @@
         <button id="btn_edit" type="button" class="btn btn-info btn-sm rightSize">
             <span class="oi oi-pencil"></span>修改
         </button>
-        <button id="btn_delete" type="button" class="btn btn-info btn-sm rightSize">
+        <button id="btn_delete" onclick="delApp();" type="button" class="btn btn-info btn-sm rightSize">
             <span class="oi oi-x"></span>删除
         </button>
     </div>
@@ -40,20 +40,7 @@
       </div>
       <div class="modal-body">
         <div class="d-flex flex-wrap" id="zonelist">
-          <label class="checkbox-inline border border-success ml-2 bg-danger">
-            <input type="checkbox" id="inlineCheckbox1" value="option1"> 国色天香
-          </label>
-          <label class="checkbox-inline border border-success ml-2 bg-danger">
-            <input type="checkbox" id="inlineCheckbox2" value="option2"> 国色天香
-          </label>
-          <label class="checkbox-inline border border-success ml-2 bg-danger">
-            <input type="checkbox" id="inlineCheckbox3" value="option3"> 国色天香
-          </label>
-          <label class="checkbox-inline border border-success ml-2 bg-danger">
-            <input type="checkbox" id="inlineCheckbox3" value="option3"> 国色天香
-          </label>
         </div>
-        
       </div>
       <div class="modal-footer">
         <input type="text" class="invisible" id="zoneappname" name="zoneappname">
@@ -109,37 +96,19 @@
     });
     return false;
   }
-  // $('#btn_add').on('click', function (e) {
-  //   index++;
-  //   index = index % 2;
-  //   if(index % 2 == 0)
-  //       $("#table").bootstrapTable("refresh", {url: '/user/appdata/0'});
-  //     else
-  //       $("#table").bootstrapTable("refresh", {url: '/user/appdata/1'});
-  //   });
-    // $('#Previous').on('click', function (e) {
-    //   $('ul.pagination').children().eq(index+1).removeClass("active");
-    //   index--;
-    //   if(index < 0)
-    //     index = 1;
-    //   if(index % 2 == 0)
-    //     $("#table").bootstrapTable("refresh", {url: '/user/appdata/0/2'});
-    //   else
-    //     $("#table").bootstrapTable("refresh", {url: '/user/appdata/1/2'});
 
-    //   $('ul.pagination').children().eq(index+1).addClass("active");
-    // });
-    // $('#Next').on('click', function (e) {
-    //   $('ul.pagination').children().eq(index+1).removeClass("active");
-    //   index++;
-    //   index = index % 2;
-    //   if(index % 2 == 0)
-    //     $("#table").bootstrapTable("refresh", {url: '/user/appdata/0/2'});
-    //   else
-    //     $("#table").bootstrapTable("refresh", {url: '/user/appdata/1/2'});
-
-    //     $('ul.pagination').children().eq(index+1).addClass("active");
-    // });
+  function delApp(){
+    var selects = $('#table').bootstrapTable('getSelections');
+    var strdata = new Array()
+    for(i in selects){
+      strdata[i] = selects[i].name
+    }
+    console.info(strdata)
+    $.post("appdel", { 'appname[]': strdata },
+    function(data) {
+      $('#table').bootstrapTable('refresh');
+    });
+  }
 
     $("#table").bootstrapTable({ // 对应table标签的id
       url: "applist", // 获取表格数据的url
