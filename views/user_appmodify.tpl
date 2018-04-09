@@ -31,7 +31,7 @@
   <form method="post" action="appmodify" onsubmit="return checkData();">
     <div class="form-group">
       <label for="appname">应用名字：</label>
-      <input type="text" class="form-control disable" id="appname" name="appname" value="{{.appname}}">
+      <input type="text" class="form-control disable" id="appname" name="appname" value="{{.appname}}" readonly>
     </div>
     <div class="form-group">
       <label for="desc">应用介绍：</label>
