@@ -3,14 +3,20 @@
 <div class="row">
   <div class="col-2">
   </div>
-  <div class="col-8 bg-light">
-    <div aria-label="breadcrumb">
+  <div class="col-8 bg-light px-0">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="index">主菜单</a></li>
         <li class="breadcrumb-item active" aria-current="page">应用管理</li>
       </ol>
-    </div>
+  </div>
+  <div class="col-2">
+  </div>
+</div>
 
+<div class="row">
+  <div class="col-2">
+  </div>
+  <div class="col-8 bg-light">
     <div id="toolbar" class="btn-group">
         <button id="btn_add" onclick="window.location.href='appcreate';" type="button" class="btn btn-info btn-sm rightSize">
             <span class="oi oi-plus"></span>新增

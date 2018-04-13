@@ -11,17 +11,22 @@
 </script>
 
 <div class="row">
+  <div class="col-2">
+  </div>
+  <div class="col-8 bg-light px-0">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="index">主菜单</a></li>
+        <li class="breadcrumb-item active" aria-current="page">应用管理</li>
+      </ol>
+  </div>
+  <div class="col-2">
+  </div>
+</div>
+
+<div class="row">
 <div class="col-2">
 </div>
 <div class="col-8 bg-light">
-  <div aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="index">主菜单</a></li>
-      <li class="breadcrumb-item"><a href="app">应用管理</a></li>
-      <li class="breadcrumb-item active" aria-current="page">应用修改</li>
-    </ol>
-  </div>
-
     {{if .error}}
     <div class="alert alert-danger">修改失败：{{str2html .error}}</div>
     {{else if .post}}
