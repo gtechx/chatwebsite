@@ -96,16 +96,6 @@ func (c *UserController) AppCreate() {
 			goto end
 		}
 
-		if desc != "" {
-			err = dataManager.SetAppField(name, "desc", desc)
-
-			if err != nil {
-				println(err.Error())
-				c.Data["error"] = "应用已经创建成功，但是设置应用描述时数据库错误"
-				goto end
-			}
-		}
-
 		c.Redirect("app", 302)
 		return
 	end:
@@ -281,6 +271,23 @@ func (c *UserController) ZoneAdd() {
 		println(errtext)
 		c.Ctx.Output.Body([]byte("{error:" + errtext + "}"))
 	}
+}
+
+func (c *UserController) ZoneDel() {
+	appname := c.GetString("appname")
+	zonenames := c.GetStrings("zonename[]")
+	dataManager := gtdb.Manager()
+
+	errtext := ""
+	for _, zonename := range zonenames {
+		err := dataManager.RemoveAppZone(appname, zonename)
+
+		if err != nil {
+			errtext = "数据库错误:" + err.Error()
+		}
+	}
+
+	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
 }
 
 func (c *UserController) ZoneList() {

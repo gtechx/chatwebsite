@@ -21,9 +21,6 @@
         <button id="btn_add" onclick="window.location.href='appcreate';" type="button" class="btn btn-info btn-sm rightSize">
             <span class="oi oi-plus"></span>新增
         </button>
-        <button id="btn_edit" type="button" class="btn btn-info btn-sm rightSize">
-            <span class="oi oi-pencil"></span>修改
-        </button>
         <button id="btn_delete" onclick="delApp();" type="button" class="btn btn-info btn-sm rightSize">
             <span class="oi oi-x"></span>删除
         </button>
@@ -45,6 +42,11 @@
         </button>
       </div>
       <div class="modal-body">
+        <div id="zonetoolbar" class="btn-group border-bottom mb-4 col-12">
+          <button id="zone_delete" onclick="delZone();" type="button" class="btn btn-info btn-sm rightSize mb-2">
+              <span class="oi oi-x"></span>批量删除
+          </button>
+        </div>
         <div class="d-flex flex-wrap" id="zonelist">
         </div>
       </div>
@@ -71,36 +73,53 @@
     var modal = $(this);
     modal.find('.modal-title').text(appname + ' 分区管理');
     $('#zoneappname').val(appname);
-    $.post("zonelist", { appname: "\""+appname+"\"" },
+    $.post("zonelist", { 'appname': appname },
     function(data) {
       console.info("Data Loaded: " + data);
       var jsondata = JSON.parse(data);
       var liststr = '';
       for (i in jsondata)
       {
-        var zone = jsondata[i].replace(/"/g, '');
+        var zone = jsondata[i]["name"];//.replace(/"/g, '');
         liststr += '<label class="checkbox-inline border border-success ml-2 bg-danger">\n';
-        liststr += '<input type="checkbox" id="\''+zone+'\'" name="\''+zone+'\'" value="\''+zone+'\'">' + zone + '\n';
+        liststr += '<input type="checkbox" id="\''+zone+'\'" name="zoneitem" value="\''+zone+'\'">' + zone + '\n';
         liststr += '</label>';
       }
       $('#zonelist').html(liststr)
     });
   });
   function addZone(){
-    $.post("zoneadd", { appname: "\""+$('#zoneappname').val()+"\"", zonename: "\""+$('#zonename').val()+"\"" },
+    $.post("zoneadd", { 'appname': $('#zoneappname').val(), 'zonename': $('#zonename').val() },
     function(data) {
       var jsondata = JSON.parse(data);
       var liststr = '';
       for (i in jsondata)
       {
-        var zone = jsondata[i].replace(/"/g, '');
+        var zone = jsondata[i]["name"];//.replace(/"/g, '');
         liststr += '<label class="checkbox-inline border border-success ml-2 bg-danger">\n';
-        liststr += '<input type="checkbox" id="\''+zone+'\'" name="\''+zone+'\'" value="\''+zone+'\'">' + zone + '\n';
+        liststr += '<input type="checkbox" id="\''+zone+'\'" name="zoneitem" value="\''+zone+'\'">' + zone + '\n';
         liststr += '</label>';
       }
       $('#zonelist').html(liststr)
     });
     return false;
+  }
+
+  function delZone(){
+    obj = document.getElementsByName("zoneitem");
+    check_val = [];
+    for(k in obj){
+        if(obj[k].checked)
+            check_val.push(obj[k].value);
+    }
+
+    $.post("zonedel", { 'appname': $('#zoneappname').val(), 'zonename[]': check_val },
+    function(data) {
+      var jsondata = JSON.parse(data);
+      if(jsondata["error"] != "")
+        alert(jsondata["error"]);
+      $('#table').bootstrapTable('refresh');
+    });
   }
 
   function delApp(){

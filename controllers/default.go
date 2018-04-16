@@ -164,11 +164,17 @@ end:
 }
 
 func (c *MainController) Install() {
-	err := gtdb.Manager().Install()
+	key := c.GetString("key")
 
-	if err == nil {
-		c.Ctx.Output.Body([]byte("install success!<br/><a href=\"/\">点击进入主页</a>"))
+	if key == "testkey" {
+		err := gtdb.Manager().Install()
+
+		if err == nil {
+			c.Ctx.Output.Body([]byte("<html><body>install success!<br/><a href=\"/\">点击进入主页</a></body></html>"))
+		} else {
+			c.Ctx.Output.Body([]byte("{error:" + err.Error() + "}"))
+		}
 	} else {
-		c.Ctx.Output.Body([]byte("{error:" + err.Error() + "}"))
+		c.Ctx.Output.Body([]byte("{error:only admin can install the db}"))
 	}
 }
