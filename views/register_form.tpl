@@ -15,7 +15,7 @@
   </div>
   <div class="form-group">
     <label for="password1">密码：</label>
-    <input type="password" class="form-control" name="password1" id="password1" placeholder="Password" oninput="document.getElementById('password').value = md5(this.value);" onpropertychange="document.getElementById('password').value = md5(this.value);">
+    <input type="password" class="form-control" name="password1" id="password1" placeholder="Password" oninput="document.getElementById('password').value = this.value;" onpropertychange="document.getElementById('password').value = this.value;">
     <input type="hidden" name="password" id="password" />
   </div>
   <div class="form-group">

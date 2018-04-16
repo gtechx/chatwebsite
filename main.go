@@ -8,7 +8,7 @@ import (
 	"github.com/astaxie/beego"
 	. "github.com/gtechx/base/common"
 	"github.com/gtechx/chatserver/config"
-	"github.com/gtechx/chatserver/data"
+	"github.com/gtechx/chatserver/db"
 	_ "github.com/gtechx/chatwebsite/routers"
 )
 
@@ -26,15 +26,21 @@ func RandString() string {
 }
 
 func main() {
-	err := gtdata.Manager().Initialize(config.RedisAddr, config.RedisPassword, config.DefaultDB, config.StartUID, config.StartAPPID)
-
+	err := gtdb.Manager().InitializeRedis(config.RedisAddr, config.RedisPassword, config.RedisDefaultDB)
 	if err != nil {
-		println("Initialize gtdata.Manager err:", err)
+		println("InitializeRedis err:", err.Error())
 		return
 	}
+	defer gtdb.Manager().UnInitialize()
+
+	err = gtdb.Manager().InitializeMysql(config.MysqlAddr, config.MysqlUserPassword, config.MysqlDefaultDB, config.MysqlTablePrefix)
+	if err != nil {
+		println("InitializeMysql err:", err.Error())
+		return
+	}
+
 	beego.AddFuncMap("Add", Add)
 	beego.AddFuncMap("HtmlAttr", HtmlAttr)
 	beego.AddFuncMap("RandString", RandString)
 	beego.Run()
-	gtdata.Manager().UnInitialize()
 }

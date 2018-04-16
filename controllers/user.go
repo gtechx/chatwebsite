@@ -6,24 +6,22 @@ import (
 
 	"github.com/astaxie/beego"
 	. "github.com/gtechx/base/common"
-	"github.com/gtechx/chatserver/data"
+	"github.com/gtechx/chatserver/db"
 )
 
 type UserController struct {
 	beego.Controller
-	datakey *gtdata.DataKey
+	account string
 }
 
 func (c *UserController) Prepare() {
-	datakey, ok := c.GetSession("datakey").(*gtdata.DataKey)
-
-	if !ok {
+	account := String(c.GetSession("account"))
+	if account == "" {
 		c.Redirect("/", 302)
 		return
 	}
-
-	c.datakey = datakey
-	c.Data["account"] = datakey.Account
+	c.Data["account"] = account
+	c.account = account
 }
 
 func (c *UserController) Index() {
@@ -33,7 +31,7 @@ func (c *UserController) Index() {
 func (c *UserController) Logout() {
 	//c.DelSession("account")
 	//c.DelSession("password")
-	c.DelSession("datakey")
+	c.DelSession("account")
 
 	c.Redirect("/", 302)
 }
@@ -51,9 +49,10 @@ func (c *UserController) AppCreate() {
 		println("appcreate ", name, desc, share)
 		c.Data["post"] = true
 
-		dataManager := gtdata.Manager()
+		dataManager := gtdb.Manager()
 		var flag bool
 		var err error
+		var tbl_app *gtdb.App
 
 		if name == "" {
 			c.Data["error"] = "应用名字不能为空"
@@ -88,27 +87,17 @@ func (c *UserController) AppCreate() {
 			}
 		}
 
-		err = dataManager.CreateApp(c.datakey.Account, name)
+		tbl_app = &gtdb.App{Name: name, Owner: c.account, Desc: desc, Share: share}
+		err = dataManager.CreateApp(tbl_app)
 
 		if err != nil {
 			println(err.Error())
 			c.Data["error"] = "数据库错误"
 			goto end
 		}
-		c.datakey.SetAppname(name)
-
-		if share != "" {
-			err = dataManager.AddShareApp(c.datakey, share)
-
-			if err != nil {
-				println(err.Error())
-				c.Data["error"] = "数据库错误"
-				goto end
-			}
-		}
 
 		if desc != "" {
-			err = dataManager.SetAppField(c.datakey, "desc", desc)
+			err = dataManager.SetAppField(name, "desc", desc)
 
 			if err != nil {
 				println(err.Error())
@@ -128,8 +117,7 @@ func (c *UserController) AppCreate() {
 
 func (c *UserController) AppModify() {
 	appname := c.GetString("appname")
-	dataManager := gtdata.Manager()
-	c.datakey.SetAppname(appname)
+	dataManager := gtdb.Manager()
 	c.Data["appname"] = appname
 
 	if appname == "" {
@@ -143,49 +131,32 @@ func (c *UserController) AppModify() {
 		c.Data["post"] = true
 
 		println(appname, desc, share)
-		shareappname, err := dataManager.GetShareApp(c.datakey)
-
+		err := dataManager.SetShareApp(appname, share)
 		if err != nil {
-			shareappname = ""
+			println("dataManager.SetShareApp ", err.Error())
+			c.Data["error"] = "数据库错误:" + err.Error()
+			goto end
 		}
 
-		if share != "" {
-			if shareappname != "" {
-				err = dataManager.DelShareApp(c.datakey, shareappname)
-				if err != nil {
-					println("dataManager.DelShareApp ", err.Error())
-					c.Data["error"] = "数据库错误"
-					goto end
-				}
-			}
-			err = dataManager.AddShareApp(c.datakey, share)
-
-			if err != nil {
-				println("dataManager.AddShareApp ", err.Error())
-				c.Data["error"] = "数据库错误"
-				goto end
-			}
-		}
-
-		err = dataManager.SetAppField(c.datakey, "desc", desc)
+		err = dataManager.SetAppField(appname, "desc", desc)
 
 		if err != nil {
 			println("dataManager.SetAppField ", err.Error())
-			c.Data["error"] = "设置应用描述时数据库错误"
+			c.Data["error"] = "设置应用描述时数据库错误:" + err.Error()
 			goto end
 		}
 
 		c.Data["desc"] = desc
 		c.Data["share"] = share
 	} else {
-		app, err := dataManager.GetApp(c.datakey)
+		app, err := dataManager.GetApp(appname)
 
 		if err == nil {
 			c.Data["desc"] = app.Desc
 			c.Data["share"] = app.Share
 		} else {
 			println(err.Error())
-			c.Data["error"] = "数据库错误"
+			c.Data["error"] = "数据库错误:" + err.Error()
 		}
 	}
 end:
@@ -194,15 +165,14 @@ end:
 
 func (c *UserController) AppDel() {
 	appnames := c.GetStrings("appname[]")
-	println(appnames[0], appnames[1])
-	dataManager := gtdata.Manager()
+	dataManager := gtdb.Manager()
 
 	errtext := ""
 	for _, appname := range appnames {
-		err := dataManager.DeleteApp(c.datakey.Account, appname)
+		err := dataManager.DeleteApp(appname)
 
 		if err != nil {
-			errtext = "数据库错误"
+			errtext = "数据库错误:" + err.Error()
 		}
 	}
 
@@ -210,27 +180,18 @@ func (c *UserController) AppDel() {
 }
 
 type pageApp struct {
-	Total uint64        `json:"total"`
-	Rows  []*gtdata.App `json:"rows"`
+	Total uint64      `json:"total"`
+	Rows  []*gtdb.App `json:"rows"`
 }
 
 func (c *UserController) AppList() {
-	// data := "[{\"id\": 0, \"name\": \"item0\", \"price\": \"$0\", \"amount11\": 0, \"amount\": 0}, {\"id\": 1, \"name\": \"item1\", \"price\": \"$1\", \"amount\": 1}]"
-	// data1 := "[{\"id\": 2, \"name\": \"item2\", \"price\": \"$2\", \"amount\": 2}, {\"id\": 3, \"name\": \"item3\", \"price\": \"$3\", \"amount\": 3}]"
-
-	// index := Int(c.Ctx.Input.Param("0"))
-	// if index%2 == 0 {
-	// 	c.Ctx.Output.Body([]byte(data))
-	// } else {
-	// 	c.Ctx.Output.Body([]byte(data1))
-	// }
 	index := Int(c.GetString("pageNumber")) - 1 //Int(c.Ctx.Input.Param("0"))
 	pagesize := Int(c.GetString("pageSize"))    //Int(c.Ctx.Input.Param("1"))
 
 	println("pageNumber:", index, " pageSize:", pagesize)
 
-	dataManager := gtdata.Manager()
-	totalcount, err := dataManager.GetAppCount(c.datakey)
+	dataManager := gtdb.Manager()
+	totalcount, err := dataManager.GetAppCountByAccount(c.account)
 
 	if err != nil {
 		println(err.Error())
@@ -238,24 +199,12 @@ func (c *UserController) AppList() {
 		return
 	}
 
-	appnamelist, err := dataManager.GetAppnameByPage(c.datakey, index*pagesize, index*pagesize+pagesize-1)
+	applist, err := dataManager.GetAppByAccount(c.account, index*pagesize, index*pagesize+pagesize-1)
 
 	if err != nil {
 		println(err.Error())
 		c.Ctx.Output.Body([]byte("[]"))
 		return
-	}
-
-	applist := []*gtdata.App{}
-	for _, appname := range appnamelist {
-		c.datakey.SetAppname(appname)
-		app, err := dataManager.GetApp(c.datakey)
-		if err != nil {
-			println(err.Error())
-			c.Ctx.Output.Body([]byte("[]"))
-			return
-		}
-		applist = append(applist, app)
 	}
 
 	pageapp := pageApp{Total: totalcount, Rows: applist}
@@ -271,6 +220,10 @@ func (c *UserController) AppList() {
 
 func (c *UserController) ZoneAdd() {
 	errtext := ""
+	var retjson []byte
+	//var err error
+	var zonelist []*gtdb.AppZone
+	var tbl_zone *gtdb.AppZone
 	if c.Ctx.Request.Method == "POST" {
 		appname := c.GetString("appname")
 		zonename := c.GetString("zonename")
@@ -280,11 +233,19 @@ func (c *UserController) ZoneAdd() {
 			return
 		}
 		zonenamearr := strings.Split(zonename, ";")
-		c.datakey.SetAppname(appname)
 
-		dataManager := gtdata.Manager()
+		dataManager := gtdb.Manager()
+		appowner, err := dataManager.GetAppOwner(appname)
+		if err != nil {
+			errtext = "数据库错误:" + err.Error()
+			goto end
+		}
+		if appowner != c.account {
+			errtext = "没有权限操作该应用：" + appname
+			goto end
+		}
 		for _, zname := range zonenamearr {
-			flag, err := dataManager.IsAppZone(c.datakey, zname)
+			flag, err := dataManager.IsAppZoneExists(appname, zname)
 
 			if err != nil {
 				errtext = "zone " + zname + " add redis error"
@@ -296,8 +257,8 @@ func (c *UserController) ZoneAdd() {
 				continue
 			}
 
-			c.datakey.SetZonename(zname)
-			err = dataManager.AddAppZone(c.datakey)
+			tbl_zone = &gtdb.AppZone{Name: zname, Owner: appname}
+			err = dataManager.AddAppZone(tbl_zone)
 
 			if err != nil {
 				errtext = "zone " + zname + " add redis error"
@@ -305,9 +266,9 @@ func (c *UserController) ZoneAdd() {
 		}
 
 		println(errtext)
-		zonelist, err := dataManager.GetAppZones(c.datakey)
+		zonelist, err = dataManager.GetAppZones(appname)
 
-		retjson, err := json.Marshal(zonelist)
+		retjson, err = json.Marshal(zonelist)
 		if err != nil {
 			println(err.Error())
 			c.Ctx.Output.Body([]byte(""))
@@ -315,6 +276,10 @@ func (c *UserController) ZoneAdd() {
 		}
 
 		c.Ctx.Output.Body(retjson)
+		return
+	end:
+		println(errtext)
+		c.Ctx.Output.Body([]byte("{error:" + errtext + "}"))
 	}
 }
 
@@ -326,11 +291,25 @@ func (c *UserController) ZoneList() {
 		return
 	}
 
-	c.datakey.SetAppname(appname)
+	var err error
+	var errtext = ""
+	var retjson []byte
+	var zonelist []*gtdb.AppZone
 
-	zonelist, err := gtdata.Manager().GetAppZones(c.datakey)
+	dbMgr := gtdb.Manager()
+	appowner, err := dbMgr.GetAppOwner(appname)
+	if err != nil {
+		errtext = "数据库错误"
+		goto end
+	}
+	if appowner != c.account {
+		errtext = "没有权限操作该app"
+		goto end
+	}
 
-	retjson, err := json.Marshal(zonelist)
+	zonelist, err = dbMgr.GetAppZones(appname)
+
+	retjson, err = json.Marshal(zonelist)
 	if err != nil {
 		println(err.Error())
 		c.Ctx.Output.Body([]byte(""))
@@ -338,4 +317,7 @@ func (c *UserController) ZoneList() {
 	}
 
 	c.Ctx.Output.Body(retjson)
+	return
+end:
+	c.Ctx.Output.Body([]byte("{error:" + errtext + "}"))
 }
