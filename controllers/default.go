@@ -92,7 +92,7 @@ func (c *MainController) Register() {
 			goto end
 		}
 
-		if flag {
+		if flag || account == "admin" || account == "root" {
 			c.Data["error"] = "账号已经存在"
 			goto end
 		}
