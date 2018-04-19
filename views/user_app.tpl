@@ -172,7 +172,7 @@
               align: 'center',
               valign: 'middle',
               formatter: function (value, row, index) {
-                  return '<a class="" href="appmodify?appname='+value+'">'+value+'</button>';
+                  return '<a class="" href="appmodify?appname='+value+'">'+value+'</a>';
               }
           }, {
               field: 'desc',
@@ -180,7 +180,7 @@
               align: 'center',
               valign: 'middle'
           }, {
-              field: 'sregdate',
+              field: 'createdate',
               title: '创建日期',
               align: 'center',
               valign: 'middle'

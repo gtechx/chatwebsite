@@ -7,11 +7,17 @@ import (
 
 func init() {
 	beego.Router("/", &controllers.MainController{}, "*:Index")
+	beego.Router("/index", &controllers.MainController{}, "*:Index")
+	beego.Router("/default", &controllers.MainController{}, "*:Index")
 	beego.Router("/index.*", &controllers.MainController{}, "*:Index")
 	beego.Router("/default.*", &controllers.MainController{}, "*:Index")
 	beego.Router("/install", &controllers.MainController{}, "*:Install")
+	beego.Router("/user", &controllers.UserController{}, "*:Index")
+	beego.Router("/admin", &controllers.UserController{}, "*:Index")
+	beego.Router("/admin/index", &controllers.UserController{}, "*:Index")
 	beego.AutoRouter(&controllers.MainController{})
 	// beego.Router("/user/logout", &controllers.UserController{}, "*:Logout")
 	// beego.Router("/user/index", &controllers.UserController{}, "*:Index")
 	beego.AutoRouter(&controllers.UserController{})
+	beego.AutoRouter(&controllers.AdminController{})
 }
