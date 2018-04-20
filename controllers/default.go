@@ -52,6 +52,11 @@ func (c *MainController) Register() {
 			goto end
 		}
 
+		if password == "" {
+			c.Data["error"] = "密码不能为空"
+			goto end
+		}
+
 		salt := getSalt()
 		md5password := getSaltedPassword(password, salt)
 		println("salt:", salt, "password:", password, "md5password:", md5password)

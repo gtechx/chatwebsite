@@ -19,26 +19,26 @@
   <div class="col-8 bg-light">
     <form class="form-inline">
         <div class="form-group col-2">
-            <label for="account">账号：</label>
-            <input type="text" class="form-control col-8" name="account" id="account" placeholder="Account">
+            <label for="accountfilter">账号：</label>
+            <input type="text" class="form-control col-8" name="accountfilter" id="accountfilter" placeholder="">
         </div>
         <div class="form-group col-2">
-            <label for="email">Email：</label>
-            <input type="text" class="form-control col-8" name="email" id="email" placeholder="Email">
+            <label for="emailfilter">Email：</label>
+            <input type="text" class="form-control col-8" name="emailfilter" id="emailfilter" placeholder="">
         </div>
         <div class="form-group col-2">
-            <label for="IP">IP：</label>
-            <input type="text" class="form-control col-8" name="IP" id="IP" placeholder="IP">
+            <label for="ipfilter">IP：</label>
+            <input type="text" class="form-control col-8" name="ipfilter" id="ipfilter" placeholder="">
         </div>
         <div class="form-group">
-            <label for="datebegin">起始日期：</label>
-            <input type="text" class="form-control col-8" name="datebegin" id="datebegin" placeholder="">
+            <label for="begindate">起始日期：</label>
+            <input type="text" class="form-control col-8" name="begindate" id="begindate" placeholder="">
         </div>
         <div class="form-group">
-            <label for="dateend">最终日期：</label>
-            <input type="text" class="form-control col-8" name="dateend" id="dateend" placeholder="">
+            <label for="enddate">最终日期：</label>
+            <input type="text" class="form-control col-8" name="enddate" id="enddate" placeholder="">
         </div>
-        <button id="btn_filter" onclick="filterAccount();" type="button" class="btn btn-info btn-sm rightSize">
+        <button id="btn_filter" onclick="$('#table').bootstrapTable('refresh');" type="button" class="btn btn-info btn-sm rightSize">
             过滤
         </button>
     </form>
@@ -104,12 +104,25 @@
 
 <script type="text/javascript">
   $( function() {
-    $( "#datebegin" ).datepicker();
+    $( "#begindate" ).datepicker();
   } );
 
   $( function() {
-    $( "#dateend" ).datepicker();
+    $( "#enddate" ).datepicker();
   } );
+
+  function checkEmail(email) {
+    var reg = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$"); //正则表达式
+
+    if(email === ""){ //输入不能为空
+        alert("邮箱不能为空!");
+　　　　return false;
+　　}else if(!reg.test(email)){ //正则验证不通过，格式不对
+　　　　alert("邮箱格式不对!");
+　　　　return false;
+　　}
+    return true;
+  }
 
   function modifyAccount(index) {
         $( "#password" ).val("")
@@ -154,12 +167,20 @@
         alert("两次输入的密码不一致!");
         return;
     }
+    if(document.getElementById('password').value == "")
+    {
+        alert("密码不能为空!");
+        return;
+    }
     $.post("accountcreate", { 'account': $('#caccount').val(), 'email': $('#cemail').val(), 'password': $('#password').val() },
     function(data) {
     $('#table').bootstrapTable('refresh');
     });
   }
   function delAccount(){
+    if (confirm("确认要删除吗？这将删除账号相关的所有数据！")==false){ 
+        return; 
+    }
     var selects = $('#table').bootstrapTable('getSelections');
     if(selects.length == 0)
         return;
@@ -242,6 +263,11 @@
       queryParams: function (params) { // 请求服务器数据时发送的参数，可以在这里添加额外的查询参数，返回false则终止请求
 
           return {
+              accountfilter: $("#accountfilter").val(),
+              emailfilter: $("#emailfilter").val(),
+              ipfilter: $("#ipfilter").val(),
+              begindate: $("#begindate").val(),
+              enddate: $("#enddate").val(),
               pageSize: params.pageSize, // 每页要显示的数据条数
               //offset: params.offset, // 每页显示数据的开始行号
               pageNumber: params.pageNumber
@@ -262,7 +288,7 @@
               align: 'center',
               valign: 'middle',
               formatter: function (value, row, index) {
-                  return '<a class="" onclick="modifyAccount('+index+');">'+value+'</a>';
+                  return '<a class="" href="#" onclick="modifyAccount('+index+');">'+value+'</a>';
               }
           }, {
               field: 'email',

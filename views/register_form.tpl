@@ -4,6 +4,11 @@
             alert("两次输入的密码不一致!");
             return false;
         }
+        if(document.getElementById('password').value == "")
+        {
+            alert("密码不能为空!");
+            return false;
+        }
         return true;
     }
 </script>

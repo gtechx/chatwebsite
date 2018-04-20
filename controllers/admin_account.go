@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"time"
 
 	"github.com/astaxie/beego"
 	. "github.com/gtechx/base/common"
@@ -33,6 +34,24 @@ func (c *AdminController) AccountList() {
 	index := Int(c.GetString("pageNumber")) - 1 //Int(c.Ctx.Input.Param("0"))
 	pagesize := Int(c.GetString("pageSize"))    //Int(c.Ctx.Input.Param("1"))
 
+	accountfilter := c.GetString("accountfilter")
+	emailfilter := c.GetString("emailfilter")
+	ipfilter := c.GetString("ipfilter")
+
+	var begindate *time.Time
+	var enddate *time.Time
+	bdate, err := time.Parse("01/02/2006", c.GetString("begindate"))
+	if err == nil {
+		begindate = &bdate
+	}
+	edate, err := time.Parse("01/02/2006", c.GetString("enddate"))
+	if err == nil {
+		enddate = &edate
+	}
+
+	//fmt.Println("begindate", c.GetString("begindate"), begindate)
+	//fmt.Println("enddate", c.GetString("enddate"), enddate)
+
 	println("pageNumber:", index, " pageSize:", pagesize)
 
 	dataManager := gtdb.Manager()
@@ -44,7 +63,7 @@ func (c *AdminController) AccountList() {
 		return
 	}
 
-	acclist, err := dataManager.GetAccountList(index*pagesize, index*pagesize+pagesize-1)
+	acclist, err := dataManager.GetAccountListByFilter(index*pagesize, index*pagesize+pagesize-1, accountfilter, emailfilter, ipfilter, begindate, enddate)
 
 	if err != nil {
 		println(err.Error())
@@ -81,6 +100,11 @@ func (c *AdminController) AccountCreate() {
 
 	if flag || account == "admin" || account == "root" {
 		errtext = "账号已经存在"
+		goto end
+	}
+
+	if password == "" {
+		errtext = "密码不能为空"
 		goto end
 	}
 

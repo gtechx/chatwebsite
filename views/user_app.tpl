@@ -123,6 +123,9 @@
   }
 
   function delApp(){
+    if (confirm("确认要删除吗？这将删除应用相关的所有数据！")==false){ 
+        return; 
+    }
     var selects = $('#table').bootstrapTable('getSelections');
     var strdata = new Array()
     for(i in selects){

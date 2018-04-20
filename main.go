@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/astaxie/beego"
+	_ "github.com/astaxie/beego/session/redis"
 	. "github.com/gtechx/base/common"
 	"github.com/gtechx/chatserver/config"
 	"github.com/gtechx/chatserver/db"
