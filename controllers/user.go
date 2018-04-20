@@ -155,15 +155,11 @@ end:
 
 func (c *UserController) AppDel() {
 	appnames := c.GetStrings("appname[]")
-	dataManager := gtdb.Manager()
 
 	errtext := ""
-	for _, appname := range appnames {
-		err := dataManager.DeleteApp(appname)
-
-		if err != nil {
-			errtext = "数据库错误:" + err.Error()
-		}
+	err := gtdb.Manager().DeleteApps(appnames)
+	if err != nil {
+		errtext = "数据库错误:" + err.Error()
 	}
 
 	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
@@ -189,7 +185,7 @@ func (c *UserController) AppList() {
 		return
 	}
 
-	applist, err := dataManager.GetAppByAccount(c.account, index*pagesize, index*pagesize+pagesize-1)
+	applist, err := dataManager.GetAppListByAccount(c.account, index*pagesize, index*pagesize+pagesize-1)
 
 	if err != nil {
 		println(err.Error())

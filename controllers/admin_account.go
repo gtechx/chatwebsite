@@ -55,7 +55,8 @@ func (c *AdminController) AccountList() {
 	println("pageNumber:", index, " pageSize:", pagesize)
 
 	dataManager := gtdb.Manager()
-	totalcount, err := dataManager.GetAccountCount()
+	accountfilter := &gtdb.AccountFilter{Account: accountfilter, Email: emailfilter, Regip: ipfilter, Createbegindate: begindate, Createenddate: enddate}
+	totalcount, err := dataManager.GetAccountCount(accountfilter)
 
 	if err != nil {
 		println(err.Error())
@@ -63,7 +64,7 @@ func (c *AdminController) AccountList() {
 		return
 	}
 
-	acclist, err := dataManager.GetAccountListByFilter(index*pagesize, index*pagesize+pagesize-1, accountfilter, emailfilter, ipfilter, begindate, enddate)
+	acclist, err := dataManager.GetAccountListByFilter(index*pagesize, index*pagesize+pagesize-1, accountfilter)
 
 	if err != nil {
 		println(err.Error())
