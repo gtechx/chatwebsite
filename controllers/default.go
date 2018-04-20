@@ -57,8 +57,8 @@ func (c *MainController) Register() {
 			goto end
 		}
 
-		salt := getSalt()
-		md5password := getSaltedPassword(password, salt)
+		salt := GetSalt(beego.AppConfig.DefaultInt("saltcount", 6))
+		md5password := GetSaltedPassword(password, salt)
 		println("salt:", salt, "password:", password, "md5password:", md5password)
 		tbl_account := &gtdb.Account{Account: account, Password: md5password, Salt: salt, Regip: c.Ctx.Input.IP()}
 		err = gtdb.Manager().CreateAccount(tbl_account)
@@ -104,7 +104,7 @@ func (c *MainController) Login() {
 			goto end
 		}
 
-		md5password := getSaltedPassword(password, tbl_account.Salt)
+		md5password := GetSaltedPassword(password, tbl_account.Salt)
 		if md5password != tbl_account.Password {
 			c.Data["error"] = "密码错误"
 			goto end

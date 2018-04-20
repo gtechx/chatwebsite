@@ -13,7 +13,6 @@ import (
 
 type AccountController struct {
 	beego.Controller
-	account string
 }
 
 func (c *AccountController) Prepare() {
@@ -22,15 +21,13 @@ func (c *AccountController) Prepare() {
 		c.Redirect("/", 302)
 		return
 	}
-	c.Data["account"] = account
-	c.account = account
 }
 
-func (c *AccountController) Account() {
-	c.TplName = "admin_account.tpl"
+func (c *AccountController) Index() {
+	c.TplName = "admin/account.tpl"
 }
 
-func (c *AccountController) AccountList() {
+func (c *AccountController) List() {
 	index := Int(c.GetString("pageNumber")) - 1 //Int(c.Ctx.Input.Param("0"))
 	pagesize := Int(c.GetString("pageSize"))    //Int(c.Ctx.Input.Param("1"))
 
@@ -72,7 +69,7 @@ func (c *AccountController) AccountList() {
 		return
 	}
 
-	pageapp := pageData{Total: totalcount, Rows: acclist}
+	pageapp := PageData{Total: totalcount, Rows: acclist}
 	retjson, err := json.Marshal(pageapp)
 	if err != nil {
 		println(err.Error())
@@ -83,7 +80,7 @@ func (c *AccountController) AccountList() {
 	c.Ctx.Output.Body(retjson)
 }
 
-func (c *AccountController) AccountCreate() {
+func (c *AccountController) Create() {
 	account := c.GetString("account")
 	password := c.GetString("password")
 	email := c.GetString("email")
@@ -109,8 +106,8 @@ func (c *AccountController) AccountCreate() {
 		goto end
 	}
 
-	salt = getSalt()
-	md5password = getSaltedPassword(password, salt)
+	salt = GetSalt(beego.AppConfig.DefaultInt("saltcount", 6))
+	md5password = GetSaltedPassword(password, salt)
 	println("salt:", salt, "password:", password, "md5password:", md5password)
 	tbl_account = &gtdb.Account{Account: account, Password: md5password, Salt: salt, Email: email, Regip: c.Ctx.Input.IP()}
 	err = gtdb.Manager().CreateAccount(tbl_account)
@@ -122,7 +119,7 @@ end:
 	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
 }
 
-func (c *AccountController) AccountUpdate() {
+func (c *AccountController) Update() {
 	account := c.GetString("account")
 	password := c.GetString("password")
 	email := c.GetString("email")
@@ -151,7 +148,7 @@ func (c *AccountController) AccountUpdate() {
 	}
 
 	if password != "" {
-		new_account.Password = getSaltedPassword(password, old_account.Salt)
+		new_account.Password = GetSaltedPassword(password, old_account.Salt)
 	}
 
 	for k := 0; k < oldt.NumField(); k++ {
@@ -172,7 +169,7 @@ end:
 	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
 }
 
-func (c *AccountController) AccountDel() {
+func (c *AccountController) Del() {
 	accounts := c.GetStrings("account[]")
 	dataManager := gtdb.Manager()
 
@@ -186,7 +183,7 @@ func (c *AccountController) AccountDel() {
 	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
 }
 
-func (c *AccountController) AccountBan() {
+func (c *AccountController) Ban() {
 	accounts := c.GetStrings("account[]")
 	dataManager := gtdb.Manager()
 
@@ -200,7 +197,7 @@ func (c *AccountController) AccountBan() {
 	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
 }
 
-func (c *AccountController) AccountUnban() {
+func (c *AccountController) Unban() {
 	accounts := c.GetStrings("account[]")
 	dataManager := gtdb.Manager()
 

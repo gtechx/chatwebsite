@@ -11,10 +11,10 @@
     我的应用数据
   </a>
 
-  <a href="/admin/account" class="list-group-item list-group-item-action text-center mt-4">
+  <a href="/admin/account/index" class="list-group-item list-group-item-action text-center mt-4">
     用户管理
   </a>
-  <a href="data" class="list-group-item list-group-item-action text-center">
+  <a href="/admin/appdata/index" class="list-group-item list-group-item-action text-center">
     应用管理
   </a>
   <a href="data" class="list-group-item list-group-item-action text-center">

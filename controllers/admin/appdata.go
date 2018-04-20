@@ -13,7 +13,6 @@ import (
 
 type AppDataController struct {
 	beego.Controller
-	account string
 }
 
 func (c *AppDataController) Prepare() {
@@ -22,15 +21,13 @@ func (c *AppDataController) Prepare() {
 		c.Redirect("/", 302)
 		return
 	}
-	c.Data["account"] = account
-	c.account = account
 }
 
-func (c *AppDataController) AppData() {
-	c.TplName = "user_app.tpl"
+func (c *AppDataController) Index() {
+	c.TplName = "admin/appdata.tpl"
 }
 
-func (c *AppDataController) AppDataCreate() {
+func (c *AppDataController) Create() {
 	if c.Ctx.Request.Method == "POST" {
 		appname := c.GetString("appname")
 		zonename := c.GetString("zonename")
@@ -47,7 +44,7 @@ func (c *AppDataController) AppDataCreate() {
 		dbManager := gtdb.Manager()
 		var flag bool
 		var err error
-		var tbl_app *gtdb.App
+		var tbl_appdata *gtdb.AppData
 
 		//check app
 		if appname == "" {
@@ -129,9 +126,9 @@ end:
 	c.TplName = "user_appdatacreate.tpl"
 }
 
-func (c *AppDataController) AppDataModify() {
-	id := c.GetString("id")
-	dataManager := gtdb.Manager()
+func (c *AppDataController) Update() {
+	id := Uint64(c.GetString("id"))
+	dbmanager := gtdb.Manager()
 	c.Data["id"] = id
 
 	if id <= 0 {
@@ -150,7 +147,7 @@ func (c *AppDataController) AppDataModify() {
 
 		blank_appdata := &gtdb.AppData{}
 		old_appdata, err := dbmanager.GetAppData(id)
-		new_appdata := &gtdb.Account{Nickname: nickname, Desc: desc, Sex: sex, Country: country, Birthday: birthday}
+		new_appdata := &gtdb.AppData{Nickname: nickname, Desc: desc, Sex: sex, Country: country, Birthday: birthday}
 
 		oldt := reflect.TypeOf(*old_appdata)
 		oldv := reflect.ValueOf(old_appdata).Elem()
@@ -180,7 +177,7 @@ func (c *AppDataController) AppDataModify() {
 			c.Data["error"] = "数据库错误:" + err.Error()
 		}
 	} else {
-		appdata, err := dataManager.GetAppData(id)
+		appdata, err := dbmanager.GetAppData(id)
 
 		if err == nil {
 			c.Data["appdata"] = appdata
@@ -193,7 +190,7 @@ end:
 	c.TplName = "user_appmodify.tpl"
 }
 
-func (c *AppDataController) AppDataDel() {
+func (c *AppDataController) Del() {
 	strappdatas := c.GetStrings("appdata[]")
 	appdatas := make([]uint64, len(strappdatas))
 
@@ -210,7 +207,7 @@ func (c *AppDataController) AppDataDel() {
 	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
 }
 
-func (c *AppDataController) AppDataList() {
+func (c *AppDataController) List() {
 	index := Int(c.GetString("pageNumber")) - 1 //Int(c.Ctx.Input.Param("0"))
 	pagesize := Int(c.GetString("pageSize"))    //Int(c.Ctx.Input.Param("1"))
 
@@ -272,7 +269,7 @@ func (c *AppDataController) AppDataList() {
 		return
 	}
 
-	pageapp := pageData{Total: totalcount, Rows: appdatalist}
+	pageapp := PageData{Total: totalcount, Rows: appdatalist}
 	retjson, err := json.Marshal(pageapp)
 	if err != nil {
 		println(err.Error())
@@ -281,4 +278,40 @@ func (c *AppDataController) AppDataList() {
 	}
 
 	c.Ctx.Output.Body(retjson)
+}
+
+func (c *AppDataController) Ban() {
+	strappdatas := c.GetStrings("appdata[]")
+	appdatas := make([]uint64, len(strappdatas))
+
+	for i, strappdata := range strappdatas {
+		appdatas[i] = Uint64(strappdata)
+	}
+
+	errtext := ""
+	err := gtdb.Manager().BanAppDatas(appdatas)
+
+	if err != nil {
+		errtext = "数据库错误:" + err.Error()
+	}
+
+	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
+}
+
+func (c *AppDataController) Unban() {
+	strappdatas := c.GetStrings("appdata[]")
+	appdatas := make([]uint64, len(strappdatas))
+
+	for i, strappdata := range strappdatas {
+		appdatas[i] = Uint64(strappdata)
+	}
+
+	errtext := ""
+	err := gtdb.Manager().UnbanAppDatas(appdatas)
+
+	if err != nil {
+		errtext = "数据库错误:" + err.Error()
+	}
+
+	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
 }

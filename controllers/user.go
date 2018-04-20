@@ -193,7 +193,7 @@ func (c *UserController) AppList() {
 		return
 	}
 
-	pageapp := pageData{Total: totalcount, Rows: applist}
+	pageapp := PageData{Total: totalcount, Rows: applist}
 	retjson, err := json.Marshal(pageapp)
 	if err != nil {
 		println(err.Error())

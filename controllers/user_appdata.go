@@ -2,6 +2,9 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
+	"reflect"
+	"time"
 
 	. "github.com/gtechx/base/common"
 	"github.com/gtechx/chatserver/db"
@@ -9,13 +12,6 @@ import (
 
 func (c *UserController) AppData() {
 	c.TplName = "user_app.tpl"
-}
-
-func checkEmptyAndExists(data, name string) {
-	dbManager := gtdb.Manager()
-	if data == "" {
-		c.Data["error"] = name + "不能为空"
-	}
 }
 
 func (c *UserController) AppDataCreate() {
@@ -26,16 +22,17 @@ func (c *UserController) AppDataCreate() {
 		desc := c.GetString("desc")
 		sex := c.GetString("sex")
 		country := c.GetString("country")
-		birthday := c.GetString("birthday")
+		//birthday := c.GetString("birthday")
+		birthday, _ := time.Parse("01/02/2006", c.GetString("birthday"))
 
-		println("AppDataCreate ", name, desc, share)
 		c.Data["post"] = true
 
 		dbManager := gtdb.Manager()
 		var flag bool
 		var err error
-		var tbl_app *gtdb.App
+		var tbl_appdata *gtdb.AppData
 
+		//check app
 		if appname == "" {
 			c.Data["error"] = "appname不能为空"
 			goto end
@@ -50,6 +47,8 @@ func (c *UserController) AppDataCreate() {
 			c.Data["error"] = "appname:" + appname + " 不存在"
 			goto end
 		}
+
+		//check zone
 		if zonename == "" {
 			c.Data["error"] = "zonename不能为空"
 			goto end
@@ -64,41 +63,25 @@ func (c *UserController) AppDataCreate() {
 			c.Data["error"] = "zonename:" + zonename + " 不存在"
 			goto end
 		}
+
+		//check nickname
 		if nickname == "" {
 			c.Data["error"] = "nickname不能为空"
 			goto end
 		}
-
-		flag, err = dataManager.IsAppExists(name)
-
+		flag, err = dbManager.IsNicknameExists(appname, zonename, nickname)
 		if err != nil {
 			println(err.Error())
-			c.Data["error"] = "数据库错误"
+			c.Data["error"] = "数据库错误:" + err.Error()
+			goto end
+		}
+		if !flag {
+			c.Data["error"] = "nickname:" + nickname + " 已经存在"
 			goto end
 		}
 
-		if flag {
-			c.Data["error"] = "应用名字已经存在"
-			goto end
-		}
-
-		if share != "" {
-			flag, err = dataManager.IsAppExists(share)
-
-			if err != nil {
-				println(err.Error())
-				c.Data["error"] = "数据库错误"
-				goto end
-			}
-
-			if !flag {
-				c.Data["error"] = "共享数据应用名字不存在"
-				goto end
-			}
-		}
-
-		tbl_app = &gtdb.App{Name: name, Owner: c.account, Desc: desc, Share: share}
-		err = dataManager.CreateApp(tbl_app)
+		tbl_appdata = &gtdb.AppData{Appname: appname, Zonename: zonename, Account: c.account, Nickname: nickname, Desc: desc, Sex: sex, Country: country, Birthday: birthday, Regip: c.Ctx.Input.IP()}
+		err = dbManager.CreateAppData(tbl_appdata)
 
 		if err != nil {
 			println(err.Error())
@@ -108,52 +91,66 @@ func (c *UserController) AppDataCreate() {
 
 		c.Redirect("appdata", 302)
 		return
-	end:
-		c.TplName = "user_appdatacreate.tpl"
-	} else {
-		c.TplName = "user_appdatacreate.tpl"
 	}
+end:
+	c.TplName = "user_appdatacreate.tpl"
 }
 
 func (c *UserController) AppDataModify() {
-	appname := c.GetString("appname")
-	dataManager := gtdb.Manager()
-	c.Data["appname"] = appname
+	id := Uint64(c.GetString("id"))
+	dbmanager := gtdb.Manager()
+	c.Data["id"] = id
 
-	if appname == "" {
-		c.Data["error"] = "应用名字为空"
+	if id <= 0 {
+		c.Data["error"] = "id不应小于0"
 		goto end
 	}
 
 	if c.Ctx.Request.Method == "POST" {
+		nickname := c.GetString("nickname")
 		desc := c.GetString("desc")
-		share := c.GetString("share")
+		sex := c.GetString("sex")
+		country := c.GetString("country")
+		//birthday := c.GetString("birthday")
+		birthday, _ := time.Parse("01/02/2006", c.GetString("birthday"))
 		c.Data["post"] = true
 
-		println(appname, desc, share)
-		err := dataManager.SetShareApp(appname, share)
+		blank_appdata := &gtdb.AppData{}
+		old_appdata, err := dbmanager.GetAppData(id)
+		new_appdata := &gtdb.AppData{Nickname: nickname, Desc: desc, Sex: sex, Country: country, Birthday: birthday}
+
+		oldt := reflect.TypeOf(*old_appdata)
+		oldv := reflect.ValueOf(old_appdata).Elem()
+		//newt := reflect.TypeOf(new_account)
+		newv := reflect.ValueOf(new_appdata).Elem()
+		//blankt := reflect.TypeOf(old_account)
+		blankv := reflect.ValueOf(blank_appdata).Elem()
+
 		if err != nil {
-			println("dataManager.SetShareApp ", err.Error())
+			fmt.Println("error:", err.Error())
 			c.Data["error"] = "数据库错误:" + err.Error()
 			goto end
 		}
 
-		err = dataManager.SetAppField(appname, "desc", desc)
-
-		if err != nil {
-			println("dataManager.SetAppField ", err.Error())
-			c.Data["error"] = "设置应用描述时数据库错误:" + err.Error()
-			goto end
+		for k := 0; k < oldt.NumField(); k++ {
+			//fmt.Printf("%s -- %v \n", t.Filed(k).Name, v.Field(k).Interface())
+			if oldv.Field(k).Type().Kind() != reflect.Slice && oldv.Field(k).Interface() != newv.Field(k).Interface() && newv.Field(k).Interface() != blankv.Field(k).Interface() {
+				oldv.Field(k).Set(newv.Field(k))
+			}
 		}
 
-		c.Data["desc"] = desc
-		c.Data["share"] = share
+		fmt.Println("old_appdata:", old_appdata)
+		err = gtdb.Manager().UpdateAppData(old_appdata)
+
+		if err != nil {
+			fmt.Println("error:", err.Error())
+			c.Data["error"] = "数据库错误:" + err.Error()
+		}
 	} else {
-		app, err := dataManager.GetApp(appname)
+		appdata, err := dbmanager.GetAppData(id)
 
 		if err == nil {
-			c.Data["desc"] = app.Desc
-			c.Data["share"] = app.Share
+			c.Data["appdata"] = appdata
 		} else {
 			println(err.Error())
 			c.Data["error"] = "数据库错误:" + err.Error()
@@ -187,6 +184,35 @@ func (c *UserController) AppDataList() {
 	appname := c.GetString("appname")
 	zonename := c.GetString("zonename")
 
+	appdatafilter := &gtdb.AppDataFilter{}
+	appdatafilter.Nickname = c.GetString("nickname")
+	appdatafilter.Desc = c.GetString("desc")
+	appdatafilter.Sex = c.GetString("sex")
+	appdatafilter.Country = c.GetString("country")
+	appdatafilter.Regip = c.GetString("regip")
+	appdatafilter.Lastip = c.GetString("lastip")
+	// lastloginbegindate := c.GetString("lastloginbegindate")
+	// lastloginenddate := c.GetString("lastloginenddate")
+	// createbegindate := c.GetString("createbegindate")
+	// createenddate := c.GetString("createenddate")
+
+	lbdate, err := time.Parse("01/02/2006", c.GetString("lastloginbegindate"))
+	if err == nil {
+		appdatafilter.Lastloginbegindate = &lbdate
+	}
+	ledate, err := time.Parse("01/02/2006", c.GetString("lastloginenddate"))
+	if err == nil {
+		appdatafilter.Lastloginenddate = &ledate
+	}
+	cbdate, err := time.Parse("01/02/2006", c.GetString("lastloginenddate"))
+	if err == nil {
+		appdatafilter.Createbegindate = &cbdate
+	}
+	cedate, err := time.Parse("01/02/2006", c.GetString("createenddate"))
+	if err == nil {
+		appdatafilter.Createenddate = &cedate
+	}
+
 	println("pageNumber:", index, " pageSize:", pagesize)
 
 	dataManager := gtdb.Manager()
@@ -195,18 +221,8 @@ func (c *UserController) AppDataList() {
 		c.Ctx.Output.Body([]byte("[]"))
 		return
 	}
-	appowner, err := dataManager.GetAppOwner(appname)
-	if err != nil {
-		println(err.Error())
-		c.Ctx.Output.Body([]byte("[]"))
-		return
-	}
-	if appowner != c.account {
-		println("no privilege")
-		c.Ctx.Output.Body([]byte("[]"))
-		return
-	}
-	totalcount, err := dataManager.GetAppDataCount(appname, zonename)
+
+	totalcount, err := dataManager.GetAppDataCount(appname, zonename, c.account, appdatafilter)
 
 	if err != nil {
 		println(err.Error())
@@ -214,7 +230,7 @@ func (c *UserController) AppDataList() {
 		return
 	}
 
-	applist, err := dataManager.GetAppByAccount(c.account, index*pagesize, index*pagesize+pagesize-1)
+	appdatalist, err := dataManager.GetAppDataList(appname, zonename, c.account, index*pagesize, index*pagesize+pagesize-1, appdatafilter)
 
 	if err != nil {
 		println(err.Error())
@@ -222,7 +238,7 @@ func (c *UserController) AppDataList() {
 		return
 	}
 
-	pageapp := pageData{Total: totalcount, Rows: applist}
+	pageapp := PageData{Total: totalcount, Rows: appdatalist}
 	retjson, err := json.Marshal(pageapp)
 	if err != nil {
 		println(err.Error())
