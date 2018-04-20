@@ -16,7 +16,7 @@
   <div class="col-8 bg-light px-0">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="index">主菜单</a></li>
-        <li class="breadcrumb-item"><a href="app">应用管理</a></li>
+        <li class="breadcrumb-item"><a href="app">我的应用</a></li>
         <li class="breadcrumb-item active" aria-current="page">应用创建</li>
       </ol>
   </div>

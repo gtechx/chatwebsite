@@ -6,7 +6,7 @@
   <div class="col-8 bg-light px-0">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="index">主菜单</a></li>
-        <li class="breadcrumb-item active" aria-current="page">应用管理</li>
+        <li class="breadcrumb-item active" aria-current="page">我的应用</li>
       </ol>
   </div>
   <div class="col-2">
