@@ -156,7 +156,7 @@
               align: 'center',
               valign: 'middle',
               formatter: function (value, row, index) {
-                  return '<a class="" href="appmodify?appname='+value+'">'+value+'</a>';
+                  return '<a class="" href="update?appname='+value+'">'+value+'</a>';
               }
           }, {
               field: 'desc',
