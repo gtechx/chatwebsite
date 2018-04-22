@@ -33,3 +33,47 @@
   {{end}}
 </header>
 <div class="container-fluid">
+  <div class="row">
+  {{if .account}}
+    <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+      <div class="sidebar-sticky">
+        <ul class="nav flex-column">
+         <li class="nav-item">
+            <a href="/user/index" class="nav-link active">
+            综合
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/user/app/index" class="nav-link active">
+            我的应用
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/user/appdata/index" class="nav-link">
+            我的应用数据
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/account/index" class="nav-link mt-4">
+            用户管理
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/appdata/index" class="nav-link">
+            应用管理
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="data" class="nav-link">
+            数据管理
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="data" class="nav-link">
+            在线玩家管理
+            </a>
+          </li>
+        </ul>
+    </nav>
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+    {{end}}

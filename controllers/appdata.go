@@ -6,15 +6,31 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/astaxie/beego"
 	. "github.com/gtechx/base/common"
 	"github.com/gtechx/chatserver/db"
 )
 
-func (c *UserController) AppData() {
-	c.TplName = "user_app.tpl"
+type AppDataController struct {
+	beego.Controller
+	account string
 }
 
-func (c *UserController) AppDataCreate() {
+func (c *AppDataController) Prepare() {
+	account := String(c.GetSession("account"))
+	if account == "" {
+		c.Redirect("/", 302)
+		return
+	}
+	c.Data["account"] = account
+	c.account = account
+}
+
+func (c *AppDataController) Index() {
+	c.TplName = "appdata.tpl"
+}
+
+func (c *AppDataController) Create() {
 	if c.Ctx.Request.Method == "POST" {
 		appname := c.GetString("appname")
 		zonename := c.GetString("zonename")
@@ -93,10 +109,10 @@ func (c *UserController) AppDataCreate() {
 		return
 	}
 end:
-	c.TplName = "user_appdatacreate.tpl"
+	c.TplName = "appdatacreate.tpl"
 }
 
-func (c *UserController) AppDataModify() {
+func (c *AppDataController) Update() {
 	id := Uint64(c.GetString("id"))
 	dbmanager := gtdb.Manager()
 	c.Data["id"] = id
@@ -157,10 +173,10 @@ func (c *UserController) AppDataModify() {
 		}
 	}
 end:
-	c.TplName = "user_appmodify.tpl"
+	c.TplName = "appdatamodify.tpl"
 }
 
-func (c *UserController) AppDataDel() {
+func (c *AppDataController) Del() {
 	strappdatas := c.GetStrings("appdata[]")
 	appdatas := make([]uint64, len(strappdatas))
 
@@ -177,7 +193,7 @@ func (c *UserController) AppDataDel() {
 	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
 }
 
-func (c *UserController) AppDataList() {
+func (c *AppDataController) List() {
 	index := Int(c.GetString("pageNumber")) - 1 //Int(c.Ctx.Input.Param("0"))
 	pagesize := Int(c.GetString("pageSize"))    //Int(c.Ctx.Input.Param("1"))
 

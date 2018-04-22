@@ -1,0 +1,185 @@
+package controllers
+
+import (
+	"encoding/json"
+
+	"github.com/astaxie/beego"
+	. "github.com/gtechx/base/common"
+	"github.com/gtechx/chatserver/db"
+)
+
+type AppController struct {
+	beego.Controller
+	account string
+}
+
+func (c *AppController) Prepare() {
+	account := String(c.GetSession("account"))
+	if account == "" {
+		c.Redirect("/", 302)
+		return
+	}
+	c.Data["account"] = account
+	c.account = account
+}
+
+func (c *AppController) Index() {
+	c.TplName = "app.tpl"
+}
+
+func (c *AppController) Create() {
+	if c.Ctx.Request.Method == "POST" {
+		name := c.GetString("name")
+		desc := c.GetString("desc")
+		share := c.GetString("share")
+
+		println("appcreate ", name, desc, share)
+		c.Data["post"] = true
+
+		dataManager := gtdb.Manager()
+		var flag bool
+		var err error
+		var tbl_app *gtdb.App
+
+		if name == "" {
+			c.Data["error"] = "应用名字不能为空"
+			goto end
+		}
+
+		flag, err = dataManager.IsAppExists(name)
+
+		if err != nil {
+			println(err.Error())
+			c.Data["error"] = "数据库错误"
+			goto end
+		}
+
+		if flag {
+			c.Data["error"] = "应用名字已经存在"
+			goto end
+		}
+
+		if share != "" {
+			flag, err = dataManager.IsAppExists(share)
+
+			if err != nil {
+				println(err.Error())
+				c.Data["error"] = "数据库错误"
+				goto end
+			}
+
+			if !flag {
+				c.Data["error"] = "共享数据应用名字不存在"
+				goto end
+			}
+		}
+
+		tbl_app = &gtdb.App{Name: name, Owner: c.account, Desc: desc, Share: share}
+		err = dataManager.CreateApp(tbl_app)
+
+		if err != nil {
+			println(err.Error())
+			c.Data["error"] = "数据库错误"
+			goto end
+		}
+
+		c.Redirect("app", 302)
+		return
+	}
+end:
+	c.TplName = "appcreate.tpl"
+}
+
+func (c *AppController) Update() {
+	appname := c.GetString("appname")
+	dataManager := gtdb.Manager()
+	c.Data["appname"] = appname
+
+	if appname == "" {
+		c.Data["error"] = "应用名字为空"
+		goto end
+	}
+
+	if c.Ctx.Request.Method == "POST" {
+		desc := c.GetString("desc")
+		share := c.GetString("share")
+		c.Data["post"] = true
+
+		println(appname, desc, share)
+		err := dataManager.SetShareApp(appname, share)
+		if err != nil {
+			println("dataManager.SetShareApp ", err.Error())
+			c.Data["error"] = "数据库错误:" + err.Error()
+			goto end
+		}
+
+		err = dataManager.SetAppField(appname, "desc", desc)
+
+		if err != nil {
+			println("dataManager.SetAppField ", err.Error())
+			c.Data["error"] = "设置应用描述时数据库错误:" + err.Error()
+			goto end
+		}
+
+		c.Data["desc"] = desc
+		c.Data["share"] = share
+	} else {
+		app, err := dataManager.GetApp(appname)
+
+		if err == nil {
+			c.Data["desc"] = app.Desc
+			c.Data["share"] = app.Share
+		} else {
+			println(err.Error())
+			c.Data["error"] = "数据库错误:" + err.Error()
+		}
+	}
+end:
+	c.TplName = "appmodify.tpl"
+}
+
+func (c *AppController) Del() {
+	appnames := c.GetStrings("appname[]")
+
+	errtext := ""
+	err := gtdb.Manager().DeleteApps(appnames)
+	if err != nil {
+		errtext = "数据库错误:" + err.Error()
+	}
+
+	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
+}
+
+func (c *AppController) List() {
+	index := Int(c.GetString("pageNumber")) - 1 //Int(c.Ctx.Input.Param("0"))
+	pagesize := Int(c.GetString("pageSize"))    //Int(c.Ctx.Input.Param("1"))
+
+	println("pageNumber:", index, " pageSize:", pagesize)
+
+	dataManager := gtdb.Manager()
+	totalcount, err := dataManager.GetAppCountByAccount(c.account)
+
+	if err != nil {
+		println(err.Error())
+		c.Ctx.Output.Body([]byte("[]"))
+		return
+	}
+
+	applist, err := dataManager.GetAppListByAccount(c.account, index*pagesize, index*pagesize+pagesize-1)
+
+	if err != nil {
+		println(err.Error())
+		c.Ctx.Output.Body([]byte("[]"))
+		return
+	}
+
+	pageapp := PageData{Total: totalcount, Rows: applist}
+	retjson, err := json.Marshal(pageapp)
+	if err != nil {
+		println(err.Error())
+		c.Ctx.Output.Body([]byte("[]"))
+		return
+	}
+
+	c.Ctx.Output.Body(retjson)
+}

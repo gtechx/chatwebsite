@@ -1,22 +1,6 @@
 {{template "header.tpl" .}}
 
-<div class="row">
-  <div class="col-2">
-  </div>
-  <div class="col-8 bg-light px-0">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/user/index">主菜单</a></li>
-        <li class="breadcrumb-item active" aria-current="page">应用管理</li>
-      </ol>
-  </div>
-  <div class="col-2">
-  </div>
-</div>
-
-<div class="row">
-  <div class="col-2">
-  </div>
-  <div class="col-8 bg-light">
+  <div class="bg-light">
     <form class="form-inline">
         <div class="form-group col-2">
             <label for="accountfilter">账号：</label>
@@ -59,9 +43,6 @@
     <table id="table">
     </table>
   </div>
-  <div class="col-2">
-  </div>
-</div>
 
 <div id="accountpanel" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered" role="document">

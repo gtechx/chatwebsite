@@ -21,6 +21,7 @@ func (c *AccountController) Prepare() {
 		c.Redirect("/", 302)
 		return
 	}
+	c.Data["account"] = account
 }
 
 func (c *AccountController) Index() {

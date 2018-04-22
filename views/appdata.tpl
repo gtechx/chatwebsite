@@ -3,6 +3,10 @@
   <div class="bg-light">
     <form class="form-inline">
         <div class="form-group col-2">
+            <label for="idfilter">ID：</label>
+            <input type="text" class="form-control col-8" name="accountfilter" id="idfilter" placeholder="">
+        </div>
+        <div class="form-group col-2">
             <label for="accountfilter">账号：</label>
             <input type="text" class="form-control col-8" name="accountfilter" id="accountfilter" placeholder="">
         </div>
@@ -44,7 +48,7 @@
     </table>
   </div>
 
-<div id="accountpanel" class="modal fade" tabindex="-1" role="dialog">
+<div id="appdatapanel" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -112,7 +116,7 @@
       $( "#createaccount" ).hide();
       $( "#modifyaccount" ).show();
       var row = $('#table').bootstrapTable('getData')[index];
-      var modal = $('#accountpanel');
+      var modal = $('#appdatapanel');
       modal.find('.modal-title').text("修改-"+row.account);
       $( "#caccount" ).val(row.account)
       $( "#cemail" ).val(row.email)
@@ -133,7 +137,7 @@
   function addAccount() {
     $( "#createaccount" ).show();
     $( "#modifyaccount" ).hide();
-    var modal = $('#accountpanel');
+    var modal = $('#appdatapanel');
     modal.find('.modal-title').text("创建");
     $( "#caccount" ).val("")
     $( "#cemail" ).val("")
@@ -264,6 +268,14 @@
               checkbox: true, // 显示一个勾选框
               align: 'center' // 居中显示
           }, {
+              field: 'id',
+              title: 'ID',
+              align: 'center',
+              valign: 'middle',
+              formatter: function (value, row, index) {
+                  return '<a class="" href="#" onclick="modifyAccount('+index+');">'+value+'</a>';
+              }
+          }, {
               field: 'account',
               title: '账号',
               align: 'center',
@@ -272,13 +284,59 @@
                   return '<a class="" href="#" onclick="modifyAccount('+index+');">'+value+'</a>';
               }
           }, {
-              field: 'email',
-              title: '邮箱',
+              field: 'appname',
+              title: '应用名称',
+              align: 'center',
+              valign: 'middle',
+              formatter: function (value, row, index) {
+                  return '<a class="" href="#" onclick="modifyAccount('+index+');">'+value+'</a>';
+              }
+          }, {
+              field: 'zonename',
+              title: '分区名',
+              align: 'center',
+              valign: 'middle',
+              formatter: function (value, row, index) {
+                  return '<a class="" href="#" onclick="modifyAccount('+index+');">'+value+'</a>';
+              }
+          }, {
+              field: 'nickname',
+              title: '昵称',
+              align: 'center',
+              valign: 'middle'
+          }, {
+              field: 'desc',
+              title: '描述',
+              align: 'center',
+              valign: 'middle'
+          }, {
+              field: 'sex',
+              title: '性别',
+              align: 'center',
+              valign: 'middle'
+          }, {
+              field: 'birthday',
+              title: '出生日期',
+              align: 'center',
+              valign: 'middle'
+          }, {
+              field: 'country',
+              title: '国家',
               align: 'center',
               valign: 'middle'
           }, {
               field: 'regip',
               title: '注册ip',
+              align: 'center',
+              valign: 'middle'
+          }, {
+              field: 'lastip',
+              title: '上次登录ip',
+              align: 'center',
+              valign: 'middle'
+          }, {
+              field: 'lastlogin',
+              title: '上次登录日期',
               align: 'center',
               valign: 'middle'
           }, {
