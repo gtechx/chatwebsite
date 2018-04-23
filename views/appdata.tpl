@@ -1,35 +1,52 @@
 {{template "header.tpl" .}}
 
   <div class="bg-light">
-    <form class="form-inline">
-        <div class="form-group col-2">
-            <label for="idfilter">ID：</label>
-            <input type="text" class="form-control col-8" name="accountfilter" id="idfilter" placeholder="">
+    <div class="d-flex flex-wrap">
+        <div class="p-2">
+            <label>ID：</label>
+            <input type="text" class="rounded" name="idfilter" id="idfilter" placeholder="">
         </div>
-        <div class="form-group col-2">
+        <div class="p-2">
+            <label for="appnamefilter">应用名称：</label>
+            <select class="rounded" name="appnamefilter" id="appnamefilter">
+                <option>Default select</option>
+                <option>Default select1</option>
+            </select>
+        </div>
+        <div class="p-2">
+            <label for="zonenamefilter">分区名：</label>
+            <select class="rounded" name="zonenamefilter" id="zonenamefilter">
+                <option>Default select</option>
+                <option>Default select1</option>
+            </select>
+        </div>
+        <div class="p-2">
             <label for="accountfilter">账号：</label>
-            <input type="text" class="form-control col-8" name="accountfilter" id="accountfilter" placeholder="">
+            <input type="text" class="rounded" name="accountfilter" id="accountfilter" placeholder="">
         </div>
-        <div class="form-group col-2">
+        <div class="p-2">
             <label for="emailfilter">Email：</label>
-            <input type="text" class="form-control col-8" name="emailfilter" id="emailfilter" placeholder="">
+            <input type="text" class="rounded" name="emailfilter" id="emailfilter" placeholder="">
         </div>
-        <div class="form-group col-2">
+        <div class="p-2">
             <label for="ipfilter">IP：</label>
-            <input type="text" class="form-control col-8" name="ipfilter" id="ipfilter" placeholder="">
+            <input type="text" class="rounded" name="ipfilter" id="ipfilter" placeholder="">
         </div>
-        <div class="form-group">
+        <div class="p-2">
             <label for="begindate">起始日期：</label>
-            <input type="text" class="form-control col-8" name="begindate" id="begindate" placeholder="">
+            <input type="text" class="rounded" name="begindate" id="begindate" placeholder="">
         </div>
-        <div class="form-group">
+        <div class="p-2">
             <label for="enddate">最终日期：</label>
-            <input type="text" class="form-control col-8" name="enddate" id="enddate" placeholder="">
+            <input type="text" class="rounded" name="enddate" id="enddate" placeholder="">
         </div>
-        <button id="btn_filter" onclick="$('#table').bootstrapTable('refresh');" type="button" class="btn btn-info btn-sm rightSize">
+        <div class="p-2">
+        <button id="btn_filter" onclick="$('#table').bootstrapTable('refresh');" type="button" class="btn btn-info btn-sm">
             过滤
         </button>
-    </form>
+        </div>
+    </div>
+
     <div id="toolbar" class="btn-group">
         <button id="btn_add" onclick="addAccount();" type="button" class="btn btn-info btn-sm rightSize">
             <span class="oi oi-plus"></span>新增

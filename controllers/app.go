@@ -83,7 +83,7 @@ func (c *AppController) Create() {
 			goto end
 		}
 
-		c.Redirect("app", 302)
+		c.Redirect("index", 302)
 		return
 	}
 end:

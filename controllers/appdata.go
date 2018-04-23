@@ -105,11 +105,11 @@ func (c *AppDataController) Create() {
 			goto end
 		}
 
-		c.Redirect("appdata", 302)
+		c.Redirect("index", 302)
 		return
 	}
 end:
-	c.TplName = "appdatacreate.tpl"
+	c.TplName = "appdata_create.tpl"
 }
 
 func (c *AppDataController) Update() {
