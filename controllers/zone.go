@@ -72,7 +72,7 @@ func (c *ZoneController) Create() {
 		}
 
 		println(errtext)
-		zonelist, err = dataManager.GetAppZones(appname)
+		zonelist, err = dataManager.GetAppZoneList(appname)
 
 		retjson, err = json.Marshal(zonelist)
 		if err != nil {
@@ -130,7 +130,7 @@ func (c *ZoneController) List() {
 		goto end
 	}
 
-	zonelist, err = dbMgr.GetAppZones(appname)
+	zonelist, err = dbMgr.GetAppZoneList(appname)
 
 	retjson, err = json.Marshal(zonelist)
 	if err != nil {

@@ -2,45 +2,78 @@
 
   <div class="bg-light">
     <div class="d-flex flex-wrap">
-        <div class="p-2">
-            <label>ID：</label>
-            <input type="text" class="rounded" name="idfilter" id="idfilter" placeholder="">
+        <div class="p-1">
+            <label for="id">ID：</label>
+            <input type="text" class="rounded" style="width:100px" name="id" id="id" placeholder="">
         </div>
-        <div class="p-2">
-            <label for="appnamefilter">应用名称：</label>
-            <select class="rounded" name="appnamefilter" id="appnamefilter">
-                <option>Default select</option>
-                <option>Default select1</option>
+        <div class="p-1">
+            <label for="appname">应用名称：</label>
+            <select class="rounded" onchange="onAppnameChange(this);" style="width:100px" name="appname" id="appname">
+                <option></option>
+                {{range $index, $elem := .applist}}
+                <option>{{$elem.Appname}}</option>
+                {{end}}
+                <option>ddd</option>
             </select>
         </div>
-        <div class="p-2">
-            <label for="zonenamefilter">分区名：</label>
-            <select class="rounded" name="zonenamefilter" id="zonenamefilter">
-                <option>Default select</option>
-                <option>Default select1</option>
+        <div class="p-1">
+            <label for="zonename">分区名：</label>
+            <select class="rounded" style="width:100px" name="zonename" id="zonename">
+                <option></option>
             </select>
         </div>
-        <div class="p-2">
-            <label for="accountfilter">账号：</label>
-            <input type="text" class="rounded" name="accountfilter" id="accountfilter" placeholder="">
+        <div class="p-1" {{if not .isadmin}}style="display:none"{{end}}>
+            <label for="account">账号：</label>
+            <input type="text" class="rounded" style="width:100px" name="account" {{if not .isadmin}}value="{{.account}}"{{end}} id="account" placeholder="">
         </div>
-        <div class="p-2">
-            <label for="emailfilter">Email：</label>
-            <input type="text" class="rounded" name="emailfilter" id="emailfilter" placeholder="">
+        <div class="p-1">
+            <label for="sex">性别：</label>
+            <select class="rounded" style="width:50px" name="sex" id="sex">
+                <option>男</option>
+                <option>女</option>
+            </select>
         </div>
-        <div class="p-2">
-            <label for="ipfilter">IP：</label>
-            <input type="text" class="rounded" name="ipfilter" id="ipfilter" placeholder="">
+        <div class="p-1">
+            <label for="desc">描述：</label>
+            <input type="text" class="rounded" style="width:150px" name="desc" id="desc" placeholder="">
         </div>
-        <div class="p-2">
+        <div class="p-1">
+            <label for="email">Email：</label>
+            <input type="text" class="rounded" style="width:100px" name="email" id="email" placeholder="">
+        </div>
+        <div class="p-1">
+            <label for="ip">IP：</label>
+            <input type="text" class="rounded" style="width:120px" name="ip" id="ip" placeholder="">
+        </div>
+        <div class="p-1">
+            <label for="country">国家：</label>
+            <input type="text" class="rounded" style="width:80px" name="country" id="country" placeholder="">
+        </div>
+        <div class="p-1">
+            <label for="birthdaybegindate">生日起始：</label>
+            <input type="text" class="rounded" style="width:100px" name="birthdaybegindate" id="birthdaybegindate" placeholder="">
+        </div>
+        <div class="p-1">
+            <label for="birthdayenddate">生日最终：</label>
+            <input type="text" class="rounded" style="width:100px" name="birthdayenddate" id="birthdayenddate" placeholder="">
+        </div>
+        <div class="p-1">
+            <label for="lastloginbegindate">登录起始：</label>
+            <input type="text" class="rounded" style="width:100px" name="lastloginbegindate" id="lastloginbegindate" placeholder="">
+        </div>
+        <div class="p-1">
+            <label for="lastloginenddate">登录最终：</label>
+            <input type="text" class="rounded" style="width:100px" name="lastloginenddate" id="lastloginenddate" placeholder="">
+        </div>
+        <div class="p-1">
             <label for="begindate">起始日期：</label>
-            <input type="text" class="rounded" name="begindate" id="begindate" placeholder="">
+            <input type="text" class="rounded" style="width:100px" name="begindate" id="begindate" placeholder="">
         </div>
-        <div class="p-2">
+        <div class="p-1">
             <label for="enddate">最终日期：</label>
-            <input type="text" class="rounded" name="enddate" id="enddate" placeholder="">
+            <input type="text" class="rounded" style="width:100px" name="enddate" id="enddate" placeholder="">
         </div>
-        <div class="p-2">
+        <div class="p-1">
         <button id="btn_filter" onclick="$('#table').bootstrapTable('refresh');" type="button" class="btn btn-info btn-sm">
             过滤
         </button>
@@ -107,11 +140,33 @@
 <script type="text/javascript">
   $( function() {
     $( "#begindate" ).datepicker();
+    $( "#enddate" ).datepicker();
+    $( "#birthdaybegindate" ).datepicker();
+    $( "#birthdayenddate" ).datepicker();
+    $( "#lastloginbegindate" ).datepicker();
+    $( "#lastloginenddate" ).datepicker();
   } );
 
-  $( function() {
-    $( "#enddate" ).datepicker();
-  } );
+  function onAppnameChange(obj) {
+      var opt = obj.options[obj.selectedIndex]
+      console.info("text:"+opt.text)
+      console.info("value:"+opt.value)
+
+        $.post("zonelist", { 'account': $('#account').val(), 'appname': $('#appname').val()},
+        function(data) {
+        $('#zonename').bootstrapTable('refresh');
+        var jsondata = JSON.parse(data);
+        var liststr = '';
+        var count = jsondata["Total"]
+        var html = $('#zonename').html()
+        for (i in jsondata["Rows"])
+        {
+            var row = jsondata["Rows"][i]
+            html += '<option>' + row.zonename + '</option>'
+        }
+        $('#zonename').html(html)
+        });
+  }
 
   function checkEmail(email) {
     var reg = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$"); //正则表达式
@@ -265,9 +320,20 @@
       queryParams: function (params) { // 请求服务器数据时发送的参数，可以在这里添加额外的查询参数，返回false则终止请求
 
           return {
-              accountfilter: $("#accountfilter").val(),
-              emailfilter: $("#emailfilter").val(),
-              ipfilter: $("#ipfilter").val(),
+              id: $("#id").val(),
+              account: $("#account").val(),
+              appname: $("#appname").val(),
+              zonename: $("#zonename").val(),
+              nickname: $("#nickname").val(),
+              sex: $("#sex").val(),
+              desc: $("#desc").val(),
+              email: $("#email").val(),
+              ip: $("#ip").val(),
+              country: $("#country").val(),
+              birthdaybegindate: $("#birthdaybegindate").val(),
+              birthdayenddate: $("#birthdayenddate").val(),
+              lastloginbegindate: $("#lastloginbegindate").val(),
+              lastloginenddate: $("#lastloginenddate").val(),
               begindate: $("#begindate").val(),
               enddate: $("#enddate").val(),
               pageSize: params.pageSize, // 每页要显示的数据条数

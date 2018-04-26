@@ -23,10 +23,13 @@ func (c *AppDataController) Prepare() {
 		return
 	}
 	c.Data["account"] = account
+	c.Data["isadmin"] = true
 	c.account = account
 }
 
 func (c *AppDataController) Index() {
+	applist, _ := gtdb.Manager().GetAccountAppList(c.account)
+	c.Data["applist"] = applist
 	c.TplName = "appdata.tpl"
 }
 
@@ -197,8 +200,13 @@ func (c *AppDataController) List() {
 	index := Int(c.GetString("pageNumber")) - 1 //Int(c.Ctx.Input.Param("0"))
 	pagesize := Int(c.GetString("pageSize"))    //Int(c.Ctx.Input.Param("1"))
 
+	id, _ := c.GetUint64("id", 0)
 	appname := c.GetString("appname")
 	zonename := c.GetString("zonename")
+	account := c.GetString("account")
+	if account != c.account {
+		account = c.account
+	}
 
 	appdatafilter := &gtdb.AppDataFilter{}
 	appdatafilter.Nickname = c.GetString("nickname")
@@ -212,6 +220,14 @@ func (c *AppDataController) List() {
 	// createbegindate := c.GetString("createbegindate")
 	// createenddate := c.GetString("createenddate")
 
+	bbdate, err := time.Parse("01/02/2006", c.GetString("birthdaybegindate"))
+	if err == nil {
+		appdatafilter.Birthdaybegindate = &bbdate
+	}
+	bedate, err := time.Parse("01/02/2006", c.GetString("birthdayenddate"))
+	if err == nil {
+		appdatafilter.Birthdayenddate = &bedate
+	}
 	lbdate, err := time.Parse("01/02/2006", c.GetString("lastloginbegindate"))
 	if err == nil {
 		appdatafilter.Lastloginbegindate = &lbdate
@@ -220,7 +236,7 @@ func (c *AppDataController) List() {
 	if err == nil {
 		appdatafilter.Lastloginenddate = &ledate
 	}
-	cbdate, err := time.Parse("01/02/2006", c.GetString("lastloginenddate"))
+	cbdate, err := time.Parse("01/02/2006", c.GetString("createbegindate"))
 	if err == nil {
 		appdatafilter.Createbegindate = &cbdate
 	}
@@ -232,13 +248,35 @@ func (c *AppDataController) List() {
 	println("pageNumber:", index, " pageSize:", pagesize)
 
 	dataManager := gtdb.Manager()
+
+	if id != 0 {
+		appdata, err := dataManager.GetAppData(id)
+
+		if err != nil {
+			println(err.Error())
+			c.Ctx.Output.Body([]byte("[]"))
+			return
+		}
+
+		pageapp := PageData{Total: 1, Rows: []*gtdb.AppData{appdata}}
+		retjson, err := json.Marshal(pageapp)
+		if err != nil {
+			println(err.Error())
+			c.Ctx.Output.Body([]byte("[]"))
+			return
+		}
+
+		c.Ctx.Output.Body(retjson)
+		return
+	}
+
 	if appname == "" {
 		println("appname must not null")
 		c.Ctx.Output.Body([]byte("[]"))
 		return
 	}
 
-	totalcount, err := dataManager.GetAppDataCount(appname, zonename, c.account, appdatafilter)
+	totalcount, err := dataManager.GetAppDataCount(appname, zonename, account, appdatafilter)
 
 	if err != nil {
 		println(err.Error())
@@ -246,7 +284,12 @@ func (c *AppDataController) List() {
 		return
 	}
 
-	appdatalist, err := dataManager.GetAppDataList(appname, zonename, c.account, index*pagesize, index*pagesize+pagesize-1, appdatafilter)
+	if totalcount == 0 {
+		c.Ctx.Output.Body([]byte("[]"))
+		return
+	}
+
+	appdatalist, err := dataManager.GetAppDataList(appname, zonename, account, index*pagesize, index*pagesize+pagesize-1, appdatafilter)
 
 	if err != nil {
 		println(err.Error())
@@ -256,6 +299,31 @@ func (c *AppDataController) List() {
 
 	pageapp := PageData{Total: totalcount, Rows: appdatalist}
 	retjson, err := json.Marshal(pageapp)
+	if err != nil {
+		println(err.Error())
+		c.Ctx.Output.Body([]byte("[]"))
+		return
+	}
+
+	c.Ctx.Output.Body(retjson)
+}
+
+func (c *AppDataController) ZoneList() {
+	appname := c.GetString("appname")
+	account := c.GetString("account")
+	if account != c.account {
+		account = c.account
+	}
+	zonelist, err := gtdb.Manager().GetAccountZoneList(account, appname)
+
+	if err != nil {
+		println(err.Error())
+		c.Ctx.Output.Body([]byte("[]"))
+		return
+	}
+
+	pagezone := PageData{Total: uint64(len(zonelist)), Rows: zonelist}
+	retjson, err := json.Marshal(pagezone)
 	if err != nil {
 		println(err.Error())
 		c.Ctx.Output.Body([]byte("[]"))
