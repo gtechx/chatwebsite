@@ -34,6 +34,10 @@
         </select>
     </div>
     <div class="form-group">
+      <label for="account">账号：</label>
+      <input type="text" class="form-control" id="account" name="account">
+    </div>
+    <div class="form-group">
       <label for="nickname">昵称：</label>
       <input type="text" class="form-control" id="nickname" name="nickname">
     </div>

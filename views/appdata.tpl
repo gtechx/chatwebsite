@@ -26,6 +26,10 @@
             <input type="text" class="rounded" style="width:100px" name="account" {{if not .isadmin}}value="{{.account}}"{{end}} id="account" placeholder="">
         </div>
         <div class="p-1">
+            <label for="nickname">昵称：</label>
+            <input type="text" class="rounded" style="width:100px" name="nickname" id="nickname" placeholder="">
+        </div>
+        <div class="p-1">
             <label for="sex">性别：</label>
             <select class="rounded" style="width:50px" name="sex" id="sex">
                 <option></option>
@@ -305,39 +309,30 @@
               field: 'id',
               title: 'ID',
               align: 'center',
-              valign: 'middle',
-              formatter: function (value, row, index) {
-                  return '<a class="" href="#" onclick="modifyAccount('+index+');">'+value+'</a>';
-              }
+              valign: 'middle'
           }, {
               field: 'account',
               title: '账号',
               align: 'center',
-              valign: 'middle',
-              formatter: function (value, row, index) {
-                  return '<a class="" href="#" onclick="modifyAccount('+index+');">'+value+'</a>';
-              }
+              valign: 'middle'
           }, {
               field: 'appname',
               title: '应用名称',
               align: 'center',
-              valign: 'middle',
-              formatter: function (value, row, index) {
-                  return '<a class="" href="#" onclick="modifyAccount('+index+');">'+value+'</a>';
-              }
+              valign: 'middle'
           }, {
               field: 'zonename',
               title: '分区名',
               align: 'center',
-              valign: 'middle',
-              formatter: function (value, row, index) {
-                  return '<a class="" href="#" onclick="modifyAccount('+index+');">'+value+'</a>';
-              }
+              valign: 'middle'
           }, {
               field: 'nickname',
               title: '昵称',
               align: 'center',
-              valign: 'middle'
+              valign: 'middle',
+              formatter: function (value, row, index) {
+                  return '<a class="" href="update?id='+row.id+'">'+value+'</a>';
+              }
           }, {
               field: 'desc',
               title: '描述',

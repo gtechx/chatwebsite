@@ -38,6 +38,7 @@ func (c *AppDataController) Create() {
 	if c.Ctx.Request.Method == "POST" {
 		appname := c.GetString("appname")
 		zonename := c.GetString("zonename")
+		account := c.GetString("account")
 		nickname := c.GetString("nickname")
 		desc := c.GetString("desc")
 		sex := c.GetString("sex")
@@ -84,6 +85,22 @@ func (c *AppDataController) Create() {
 			goto end
 		}
 
+		//check account
+		if account == "" {
+			c.Data["error"] = "account不能为空"
+			goto end
+		}
+		flag, err = dbManager.IsAccountExists(account)
+		if err != nil {
+			println(err.Error())
+			c.Data["error"] = "数据库错误:" + err.Error()
+			goto end
+		}
+		if !flag {
+			c.Data["error"] = "account:" + account + " 不存在"
+			goto end
+		}
+
 		//check nickname
 		if nickname == "" {
 			c.Data["error"] = "nickname不能为空"
@@ -100,7 +117,7 @@ func (c *AppDataController) Create() {
 			goto end
 		}
 
-		tbl_appdata = &gtdb.AppData{Appname: appname, Zonename: zonename, Account: c.account, Nickname: nickname, Desc: desc, Sex: sex, Country: country, Birthday: birthday, Regip: c.Ctx.Input.IP()}
+		tbl_appdata = &gtdb.AppData{Appname: appname, Zonename: zonename, Account: account, Nickname: nickname, Desc: desc, Sex: sex, Country: country, Birthday: birthday, Regip: c.Ctx.Input.IP()}
 		err = dbManager.CreateAppData(tbl_appdata)
 
 		if err != nil {
@@ -125,11 +142,24 @@ func (c *AppDataController) Update() {
 	dbmanager := gtdb.Manager()
 	c.Data["id"] = id
 
+	fmt.Println("id:",c.GetString("id"))
+
+	var old_appdata *gtdb.AppData
+	var err error
 	if id <= 0 {
 		c.Data["error"] = "id不应小于0"
 		goto end
 	}
 
+	old_appdata, err = dbmanager.GetAppData(id)
+
+	if err != nil {
+		fmt.Println("error:", err.Error())
+		c.Data["error"] = "数据库错误:" + err.Error()
+		goto end
+	}
+
+	c.Data["appdata"] = old_appdata
 	if c.Ctx.Request.Method == "POST" {
 		nickname := c.GetString("nickname")
 		desc := c.GetString("desc")
@@ -139,8 +169,10 @@ func (c *AppDataController) Update() {
 		birthday, _ := time.Parse("01/02/2006", c.GetString("birthday"))
 		c.Data["post"] = true
 
+		fmt.Println("desc:",desc)
+
 		blank_appdata := &gtdb.AppData{}
-		old_appdata, err := dbmanager.GetAppData(id)
+
 		new_appdata := &gtdb.AppData{Nickname: nickname, Desc: desc, Sex: sex, Country: country, Birthday: birthday}
 
 		oldt := reflect.TypeOf(*old_appdata)
@@ -170,18 +202,9 @@ func (c *AppDataController) Update() {
 			fmt.Println("error:", err.Error())
 			c.Data["error"] = "数据库错误:" + err.Error()
 		}
-	} else {
-		appdata, err := dbmanager.GetAppData(id)
-
-		if err == nil {
-			c.Data["appdata"] = appdata
-		} else {
-			println(err.Error())
-			c.Data["error"] = "数据库错误:" + err.Error()
-		}
 	}
 end:
-	c.TplName = "appdatamodify.tpl"
+	c.TplName = "appdata_update.tpl"
 }
 
 func (c *AppDataController) Del() {
@@ -253,13 +276,14 @@ func (c *AppDataController) List() {
 	println("pageNumber:", index, " pageSize:", pagesize)
 
 	dataManager := gtdb.Manager()
+	pagenone := "{total:0, rows:[]}"
 
 	if id != 0 {
 		appdata, err := dataManager.GetAppData(id)
 
 		if err != nil {
 			println(err.Error())
-			c.Ctx.Output.Body([]byte("[]"))
+			c.Ctx.Output.Body([]byte(pagenone))
 			return
 		}
 
@@ -267,7 +291,7 @@ func (c *AppDataController) List() {
 		retjson, err := json.Marshal(pageapp)
 		if err != nil {
 			println(err.Error())
-			c.Ctx.Output.Body([]byte("[]"))
+			c.Ctx.Output.Body([]byte(pagenone))
 			return
 		}
 
@@ -277,7 +301,7 @@ func (c *AppDataController) List() {
 
 	if appname == "" {
 		println("appname must not null")
-		c.Ctx.Output.Body([]byte("[]"))
+		c.Ctx.Output.Body([]byte(pagenone))
 		return
 	}
 
@@ -285,12 +309,12 @@ func (c *AppDataController) List() {
 
 	if err != nil {
 		println(err.Error())
-		c.Ctx.Output.Body([]byte("[]"))
+		c.Ctx.Output.Body([]byte(pagenone))
 		return
 	}
 
 	if totalcount == 0 {
-		c.Ctx.Output.Body([]byte("[]"))
+		c.Ctx.Output.Body([]byte(pagenone))
 		return
 	}
 
@@ -298,7 +322,7 @@ func (c *AppDataController) List() {
 
 	if err != nil {
 		println(err.Error())
-		c.Ctx.Output.Body([]byte("[]"))
+		c.Ctx.Output.Body([]byte(pagenone))
 		return
 	}
 
@@ -306,7 +330,7 @@ func (c *AppDataController) List() {
 	retjson, err := json.Marshal(pageapp)
 	if err != nil {
 		println(err.Error())
-		c.Ctx.Output.Body([]byte("[]"))
+		c.Ctx.Output.Body([]byte(pagenone))
 		return
 	}
 
