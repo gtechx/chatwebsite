@@ -63,7 +63,7 @@ func (c *ZoneController) Create() {
 				continue
 			}
 
-			tbl_zone = &gtdb.AppZone{Name: zname, Owner: appname}
+			tbl_zone = &gtdb.AppZone{Zonename: zname, Owner: appname}
 			err = dataManager.AddAppZone(tbl_zone)
 
 			if err != nil {

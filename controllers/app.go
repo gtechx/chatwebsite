@@ -74,7 +74,7 @@ func (c *AppController) Create() {
 			}
 		}
 
-		tbl_app = &gtdb.App{Name: name, Owner: c.account, Desc: desc, Share: share}
+		tbl_app = &gtdb.App{Appname: name, Owner: c.account, Desc: desc, Share: share}
 		err = dataManager.CreateApp(tbl_app)
 
 		if err != nil {

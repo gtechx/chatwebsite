@@ -23,7 +23,7 @@
         <select class="form-control" onchange="onAppnameChange(this);" style="width:100px" name="appname" id="appname">
             <option></option>
             {{range $index, $elem := .applist}}
-            <option>{{$elem.Name}}</option>
+            <option>{{$elem.Appname}}</option>
             {{end}}
         </select>
     </div>
@@ -44,7 +44,6 @@
     <div class="form-group">
       <label for="sex">性别：</label>
       <select class="form-control" name="sex" id="sex">
-          <option></option>
           <option>男</option>
           <option>女</option>
       </select>
@@ -84,7 +83,7 @@
         for (i in jsondata["rows"])
         {
             var row = jsondata["rows"][i];
-            html += '<option>' + row.name + '</option>';
+            html += '<option>' + row.zonename + '</option>';
         }
         $('#zonename').html(html);
         });

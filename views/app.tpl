@@ -61,7 +61,7 @@
       var liststr = '';
       for (i in jsondata)
       {
-        var zone = jsondata[i]["name"];//.replace(/"/g, '');
+        var zone = jsondata[i]["zonename"];//.replace(/"/g, '');
         liststr += '<label class="checkbox-inline border border-success ml-2 bg-danger">\n';
         liststr += '<input type="checkbox" id="\''+zone+'\'" name="zoneitem" value="\''+zone+'\'">' + zone + '\n';
         liststr += '</label>';
@@ -76,7 +76,7 @@
       var liststr = '';
       for (i in jsondata)
       {
-        var zone = jsondata[i]["name"];//.replace(/"/g, '');
+        var zone = jsondata[i]["zonename"];//.replace(/"/g, '');
         liststr += '<label class="checkbox-inline border border-success ml-2 bg-danger">\n';
         liststr += '<input type="checkbox" id="\''+zone+'\'" name="zoneitem" value="\''+zone+'\'">' + zone + '\n';
         liststr += '</label>';
@@ -151,7 +151,7 @@
               checkbox: true, // 显示一个勾选框
               align: 'center' // 居中显示
           }, {
-              field: 'name',
+              field: 'appname',
               title: '名称',
               align: 'center',
               valign: 'middle',
@@ -181,7 +181,7 @@
               width: 160, // 定义列的宽度，单位为像素px
               formatter: function (value, row, index) {
                 if(value == "")
-                  return '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#zonepanel" data-whatever="'+row.name+'">分区管理</button>';
+                  return '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#zonepanel" data-whatever="'+row.appname+'">分区管理</button>';
               }
           }
       ],

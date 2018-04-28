@@ -7,7 +7,7 @@
             <select class="rounded" onchange="onAppnameChange(this);" style="width:100px" name="appname" id="appname">
                 <option></option>
                 {{range $index, $elem := .applist}}
-                <option>{{$elem.Name}}</option>
+                <option>{{$elem.Appname}}</option>
                 {{end}}
             </select>
         </div>
@@ -126,7 +126,7 @@
         for (i in jsondata["rows"])
         {
             var row = jsondata["rows"][i];
-            html += '<option>' + row.name + '</option>';
+            html += '<option>' + row.zonename + '</option>';
         }
         $('#zonename').html(html);
         });

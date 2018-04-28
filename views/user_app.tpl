@@ -170,7 +170,7 @@
               checkbox: true, // 显示一个勾选框
               align: 'center' // 居中显示
           }, {
-              field: 'name',
+              field: 'appname',
               title: '名称',
               align: 'center',
               valign: 'middle',
