@@ -3,17 +3,12 @@
   <div class="bg-light">
     <div class="d-flex flex-wrap">
         <div class="p-1">
-            <label for="id">ID：</label>
-            <input type="text" class="rounded" style="width:100px" name="id" id="id" placeholder="">
-        </div>
-        <div class="p-1">
             <label for="appname">应用名称：</label>
             <select class="rounded" onchange="onAppnameChange(this);" style="width:100px" name="appname" id="appname">
                 <option></option>
                 {{range $index, $elem := .applist}}
-                <option>{{$elem.Appname}}</option>
+                <option>{{$elem.Name}}</option>
                 {{end}}
-                <option>ddd</option>
             </select>
         </div>
         <div class="p-1">
@@ -22,6 +17,10 @@
                 <option></option>
             </select>
         </div>
+        <div class="p-1">
+            <label for="id">ID：</label>
+            <input type="text" class="rounded" style="width:100px" name="id" id="id" placeholder="">
+        </div>
         <div class="p-1" {{if not .isadmin}}style="display:none"{{end}}>
             <label for="account">账号：</label>
             <input type="text" class="rounded" style="width:100px" name="account" {{if not .isadmin}}value="{{.account}}"{{end}} id="account" placeholder="">
@@ -29,6 +28,7 @@
         <div class="p-1">
             <label for="sex">性别：</label>
             <select class="rounded" style="width:50px" name="sex" id="sex">
+                <option></option>
                 <option>男</option>
                 <option>女</option>
             </select>
@@ -80,8 +80,9 @@
         </div>
     </div>
 
+    {{if not .isreadonly}}
     <div id="toolbar" class="btn-group">
-        <button id="btn_add" onclick="addAccount();" type="button" class="btn btn-info btn-sm rightSize">
+        <button id="btn_add" onclick="window.location.href='create';" type="button" class="btn btn-info btn-sm rightSize">
             <span class="oi oi-plus"></span>新增
         </button>
         <button id="btn_delete" onclick="delAccount();" type="button" class="btn btn-info btn-sm rightSize">
@@ -94,48 +95,10 @@
             <span class="oi oi-circle-check"></span>解除封禁
         </button>
     </div>
+    {{end}}
     <table id="table">
     </table>
   </div>
-
-<div id="appdatapanel" class="modal fade" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Modal title</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form>
-            <div class="form-group">
-                <label for="caccount">账号：</label>
-                <input type="text" class="form-control" name="caccount" id="caccount" placeholder="Account">
-            </div>
-            <div class="form-group">
-                <label for="cemail">邮箱：</label>
-                <input type="email" class="form-control" name="cemail" id="cemail" placeholder="Email">
-            </div>
-            <div class="form-group">
-                <label for="password1">密码：</label>
-                <input type="password" class="form-control" name="password1" id="password1" placeholder="Password" oninput="document.getElementById('password').value = this.value;" onpropertychange="document.getElementById('password').value = this.value;">
-                <input type="hidden" name="password" id="password" />
-            </div>
-            <div class="form-group">
-                <label for="password2">确认密码：</label>
-                <input type="password" class="form-control" name="password2" id="password2" placeholder="Password">
-            </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="createaccount" onclick="createAccount();">创建</button>
-        <button type="button" class="btn btn-primary" id="modifyaccount" onclick="updateAccount();">修改</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <script type="text/javascript">
   $( function() {
@@ -148,23 +111,24 @@
   } );
 
   function onAppnameChange(obj) {
-      var opt = obj.options[obj.selectedIndex]
-      console.info("text:"+opt.text)
-      console.info("value:"+opt.value)
+      var opt = obj.options[obj.selectedIndex];
+      console.info("text:"+opt.text);
+      console.info("value:"+opt.value);
 
         $.post("zonelist", { 'account': $('#account').val(), 'appname': $('#appname').val()},
         function(data) {
         $('#zonename').bootstrapTable('refresh');
         var jsondata = JSON.parse(data);
+        console.info(jsondata["rows"]);
         var liststr = '';
-        var count = jsondata["Total"]
-        var html = $('#zonename').html()
-        for (i in jsondata["Rows"])
+        var count = jsondata["total"];
+        var html = $('#zonename').html();
+        for (i in jsondata["rows"])
         {
-            var row = jsondata["Rows"][i]
-            html += '<option>' + row.zonename + '</option>'
+            var row = jsondata["rows"][i];
+            html += '<option>' + row.name + '</option>';
         }
-        $('#zonename').html(html)
+        $('#zonename').html(html);
         });
   }
 
@@ -204,19 +168,6 @@
     function(data) {
     $('#table').bootstrapTable('refresh');
     });
-  }
-
-  function addAccount() {
-    $( "#createaccount" ).show();
-    $( "#modifyaccount" ).hide();
-    var modal = $('#appdatapanel');
-    modal.find('.modal-title').text("创建");
-    $( "#caccount" ).val("")
-    $( "#cemail" ).val("")
-    $( "#password" ).val("")
-    $( "#password1" ).val("")
-    $( "#password2" ).val("")
-    modal.modal('show');
   }
 
   function createAccount(){

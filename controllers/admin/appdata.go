@@ -22,6 +22,7 @@ func (c *AppDataController) Prepare() {
 		return
 	}
 	c.Data["account"] = account
+	c.Data["isadmin"] = true
 }
 
 func (c *AppDataController) Index() {
@@ -122,6 +123,8 @@ func (c *AppDataController) Create() {
 
 		c.Redirect("appdata", 302)
 		return
+	} else {
+
 	}
 end:
 	c.TplName = "user_appdatacreate.tpl"

@@ -28,7 +28,8 @@ func (c *AppDataController) Prepare() {
 }
 
 func (c *AppDataController) Index() {
-	applist, _ := gtdb.Manager().GetAccountAppList(c.account)
+	count, _ := gtdb.Manager().GetAppCountByAccount(c.account)
+	applist, _ := gtdb.Manager().GetAppListByAccount(c.account, 0, int(count))
 	c.Data["applist"] = applist
 	c.TplName = "appdata.tpl"
 }
@@ -94,7 +95,7 @@ func (c *AppDataController) Create() {
 			c.Data["error"] = "数据库错误:" + err.Error()
 			goto end
 		}
-		if !flag {
+		if flag {
 			c.Data["error"] = "nickname:" + nickname + " 已经存在"
 			goto end
 		}
@@ -110,6 +111,10 @@ func (c *AppDataController) Create() {
 
 		c.Redirect("index", 302)
 		return
+	} else {
+		count, _ := gtdb.Manager().GetAppCountByAccount(c.account)
+		applist, _ := gtdb.Manager().GetAppListByAccount(c.account, 0, int(count))
+		c.Data["applist"] = applist
 	}
 end:
 	c.TplName = "appdata_create.tpl"
@@ -204,9 +209,9 @@ func (c *AppDataController) List() {
 	appname := c.GetString("appname")
 	zonename := c.GetString("zonename")
 	account := c.GetString("account")
-	if account != c.account {
-		account = c.account
-	}
+	// if account != c.account {
+	// 	account = c.account
+	// }
 
 	appdatafilter := &gtdb.AppDataFilter{}
 	appdatafilter.Nickname = c.GetString("nickname")
@@ -314,7 +319,7 @@ func (c *AppDataController) ZoneList() {
 	if account != c.account {
 		account = c.account
 	}
-	zonelist, err := gtdb.Manager().GetAccountZoneList(account, appname)
+	zonelist, err := gtdb.Manager().GetAppZoneList(appname)
 
 	if err != nil {
 		println(err.Error())

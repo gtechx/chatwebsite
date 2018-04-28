@@ -19,6 +19,21 @@
 {{end}}
   <form method="post" action="create" onsubmit="return checkData();">
     <div class="form-group">
+        <label for="appname">应用名称：</label>
+        <select class="form-control" onchange="onAppnameChange(this);" style="width:100px" name="appname" id="appname">
+            <option></option>
+            {{range $index, $elem := .applist}}
+            <option>{{$elem.Name}}</option>
+            {{end}}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="zonename">分区名：</label>
+        <select class="form-control" style="width:100px" name="zonename" id="zonename">
+            <option></option>
+        </select>
+    </div>
+    <div class="form-group">
       <label for="nickname">昵称：</label>
       <input type="text" class="form-control" id="nickname" name="nickname">
     </div>
@@ -29,6 +44,7 @@
     <div class="form-group">
       <label for="sex">性别：</label>
       <select class="form-control" name="sex" id="sex">
+          <option></option>
           <option>男</option>
           <option>女</option>
       </select>
@@ -45,5 +61,34 @@
   </form>
 
 </div>
+
+<script type="text/javascript">
+  $( function() {
+    $( "#birthday" ).datepicker();
+    $("#country").countrySelect();
+  } );
+
+  function onAppnameChange(obj) {
+      var opt = obj.options[obj.selectedIndex];
+      console.info("text:"+opt.text);
+      console.info("value:"+opt.value);
+
+        $.post("zonelist", { 'account': $('#account').val(), 'appname': $('#appname').val()},
+        function(data) {
+        $('#zonename').bootstrapTable('refresh');
+        var jsondata = JSON.parse(data);
+        console.info(jsondata["rows"]);
+        var liststr = '';
+        var count = jsondata["total"];
+        var html = $('#zonename').html();
+        for (i in jsondata["rows"])
+        {
+            var row = jsondata["rows"][i];
+            html += '<option>' + row.name + '</option>';
+        }
+        $('#zonename').html(html);
+        });
+  }
+</script>
 
 {{template "footer.tpl" .}}

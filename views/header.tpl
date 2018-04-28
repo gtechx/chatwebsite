@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.css">
 <link rel="stylesheet" href="/static/css/open-iconic-bootstrap.min.css">
 <link rel="stylesheet" href="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.css">
+<link href="https://cdn.bootcss.com/country-select-js/2.0.1/css/countrySelect.min.css" rel="stylesheet">
 <script src="/static/js/md5.min.js"></script>
 </head>
 <body>
@@ -19,6 +20,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/locale/bootstrap-table-zh-CN.min.js"></script>
 <script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://cdn.bootcss.com/country-select-js/2.0.1/js/countrySelect.min.js"></script>
 
 <header class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
   <a class="navbar-brand mr-md-auto" href="/">
@@ -45,11 +47,16 @@
           </li>
           <li class="nav-item">
             <a href="/user/app/index" class="nav-link active">
-            我的应用
+            应用
             </a>
           </li>
           <li class="nav-item">
             <a href="/user/appdata/index" class="nav-link">
+            应用数据
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/user/myappdata/index" class="nav-link">
             我的应用数据
             </a>
           </li>
