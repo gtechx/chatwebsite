@@ -126,7 +126,7 @@
         console.info(jsondata["rows"]);
         var liststr = '';
         var count = jsondata["total"];
-        var html = $('#zonename').html();
+        var html = "<option></option>";
         for (i in jsondata["rows"])
         {
             var row = jsondata["rows"][i];
