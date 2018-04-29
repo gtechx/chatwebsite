@@ -63,6 +63,7 @@
           <div class="form-group row">
             <label class="col-sm-5 col-form-label" for="zonename">分区名字：</label>
             <input type="text" class="form-control col-sm-4" id="zonename" name="zonename">
+            <input type="hidden" class="form-control" id="account" name="account">
             <button type="submit" class="btn btn-outline-primary col-sm-2 col-form-label ml-2">添加</button>
           </div>   
         </form>
@@ -74,13 +75,15 @@
 <script type="text/javascript">
   $('#zonepanel').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget); // Button that triggered the modal
-    var appname = button.data('whatever'); // Extract info from data-* attributes
+    var index = button.data('whatever'); // Extract info from data-* attributes
+    var row = $('#table').bootstrapTable('getData')[index];
     // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
     // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
     var modal = $(this);
-    modal.find('.modal-title').text(appname + ' 分区管理');
-    $('#zoneappname').val(appname);
-    $.post("../zone/list", { 'appname': appname },
+    modal.find('.modal-title').text(row.appname + ' 分区管理');
+    $('#zoneappname').val(row.appname);
+    $('#account').attr("value", row.owner);
+    $.post("../zone/list", { 'appname': row.appname },
     function(data) {
       console.info("Data Loaded: " + data);
       var jsondata = JSON.parse(data);
@@ -194,7 +197,12 @@
               title: '描述',
               align: 'center',
               valign: 'middle'
-          }, {
+          }, {{if .isadmin}}{
+              field: 'owner',
+              title: '拥有者',
+              align: 'center',
+              valign: 'middle'
+          },{{end}} {
               field: 'createdate',
               title: '创建日期',
               align: 'center',
@@ -212,7 +220,7 @@
               width: 160, // 定义列的宽度，单位为像素px
               formatter: function (value, row, index) {
                 if(value == "")
-                  return '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#zonepanel" data-whatever="'+row.appname+'">分区管理</button>';
+                  return '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#zonepanel" data-whatever="'+index+'">分区管理</button>';
               }
           }
       ],
