@@ -18,6 +18,10 @@
     {{end}}
 {{end}}
   <form method="post" action="create" onsubmit="return checkData();">
+    <div class="p-1" {{if not .isadmin}}style="display:none"{{end}}>
+        <label for="owner">拥有者：</label>
+        <input type="text" class="form-control" name="owner" {{if not .isadmin}}value="{{.owner}}"{{end}} id="owner" placeholder="">
+    </div>
     <div class="form-group">
       <label for="name">应用名字：</label>
       <input type="text" class="form-control" id="name" name="name">

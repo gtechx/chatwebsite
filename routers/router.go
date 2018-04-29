@@ -37,6 +37,7 @@ func init() {
 		//beego.NSAutoRouter(&controllers.UserController{}),
 		beego.NSAutoRouter(&admin.AccountController{}),
 		beego.NSAutoRouter(&admin.AppDataController{}),
+		beego.NSAutoRouter(&admin.AppController{}),
 	)
 	beego.AddNamespace(ns)
 }

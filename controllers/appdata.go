@@ -142,7 +142,7 @@ func (c *AppDataController) Update() {
 	dbmanager := gtdb.Manager()
 	c.Data["id"] = id
 
-	fmt.Println("id:",c.GetString("id"))
+	fmt.Println("id:", c.GetString("id"))
 
 	var old_appdata *gtdb.AppData
 	var err error
@@ -169,7 +169,7 @@ func (c *AppDataController) Update() {
 		birthday, _ := time.Parse("01/02/2006", c.GetString("birthday"))
 		c.Data["post"] = true
 
-		fmt.Println("desc:",desc)
+		fmt.Println("desc:", desc)
 
 		blank_appdata := &gtdb.AppData{}
 
@@ -339,10 +339,24 @@ func (c *AppDataController) List() {
 
 func (c *AppDataController) ZoneList() {
 	appname := c.GetString("appname")
-	account := c.GetString("account")
-	if account != c.account {
-		account = c.account
+	// account := c.GetString("account")
+	// if account != c.account {
+	// 	account = c.account
+	// }
+	owner, err := gtdb.Manager().GetAppOwner(appname)
+
+	if err != nil {
+		println(err.Error())
+		c.Ctx.Output.Body([]byte("[]"))
+		return
 	}
+
+	if owner != c.account {
+		println(c.account, " has no privilege to op ", appname)
+		c.Ctx.Output.Body([]byte("[]"))
+		return
+	}
+
 	zonelist, err := gtdb.Manager().GetAppZoneList(appname)
 
 	if err != nil {
@@ -360,4 +374,40 @@ func (c *AppDataController) ZoneList() {
 	}
 
 	c.Ctx.Output.Body(retjson)
+}
+
+func (c *AppDataController) Ban() {
+	strappdatas := c.GetStrings("appdata[]")
+	appdatas := make([]uint64, len(strappdatas))
+
+	for i, strappdata := range strappdatas {
+		appdatas[i] = Uint64(strappdata)
+	}
+
+	errtext := ""
+	err := gtdb.Manager().BanAppDatas(appdatas)
+
+	if err != nil {
+		errtext = "数据库错误:" + err.Error()
+	}
+
+	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
+}
+
+func (c *AppDataController) Unban() {
+	strappdatas := c.GetStrings("appdata[]")
+	appdatas := make([]uint64, len(strappdatas))
+
+	for i, strappdata := range strappdatas {
+		appdatas[i] = Uint64(strappdata)
+	}
+
+	errtext := ""
+	err := gtdb.Manager().UnbanAppDatas(appdatas)
+
+	if err != nil {
+		errtext = "数据库错误:" + err.Error()
+	}
+
+	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
 }

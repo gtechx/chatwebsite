@@ -5,7 +5,6 @@
         <div class="p-1">
             <label for="appname">应用名称：</label>
             <select class="rounded" onchange="onAppnameChange(this);" style="width:100px" name="appname" id="appname">
-                <option></option>
                 {{range $index, $elem := .applist}}
                 <option>{{$elem.Appname}}</option>
                 {{end}}
@@ -89,13 +88,13 @@
         <button id="btn_add" onclick="window.location.href='create';" type="button" class="btn btn-info btn-sm rightSize">
             <span class="oi oi-plus"></span>新增
         </button>
-        <button id="btn_delete" onclick="delAccount();" type="button" class="btn btn-info btn-sm rightSize">
+        <button id="btn_delete" onclick="delAppData();" type="button" class="btn btn-info btn-sm rightSize">
             <span class="oi oi-x"></span>删除
         </button>
-        <button id="btn_ban" onclick="banAccounts();" type="button" class="btn btn-info btn-sm rightSize">
+        <button id="btn_ban" onclick="banAppDatas();" type="button" class="btn btn-info btn-sm rightSize">
             <span class="oi oi-ban"></span>封禁
         </button>
-        <button id="btn_ban" onclick="unbanAccounts();" type="button" class="btn btn-info btn-sm rightSize">
+        <button id="btn_ban" onclick="unbanAppDatas();" type="button" class="btn btn-info btn-sm rightSize">
             <span class="oi oi-circle-check"></span>解除封禁
         </button>
     </div>
@@ -112,6 +111,7 @@
     $( "#birthdayenddate" ).datepicker();
     $( "#lastloginbegindate" ).datepicker();
     $( "#lastloginenddate" ).datepicker();
+    onAppnameChange(document.getElementsByName( "appname" )[0]);
   } );
 
   function onAppnameChange(obj) {
@@ -149,47 +149,7 @@
     return true;
   }
 
-  function modifyAccount(index) {
-        $( "#password" ).val("")
-        $( "#password1" ).val("")
-        $( "#password2" ).val("")
-      $( "#createaccount" ).hide();
-      $( "#modifyaccount" ).show();
-      var row = $('#table').bootstrapTable('getData')[index];
-      var modal = $('#appdatapanel');
-      modal.find('.modal-title').text("修改-"+row.account);
-      $( "#caccount" ).val(row.account)
-      $( "#cemail" ).val(row.email)
-      modal.modal('show');
-  }
-
-  function updateAccount(){
-    if(document.getElementById('password1').value != document.getElementById('password2').value){
-        alert("两次输入的密码不一致!");
-        return;
-    }
-    $.post("update", { 'account': $('#caccount').val(), 'email': $('#cemail').val(), 'password': $('#password').val() },
-    function(data) {
-    $('#table').bootstrapTable('refresh');
-    });
-  }
-
-  function createAccount(){
-    if(document.getElementById('password1').value != document.getElementById('password2').value){
-        alert("两次输入的密码不一致!");
-        return;
-    }
-    if(document.getElementById('password').value == "")
-    {
-        alert("密码不能为空!");
-        return;
-    }
-    $.post("create", { 'account': $('#caccount').val(), 'email': $('#cemail').val(), 'password': $('#password').val() },
-    function(data) {
-    $('#table').bootstrapTable('refresh');
-    });
-  }
-  function delAccount(){
+  function delAppData(){
     if (confirm("确认要删除吗？这将删除账号相关的所有数据！")==false){ 
         return; 
     }
@@ -198,61 +158,61 @@
         return;
     var strdata = new Array()
     for(i in selects){
-      strdata[i] = selects[i].account
+      strdata[i] = selects[i].id
     }
-    console.info("del account "+strdata)
-    $.post("del", { 'account[]': strdata },
+    console.info("del appdata "+strdata)
+    $.post("del", { 'appdata[]': strdata },
     function(data) {
       $('#table').bootstrapTable('refresh');
     });
   }
 
-  function banAccounts(){
+  function banAppDatas(){
     var selects = $('#table').bootstrapTable('getSelections');
     if(selects.length == 0)
         return;
     var strdata = new Array()
     for(i in selects){
-      strdata[i] = selects[i].account
+      strdata[i] = selects[i].id
     }
-    console.info("ban account "+strdata)
-    $.post("ban", { 'account[]': strdata },
+    console.info("ban appdata "+strdata)
+    $.post("ban", { 'appdata[]': strdata },
     function(data) {
       $('#table').bootstrapTable('refresh');
     });
   }
 
-  function unbanAccounts(){
+  function unbanAppDatas(){
     var selects = $('#table').bootstrapTable('getSelections');
     if(selects.length == 0)
         return;
     var strdata = new Array()
     for(i in selects){
-      strdata[i] = selects[i].account
+      strdata[i] = selects[i].id
     }
-    console.info("ban account "+strdata)
-    $.post("unban", { 'account[]': strdata },
+    console.info("ban appdata "+strdata)
+    $.post("unban", { 'appdata[]': strdata },
     function(data) {
       $('#table').bootstrapTable('refresh');
     });
   }
 
-  function banAccount(index){
+  function banAppData(index){
     var row = $('#table').bootstrapTable('getData')[index];
 
     var strdata = new Array()
-    strdata[0] = row.account
-    $.post("ban", { 'account[]': strdata },
+    strdata[0] = row.id
+    $.post("ban", { 'appdata[]': strdata },
     function(data) {
     $('#table').bootstrapTable('refresh');
     });
   }
-  function unbanAccount(index){
+  function unbanAppData(index){
     var row = $('#table').bootstrapTable('getData')[index];
 
     var strdata = new Array()
-    strdata[0] = row.account
-    $.post("unban", { 'account[]': strdata },
+    strdata[0] = row.id
+    $.post("unban", { 'appdata[]': strdata },
     function(data) {
     $('#table').bootstrapTable('refresh');
     });
@@ -381,9 +341,9 @@
               width: 160, // 定义列的宽度，单位为像素px
               formatter: function (value, row, index) {
                   if(value)
-                    return '<button class="btn btn-primary btn-sm" onclick="unbanAccount('+index+');">解除封禁</button>';
+                    return '<button class="btn btn-primary btn-sm" onclick="unbanAppData('+index+');">解除封禁</button>';
                   else
-                    return '<button class="btn btn-primary btn-sm" onclick="banAccount('+index+');">封禁</button>';
+                    return '<button class="btn btn-primary btn-sm" onclick="banAppData('+index+');">封禁</button>';
               }
           }
       ],

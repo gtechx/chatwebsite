@@ -66,12 +66,12 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="/admin/appdata/index" class="nav-link">
+            <a href="/admin/app/index" class="nav-link">
             应用管理
             </a>
           </li>
           <li class="nav-item">
-            <a href="data" class="nav-link">
+            <a href="/admin/appdata/index" class="nav-link">
             数据管理
             </a>
           </li>

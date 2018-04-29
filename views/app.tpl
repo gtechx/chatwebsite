@@ -1,6 +1,32 @@
 {{template "header.tpl" .}}
 
   <div class="bg-light">
+    <div class="d-flex flex-wrap">
+        <div class="p-1">
+            <label for="appnamefilter">应用名字：</label>
+            <input type="text" class="rounded" style="width:100px" name="appnamefilter" id="appnamefilter" placeholder="">
+        </div>
+        <div class="p-1">
+            <label for="descfilter">描述：</label>
+            <input type="text" class="rounded" style="width:100px" name="descfilter" id="descfilter" placeholder="">
+        </div>
+        <div class="p-1">
+            <label for="sharefilter">共享应用名字：</label>
+            <input type="text" class="rounded" style="width:100px" name="sharefilter" id="sharefilter" placeholder="">
+        </div>
+        <div class="p-1">
+            <label for="begindate">起始日期：</label>
+            <input type="text" class="rounded" style="width:100px" name="begindate" id="begindate" placeholder="">
+        </div>
+        <div class="p-1">
+            <label for="enddate">最终日期：</label>
+            <input type="text" class="rounded" style="width:100px" name="enddate" id="enddate" placeholder="">
+        </div>
+        <button id="btn_filter" onclick="$('#table').bootstrapTable('refresh');" type="button" class="btn btn-info btn-sm rightSize">
+            过滤
+        </button>
+    </div>
+
     <div id="toolbar" class="btn-group">
         <button id="btn_add" onclick="window.location.href='create';" type="button" class="btn btn-info btn-sm rightSize">
             <span class="oi oi-plus"></span>新增
@@ -136,6 +162,11 @@
       queryParams: function (params) { // 请求服务器数据时发送的参数，可以在这里添加额外的查询参数，返回false则终止请求
 
           return {
+              appnamefilter: $("#appnamefilter").val(),
+              descfilter: $("#descfilter").val(),
+              sharefilter: $("#sharefilter").val(),
+              createbegindate: $("#begindate").val(),
+              createenddate: $("#enddate").val(),
               pageSize: params.pageSize, // 每页要显示的数据条数
               //offset: params.offset, // 每页显示数据的开始行号
               pageNumber: params.pageNumber

@@ -1,4 +1,4 @@
-package controllers
+package admin
 
 import (
 	"encoding/json"
@@ -11,7 +11,6 @@ import (
 
 type AppController struct {
 	beego.Controller
-	account string
 }
 
 func (c *AppController) Prepare() {
@@ -21,7 +20,7 @@ func (c *AppController) Prepare() {
 		return
 	}
 	c.Data["account"] = account
-	c.account = account
+	c.Data["isadmin"] = true
 }
 
 func (c *AppController) Index() {
@@ -33,6 +32,7 @@ func (c *AppController) Create() {
 		name := c.GetString("name")
 		desc := c.GetString("desc")
 		share := c.GetString("share")
+		owner := c.GetString("owner")
 
 		println("appcreate ", name, desc, share)
 		c.Data["post"] = true
@@ -60,6 +60,19 @@ func (c *AppController) Create() {
 			goto end
 		}
 
+		flag, err = dataManager.IsAccountExists(owner)
+
+		if err != nil {
+			println(err.Error())
+			c.Data["error"] = "数据库错误"
+			goto end
+		}
+
+		if flag {
+			c.Data["error"] = "拥有者不存在"
+			goto end
+		}
+
 		if share != "" {
 			flag, err = dataManager.IsAppExists(share)
 
@@ -75,7 +88,7 @@ func (c *AppController) Create() {
 			}
 		}
 
-		tbl_app = &gtdb.App{Appname: name, Owner: c.account, Desc: desc, Share: share}
+		tbl_app = &gtdb.App{Appname: name, Owner: owner, Desc: desc, Share: share}
 		err = dataManager.CreateApp(tbl_app)
 
 		if err != nil {
@@ -172,7 +185,7 @@ func (c *AppController) List() {
 	}
 
 	dataManager := gtdb.Manager()
-	totalcount, err := dataManager.GetAppCountByAccount(c.account, appfilter)
+	totalcount, err := dataManager.GetAppCount(appfilter)
 
 	if err != nil {
 		println(err.Error())
@@ -180,7 +193,7 @@ func (c *AppController) List() {
 		return
 	}
 
-	applist, err := dataManager.GetAppListByAccount(c.account, index*pagesize, index*pagesize+pagesize-1, appfilter)
+	applist, err := dataManager.GetAppList(index*pagesize, index*pagesize+pagesize-1, appfilter)
 
 	if err != nil {
 		println(err.Error())

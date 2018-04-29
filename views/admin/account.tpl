@@ -1,31 +1,31 @@
 {{template "header.tpl" .}}
 
   <div class="bg-light">
-    <form class="form-inline">
-        <div class="form-group col-2">
+    <div class="d-flex flex-wrap">
+        <div class="p-1">
             <label for="accountfilter">账号：</label>
-            <input type="text" class="form-control col-8" name="accountfilter" id="accountfilter" placeholder="">
+            <input type="text" class="rounded" style="width:100px" name="accountfilter" id="accountfilter" placeholder="">
         </div>
-        <div class="form-group col-2">
+        <div class="p-1">
             <label for="emailfilter">Email：</label>
-            <input type="text" class="form-control col-8" name="emailfilter" id="emailfilter" placeholder="">
+            <input type="text" class="rounded" style="width:100px" name="emailfilter" id="emailfilter" placeholder="">
         </div>
-        <div class="form-group col-2">
+        <div class="p-1">
             <label for="ipfilter">IP：</label>
-            <input type="text" class="form-control col-8" name="ipfilter" id="ipfilter" placeholder="">
+            <input type="text" class="rounded" style="width:100px" name="ipfilter" id="ipfilter" placeholder="">
         </div>
-        <div class="form-group">
+        <div class="p-1">
             <label for="begindate">起始日期：</label>
-            <input type="text" class="form-control col-8" name="begindate" id="begindate" placeholder="">
+            <input type="text" class="rounded" style="width:100px" name="begindate" id="begindate" placeholder="">
         </div>
-        <div class="form-group">
+        <div class="p-1">
             <label for="enddate">最终日期：</label>
-            <input type="text" class="form-control col-8" name="enddate" id="enddate" placeholder="">
+            <input type="text" class="rounded" style="width:100px" name="enddate" id="enddate" placeholder="">
         </div>
         <button id="btn_filter" onclick="$('#table').bootstrapTable('refresh');" type="button" class="btn btn-info btn-sm rightSize">
             过滤
         </button>
-    </form>
+    </div>
     <div id="toolbar" class="btn-group">
         <button id="btn_add" onclick="addAccount();" type="button" class="btn btn-info btn-sm rightSize">
             <span class="oi oi-plus"></span>新增
