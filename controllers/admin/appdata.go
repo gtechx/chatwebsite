@@ -182,11 +182,11 @@ func (c *AppDataController) Update() {
 		//blankt := reflect.TypeOf(old_account)
 		blankv := reflect.ValueOf(blank_appdata).Elem()
 
-		if err != nil {
-			fmt.Println("error:", err.Error())
-			c.Data["error"] = "数据库错误:" + err.Error()
-			goto end
-		}
+		// if err != nil {
+		// 	fmt.Println("error:", err.Error())
+		// 	c.Data["error"] = "数据库错误:" + err.Error()
+		// 	goto end
+		// }
 
 		for k := 0; k < oldt.NumField(); k++ {
 			//fmt.Printf("%s -- %v \n", t.Filed(k).Name, v.Field(k).Interface())

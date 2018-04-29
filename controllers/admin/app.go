@@ -2,6 +2,8 @@ package admin
 
 import (
 	"encoding/json"
+	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/astaxie/beego"
@@ -109,8 +111,18 @@ func (c *AppController) Update() {
 	dataManager := gtdb.Manager()
 	c.Data["appname"] = appname
 
+	var old_app *gtdb.App
+	var err error
 	if appname == "" {
 		c.Data["error"] = "应用名字为空"
+		goto end
+	}
+
+	old_app, err = dataManager.GetApp(appname)
+
+	if err != nil {
+		fmt.Println("error:", err.Error())
+		c.Data["error"] = "数据库错误:" + err.Error()
 		goto end
 	}
 
@@ -120,19 +132,30 @@ func (c *AppController) Update() {
 		c.Data["post"] = true
 
 		println(appname, desc, share)
-		err := dataManager.SetShareApp(appname, share)
-		if err != nil {
-			println("dataManager.SetShareApp ", err.Error())
-			c.Data["error"] = "数据库错误:" + err.Error()
-			goto end
+
+		blank_app := &gtdb.App{}
+
+		new_app := &gtdb.App{Appname: appname, Desc: desc, Share: share}
+
+		oldt := reflect.TypeOf(*old_app)
+		oldv := reflect.ValueOf(old_app).Elem()
+		//newt := reflect.TypeOf(new_account)
+		newv := reflect.ValueOf(new_app).Elem()
+		//blankt := reflect.TypeOf(old_account)
+		blankv := reflect.ValueOf(blank_app).Elem()
+
+		for k := 0; k < oldt.NumField(); k++ {
+			//fmt.Printf("%s -- %v \n", t.Filed(k).Name, v.Field(k).Interface())
+			if oldv.Field(k).Type().Kind() != reflect.Slice && oldv.Field(k).Interface() != newv.Field(k).Interface() && newv.Field(k).Interface() != blankv.Field(k).Interface() {
+				oldv.Field(k).Set(newv.Field(k))
+			}
 		}
 
-		err = dataManager.SetAppField(appname, "desc", desc)
+		err = gtdb.Manager().UpdateApp(old_app)
 
 		if err != nil {
-			println("dataManager.SetAppField ", err.Error())
-			c.Data["error"] = "设置应用描述时数据库错误:" + err.Error()
-			goto end
+			fmt.Println("error:", err.Error())
+			c.Data["error"] = "数据库错误:" + err.Error()
 		}
 
 		c.Data["desc"] = desc

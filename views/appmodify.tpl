@@ -20,7 +20,7 @@
   <form method="post" action="update" onsubmit="return checkData();">
     <div class="form-group">
       <label for="appname">应用名字：</label>
-      <input type="text" class="form-control disable" id="appname" name="appname" value="{{.appname}}" readonly>
+      <input type="text" class="form-control disable" id="appname" name="appname" value="{{.appname}}" {{if not .isadmin}}readonly{{end}}>
     </div>
     <div class="form-group">
       <label for="desc">应用介绍：</label>
