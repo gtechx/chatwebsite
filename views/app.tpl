@@ -73,6 +73,22 @@
 </div>
 
 <script type="text/javascript">
+  function refreshzones(appname) {
+    $.post("../zone/list", { 'appname': appname },
+    function(data) {
+      console.info("Data Loaded: " + data);
+      var jsondata = JSON.parse(data);
+      var liststr = '';
+      for (i in jsondata)
+      {
+        var zone = jsondata[i]["zonename"];//.replace(/"/g, '');
+        liststr += '<label class="checkbox-inline border border-success ml-2 bg-danger">\n';
+        liststr += '<input type="checkbox" id="'+zone+'" name="zoneitem" value="'+zone+'">' + zone + '\n';
+        liststr += '</label>';
+      }
+      $('#zonelist').html(liststr)
+    });
+  }
   $('#zonepanel').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget); // Button that triggered the modal
     var index = button.data('whatever'); // Extract info from data-* attributes
@@ -92,14 +108,14 @@
       {
         var zone = jsondata[i]["zonename"];//.replace(/"/g, '');
         liststr += '<label class="checkbox-inline border border-success ml-2 bg-danger">\n';
-        liststr += '<input type="checkbox" id="\''+zone+'\'" name="zoneitem" value="\''+zone+'\'">' + zone + '\n';
+        liststr += '<input type="checkbox" id="'+zone+'" name="zoneitem" value="'+zone+'">' + zone + '\n';
         liststr += '</label>';
       }
       $('#zonelist').html(liststr)
     });
   });
   function addZone(){
-    $.post("../zone/create", { 'appname': $('#zoneappname').val(), 'zonename': $('#zonename').val() },
+    $.post("../zone/create", { 'appname': $('#zoneappname').val(), 'zonename': $('#zonename').val(), 'account': $('#account').val() },
     function(data) {
       var jsondata = JSON.parse(data);
       var liststr = '';
@@ -107,7 +123,7 @@
       {
         var zone = jsondata[i]["zonename"];//.replace(/"/g, '');
         liststr += '<label class="checkbox-inline border border-success ml-2 bg-danger">\n';
-        liststr += '<input type="checkbox" id="\''+zone+'\'" name="zoneitem" value="\''+zone+'\'">' + zone + '\n';
+        liststr += '<input type="checkbox" id="'+zone+'" name="zoneitem" value="'+zone+'">' + zone + '\n';
         liststr += '</label>';
       }
       $('#zonelist').html(liststr)
@@ -118,17 +134,21 @@
   function delZone(){
     obj = document.getElementsByName("zoneitem");
     check_val = [];
-    for(k in obj){
-        if(obj[k].checked)
-            check_val.push(obj[k].value);
+    console.info(obj)
+    for(var i = 0; i < obj.length; i++){
+      console.info(obj[i].checked)
+        if(obj[i].checked)
+            check_val.push(obj[i].value);
     }
-
+    
     $.post("../zone/del", { 'appname': $('#zoneappname').val(), 'zonename[]': check_val },
     function(data) {
+      console.info(data)
       var jsondata = JSON.parse(data);
       if(jsondata["error"] != "")
         alert(jsondata["error"]);
-      $('#table').bootstrapTable('refresh');
+      else
+        refreshzones($('#zoneappname').val())
     });
   }
 
@@ -138,10 +158,9 @@
     }
     var selects = $('#table').bootstrapTable('getSelections');
     var strdata = new Array()
-    for(i in selects){
-      strdata[i] = selects[i].name
+    for(var i = 0; i < selects.length; i++){
+      strdata.push(selects[i].appname);
     }
-    console.info(strdata)
     $.post("del", { 'appname[]': strdata },
     function(data) {
       $('#table').bootstrapTable('refresh');

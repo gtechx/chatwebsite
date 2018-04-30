@@ -2,7 +2,7 @@
 
 <script type="text/javascript">
     function checkData(){
-        if(document.getElementById('name').value == ""){
+        if(document.getElementById('appname').value == ""){
             alert("请输入应用名字!");
             return false;
         }

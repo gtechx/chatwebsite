@@ -30,11 +30,11 @@ func (c *AppController) Index() {
 
 func (c *AppController) Create() {
 	if c.Ctx.Request.Method == "POST" {
-		name := c.GetString("name")
+		appname := c.GetString("appname")
 		desc := c.GetString("desc")
 		share := c.GetString("share")
 
-		println("appcreate ", name, desc, share)
+		println("appcreate ", appname, desc, share)
 		c.Data["post"] = true
 
 		dataManager := gtdb.Manager()
@@ -42,12 +42,12 @@ func (c *AppController) Create() {
 		var err error
 		var tbl_app *gtdb.App
 
-		if name == "" {
+		if appname == "" {
 			c.Data["error"] = "应用名字不能为空"
 			goto end
 		}
 
-		flag, err = dataManager.IsAppExists(name)
+		flag, err = dataManager.IsAppExists(appname)
 
 		if err != nil {
 			println(err.Error())
@@ -75,7 +75,7 @@ func (c *AppController) Create() {
 			}
 		}
 
-		tbl_app = &gtdb.App{Appname: name, Owner: c.account, Desc: desc, Share: share}
+		tbl_app = &gtdb.App{Appname: appname, Owner: c.account, Desc: desc, Share: share}
 		err = dataManager.CreateApp(tbl_app)
 
 		if err != nil {

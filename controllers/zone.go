@@ -85,7 +85,7 @@ func (c *ZoneController) Create() {
 		return
 	end:
 		println(errtext)
-		c.Ctx.Output.Body([]byte("{error:" + errtext + "}"))
+		c.Ctx.Output.Body([]byte("{\"error\":" + errtext + "}"))
 	}
 }
 
@@ -103,7 +103,7 @@ func (c *ZoneController) Del() {
 		}
 	}
 
-	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
+	c.Ctx.Output.Body([]byte("{\"error\":\"" + errtext + "\"}"))
 }
 
 func (c *ZoneController) List() {
@@ -142,5 +142,5 @@ func (c *ZoneController) List() {
 	c.Ctx.Output.Body(retjson)
 	return
 end:
-	c.Ctx.Output.Body([]byte("{error:" + errtext + "}"))
+	c.Ctx.Output.Body([]byte("{\"error\":" + errtext + "}"))
 }

@@ -2,6 +2,7 @@ package admin
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/astaxie/beego"
@@ -47,7 +48,7 @@ func (c *ZoneController) Create() {
 			goto end
 		}
 		if appowner != account {
-			errtext = zonename + "不属于" + appname
+			errtext = appname + "不属于" + account
 			goto end
 		}
 		for _, zname := range zonenamearr {
@@ -85,7 +86,7 @@ func (c *ZoneController) Create() {
 		return
 	end:
 		println(errtext)
-		c.Ctx.Output.Body([]byte("{error:" + errtext + "}"))
+		c.Ctx.Output.Body([]byte("{\"error\":" + errtext + "}"))
 	}
 }
 
@@ -94,7 +95,7 @@ func (c *ZoneController) Del() {
 	zonenames := c.GetStrings("zonename[]")
 	//account := c.GetString("account")
 	dataManager := gtdb.Manager()
-
+	fmt.Println(appname, zonenames)
 	errtext := ""
 	// appowner, err := dataManager.GetAppOwner(appname)
 	// if err != nil {
@@ -114,8 +115,9 @@ func (c *ZoneController) Del() {
 		}
 	}
 
+	fmt.Println("errtext:", errtext)
 	//end:
-	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
+	c.Ctx.Output.Body([]byte("{\"error\":\"" + errtext + "\"}"))
 }
 
 func (c *ZoneController) List() {
@@ -154,5 +156,5 @@ func (c *ZoneController) List() {
 	c.Ctx.Output.Body(retjson)
 	return
 	//end:
-	c.Ctx.Output.Body([]byte("{error:" + errtext + "}"))
+	c.Ctx.Output.Body([]byte("{\"error\":" + errtext + "}"))
 }

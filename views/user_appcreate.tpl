@@ -2,7 +2,7 @@
 
 <script type="text/javascript">
     function checkData(){
-        if(document.getElementById('name').value == ""){
+        if(document.getElementById('appname').value == ""){
             alert("请输入应用名字!");
             return false;
         }
@@ -36,8 +36,8 @@
 {{end}}
   <form method="post" action="appcreate" onsubmit="return checkData();">
     <div class="form-group">
-      <label for="name">应用名字：</label>
-      <input type="text" class="form-control" id="name" name="name">
+      <label for="appname">应用名字：</label>
+      <input type="text" class="form-control" id="appname" name="appname">
     </div>
     <div class="form-group">
       <label for="desc">应用介绍：</label>

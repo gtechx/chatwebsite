@@ -23,8 +23,8 @@
         <input type="text" class="form-control" name="owner" {{if not .isadmin}}value="{{.owner}}"{{end}} id="owner" placeholder="">
     </div>
     <div class="form-group">
-      <label for="name">应用名字：</label>
-      <input type="text" class="form-control" id="name" name="name">
+      <label for="appname">应用名字：</label>
+      <input type="text" class="form-control" id="appname" name="appname">
     </div>
     <div class="form-group">
       <label for="desc">应用介绍：</label>
