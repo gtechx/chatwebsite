@@ -39,44 +39,44 @@
   {{if .account}}
     <nav class="col-md-2 d-none d-md-block bg-light sidebar border-right">
       <div class="sidebar-sticky">
-        <ul class="nav flex-column">
+        <ul class="nav nav-pills flex-column">
          <li class="nav-item">
-            <a href="/user/index" class="nav-link active">
+            <a href="/user/index" class="nav-link {{if compare .nav "user"}}active{{end}}">
             综合
             </a>
           </li>
           <li class="nav-item">
-            <a href="/user/app/index" class="nav-link active">
+            <a href="/user/app/index" class="nav-link {{if compare .nav "userapp"}}active{{end}}">
             应用
             </a>
           </li>
           <li class="nav-item">
-            <a href="/user/appdata/index" class="nav-link">
+            <a href="/user/appdata/index" class="nav-link {{if compare .nav "userappdata"}}active{{end}}">
             应用数据
             </a>
           </li>
           <li class="nav-item">
-            <a href="/user/myappdata/index" class="nav-link">
+            <a href="/user/myappdata/index" class="nav-link {{if compare .nav "usermyappdata"}}active{{end}}">
             我的应用数据
             </a>
           </li>
           <li class="nav-item">
-            <a href="/admin/account/index" class="nav-link mt-4">
+            <a href="/admin/account/index" class="nav-link mt-4 {{if compare .nav "adminadmin"}}active{{end}}">
             管理员管理
             </a>
           </li>
           <li class="nav-item">
-            <a href="/admin/account/index" class="nav-link">
+            <a href="/admin/account/index" class="nav-link {{if compare .nav "adminaccount"}}active{{end}}">
             用户管理
             </a>
           </li>
           <li class="nav-item">
-            <a href="/admin/app/index" class="nav-link">
+            <a href="/admin/app/index" class="nav-link {{if compare .nav "adminapp"}}active{{end}}">
             应用管理
             </a>
           </li>
           <li class="nav-item">
-            <a href="/admin/appdata/index" class="nav-link">
+            <a href="/admin/appdata/index" class="nav-link {{if compare .nav "adminappdata"}}active{{end}}">
             数据管理
             </a>
           </li>

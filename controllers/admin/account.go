@@ -22,6 +22,7 @@ func (c *AccountController) Prepare() {
 		return
 	}
 	c.Data["account"] = account
+	c.Data["nav"] = "adminaccount"
 }
 
 func (c *AccountController) Index() {

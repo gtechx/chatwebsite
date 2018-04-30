@@ -24,6 +24,7 @@ func (c *AppDataController) Prepare() {
 	}
 	c.Data["account"] = account
 	c.Data["isadmin"] = true
+	c.Data["nav"] = "adminappdata"
 	c.account = account
 }
 

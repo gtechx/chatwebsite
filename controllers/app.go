@@ -21,6 +21,7 @@ func (c *AppController) Prepare() {
 		return
 	}
 	c.Data["account"] = account
+	c.Data["nav"] = "userapp"
 	c.account = account
 }
 

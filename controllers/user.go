@@ -17,6 +17,7 @@ func (c *UserController) Prepare() {
 		return
 	}
 	c.Data["account"] = account
+	c.Data["nav"] = "user"
 	c.account = account
 }
 

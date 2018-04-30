@@ -23,6 +23,7 @@ func (c *AppController) Prepare() {
 	}
 	c.Data["account"] = account
 	c.Data["isadmin"] = true
+	c.Data["nav"] = "adminapp"
 }
 
 func (c *AppController) Index() {
