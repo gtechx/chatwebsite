@@ -36,7 +36,7 @@ func (c *AppController) Create() {
 		share := c.GetString("share")
 		owner := c.GetString("owner")
 
-		println("appcreate ", appname, desc, share)
+		println("appcreate ", appname, desc, share, owner)
 		c.Data["post"] = true
 
 		dataManager := gtdb.Manager()
@@ -70,7 +70,7 @@ func (c *AppController) Create() {
 			goto end
 		}
 
-		if flag {
+		if !flag {
 			c.Data["error"] = "拥有者不存在"
 			goto end
 		}

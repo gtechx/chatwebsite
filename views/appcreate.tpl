@@ -2,7 +2,7 @@
 
 <script type="text/javascript">
     function checkData(){
-        if(document.getElementById('name').value == ""){
+        if(document.getElementById('appname').value == ""){
             alert("请输入应用名字!");
             return false;
         }
@@ -18,7 +18,7 @@
     {{end}}
 {{end}}
   <form method="post" action="create" onsubmit="return checkData();">
-    <div class="p-1" {{if not .isadmin}}style="display:none"{{end}}>
+    <div class="form-group" {{if not .isadmin}}style="display:none"{{end}}>
         <label for="owner">拥有者：</label>
         <input type="text" class="form-control" name="owner" {{if not .isadmin}}value="{{.owner}}"{{end}} id="owner" placeholder="">
     </div>
