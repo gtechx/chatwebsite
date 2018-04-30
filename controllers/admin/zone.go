@@ -129,7 +129,7 @@ func (c *ZoneController) List() {
 	}
 
 	var err error
-	var errtext = ""
+	//var errtext = ""
 	var retjson []byte
 	var zonelist []*gtdb.AppZone
 
@@ -149,12 +149,12 @@ func (c *ZoneController) List() {
 	retjson, err = json.Marshal(zonelist)
 	if err != nil {
 		println(err.Error())
-		c.Ctx.Output.Body([]byte(""))
+		c.Ctx.Output.Body([]byte("{\"error\":" + err.Error() + "}"))
 		return
 	}
 
 	c.Ctx.Output.Body(retjson)
 	return
 	//end:
-	c.Ctx.Output.Body([]byte("{\"error\":" + errtext + "}"))
+	//c.Ctx.Output.Body([]byte("{\"error\":" + errtext + "}"))
 }

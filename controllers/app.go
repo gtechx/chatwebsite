@@ -148,7 +148,7 @@ func (c *AppController) Del() {
 		errtext = "数据库错误:" + err.Error()
 	}
 
-	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
+	c.Ctx.Output.Body([]byte("{\"error\":\"" + errtext + "\"}"))
 }
 
 func (c *AppController) List() {

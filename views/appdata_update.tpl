@@ -44,8 +44,8 @@
     <div class="form-group">
       <label for="sex">性别：</label>
       <select class="form-control" name="sex" id="sex">
-          <option {{if compare .appdata.Sex "男"}}active{{end}}>男</option>
-          <option {{if compare .appdata.Sex "女"}}active{{end}}>女</option>
+          <option {{if compare .appdata.Sex "男"}}selected{{end}}>男</option>
+          <option {{if compare .appdata.Sex "女"}}selected{{end}}>女</option>
       </select>
     </div>
     <div class="form-group">

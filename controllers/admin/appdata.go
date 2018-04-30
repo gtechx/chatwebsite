@@ -221,7 +221,7 @@ func (c *AppDataController) Del() {
 		errtext = "数据库错误:" + err.Error()
 	}
 
-	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
+	c.Ctx.Output.Body([]byte("{\"error\":\"" + errtext + "\"}"))
 }
 
 func (c *AppDataController) List() {
@@ -276,7 +276,7 @@ func (c *AppDataController) List() {
 	println("pageNumber:", index, " pageSize:", pagesize)
 
 	dataManager := gtdb.Manager()
-	pagenone := "{total:0, rows:[]}"
+	pagenone := "{\"total\":0, \"rows\":[]}"
 
 	if id != 0 {
 		appdata, err := dataManager.GetAppData(id)
@@ -375,7 +375,7 @@ func (c *AppDataController) Ban() {
 		errtext = "数据库错误:" + err.Error()
 	}
 
-	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
+	c.Ctx.Output.Body([]byte("{\"error\":\"" + errtext + "\"}"))
 }
 
 func (c *AppDataController) Unban() {
@@ -393,5 +393,5 @@ func (c *AppDataController) Unban() {
 		errtext = "数据库错误:" + err.Error()
 	}
 
-	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
+	c.Ctx.Output.Body([]byte("{\"error\":\"" + errtext + "\"}"))
 }

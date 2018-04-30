@@ -1,4 +1,5 @@
     {{if .account}}
+    </div>
     </main>
     {{end}}
     </div>

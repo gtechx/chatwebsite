@@ -37,7 +37,7 @@
 <div class="container-fluid">
   <div class="row">
   {{if .account}}
-    <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+    <nav class="col-md-2 d-none d-md-block bg-light sidebar border-right">
       <div class="sidebar-sticky">
         <ul class="nav flex-column">
          <li class="nav-item">
@@ -62,6 +62,11 @@
           </li>
           <li class="nav-item">
             <a href="/admin/account/index" class="nav-link mt-4">
+            管理员管理
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/account/index" class="nav-link">
             用户管理
             </a>
           </li>
@@ -81,6 +86,8 @@
             </a>
           </li>
         </ul>
+        </div>
     </nav>
-    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+    <main role="main" class="col-md-9 col-lg-10 px-0">
+    <div class="p-3 bg-light">
     {{end}}

@@ -117,7 +117,7 @@ func (c *AccountController) Create() {
 		errtext = "数据库错误:" + err.Error()
 	}
 end:
-	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
+	c.Ctx.Output.Body([]byte("{\"error\":\"" + errtext + "\"}"))
 }
 
 func (c *AccountController) Update() {
@@ -167,7 +167,7 @@ func (c *AccountController) Update() {
 		errtext = "数据库错误:" + err.Error()
 	}
 end:
-	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
+	c.Ctx.Output.Body([]byte("{\"error\":\"" + errtext + "\"}"))
 }
 
 func (c *AccountController) Del() {
@@ -181,7 +181,7 @@ func (c *AccountController) Del() {
 		errtext = "数据库错误:" + err.Error()
 	}
 
-	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
+	c.Ctx.Output.Body([]byte("{\"error\":\"" + errtext + "\"}"))
 }
 
 func (c *AccountController) Ban() {
@@ -195,7 +195,7 @@ func (c *AccountController) Ban() {
 		errtext = "数据库错误:" + err.Error()
 	}
 
-	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
+	c.Ctx.Output.Body([]byte("{\"error\":\"" + errtext + "\"}"))
 }
 
 func (c *AccountController) Unban() {
@@ -209,5 +209,5 @@ func (c *AccountController) Unban() {
 		errtext = "数据库错误:" + err.Error()
 	}
 
-	c.Ctx.Output.Body([]byte("{error:\"" + errtext + "\"}"))
+	c.Ctx.Output.Body([]byte("{\"error\":\"" + errtext + "\"}"))
 }
