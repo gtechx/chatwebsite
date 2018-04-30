@@ -22,9 +22,11 @@
             <label for="enddate">最终日期：</label>
             <input type="text" class="rounded" style="width:100px" name="enddate" id="enddate" placeholder="">
         </div>
-        <button id="btn_filter" onclick="$('#table').bootstrapTable('refresh');" type="button" class="btn btn-info btn-sm rightSize">
+        <div class="p-1">
+        <button id="btn_filter" onclick="$('#table').bootstrapTable('refresh');" type="button" class="btn btn-info btn-sm">
             过滤
         </button>
+        </div>
     </div>
     <div id="toolbar" class="btn-group">
         <button id="btn_add" onclick="addAccount();" type="button" class="btn btn-info btn-sm rightSize">
