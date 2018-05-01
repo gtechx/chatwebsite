@@ -50,7 +50,7 @@
     </div>
     <div class="form-group">
       <label for="birthday">生日：</label>
-      <input type="text" class="form-control" id="birthday" name="birthday" value="{{.appdata.Birthday}}">
+      <input type="text" class="form-control" id="birthday" name="birthday" value="{{dateformat .appdata.Birthday "01/02/2006"}}">
     </div>
     <div class="form-group">
       <label for="country">国家：</label>

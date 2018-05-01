@@ -115,6 +115,8 @@
   } );
 
   function onAppnameChange(obj) {
+      if(obj.selectedIndex == -1)
+        return;
       var opt = obj.options[obj.selectedIndex];
       console.info("text:"+opt.text);
       console.info("value:"+opt.value);
@@ -262,10 +264,11 @@
       //sortName: 'id', // 要排序的字段
       //sortOrder: 'desc', // 排序规则
       columns: [
+          {{if not .isreadonly}}
           {
               checkbox: true, // 显示一个勾选框
               align: 'center' // 居中显示
-          }, {
+          },{{end}} {
               field: 'id',
               title: 'ID',
               align: 'center',
@@ -291,7 +294,11 @@
               align: 'center',
               valign: 'middle',
               formatter: function (value, row, index) {
+                  {{if .isreadonly}}
+                  return value;
+                  {{else}}
                   return '<a class="" href="update?id='+row.id+'">'+value+'</a>';
+                  {{end}}
               }
           }, {
               field: 'desc',
@@ -333,7 +340,7 @@
               title: '注册日期',
               align: 'center',
               valign: 'middle'
-          }, {
+          }{{if not .isreadonly}}, {
               field: 'isbaned',
               title: "操作",
               align: 'center',
@@ -345,7 +352,7 @@
                   else
                     return '<button class="btn btn-primary btn-sm" onclick="banAppData('+index+');">封禁</button>';
               }
-          }
+          }{{end}}
       ],
       onLoadSuccess: function(data){  //加载成功时执行
             console.info("加载成功");

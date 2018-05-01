@@ -4,27 +4,18 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/astaxie/beego"
 	. "github.com/gtechx/base/common"
 	"github.com/gtechx/chatserver/db"
 )
 
 type MyAppDataController struct {
-	beego.Controller
-	account string
+	BaseController
 }
 
 func (c *MyAppDataController) Prepare() {
-	account := String(c.GetSession("account"))
-	if account == "" {
-		c.Redirect("/", 302)
-		return
-	}
-	c.Data["account"] = account
-	//c.Data["isadmin"] = false
+	c.BaseController.Prepare()
 	c.Data["isreadonly"] = true
 	c.Data["nav"] = "usermyappdata"
-	c.account = account
 }
 
 func (c *MyAppDataController) Index() {

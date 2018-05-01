@@ -4,24 +4,15 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/astaxie/beego"
-	. "github.com/gtechx/base/common"
 	"github.com/gtechx/chatserver/db"
 )
 
 type ZoneController struct {
-	beego.Controller
-	account string
+	BaseController
 }
 
 func (c *ZoneController) Prepare() {
-	account := String(c.GetSession("account"))
-	if account == "" {
-		c.Redirect("/", 302)
-		return
-	}
-	c.Data["account"] = account
-	c.account = account
+	c.BaseController.Prepare()
 }
 
 func (c *ZoneController) Create() {

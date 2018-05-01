@@ -60,31 +60,42 @@
             我的应用数据
             </a>
           </li>
+
+          {{if .priv.Adminadmin}}
           <li class="nav-item">
-            <a href="/admin/account/index" class="nav-link mt-4 {{if compare .nav "adminadmin"}}active{{end}}">
+            <a href="/admin/admin/index" class="nav-link mt-4 {{if compare .nav "adminadmin"}}active{{end}}">
             管理员管理
             </a>
           </li>
+          {{end}}
+          {{if .priv.Adminuser}}
           <li class="nav-item">
             <a href="/admin/account/index" class="nav-link {{if compare .nav "adminaccount"}}active{{end}}">
             用户管理
             </a>
           </li>
+          {{end}}
+          {{if .priv.Adminapp}}
           <li class="nav-item">
             <a href="/admin/app/index" class="nav-link {{if compare .nav "adminapp"}}active{{end}}">
             应用管理
             </a>
           </li>
+          {{end}}
+          {{if .priv.Adminappdata}}
           <li class="nav-item">
             <a href="/admin/appdata/index" class="nav-link {{if compare .nav "adminappdata"}}active{{end}}">
             数据管理
             </a>
           </li>
+          {{end}}
+          {{if .priv.Adminonline}}
           <li class="nav-item">
             <a href="data" class="nav-link">
             在线玩家管理
             </a>
           </li>
+          {{end}}
         </ul>
         </div>
     </nav>

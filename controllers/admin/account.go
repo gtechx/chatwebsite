@@ -12,12 +12,12 @@ import (
 )
 
 type AccountController struct {
-	beego.Controller
+	AdminBaseController
 }
 
 func (c *AccountController) Prepare() {
 	account := String(c.GetSession("account"))
-	if account == "" {
+	if account == "" || !c.checkPrivilege() {
 		c.Redirect("/", 302)
 		return
 	}

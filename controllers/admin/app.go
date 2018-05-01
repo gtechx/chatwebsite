@@ -6,18 +6,17 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/astaxie/beego"
 	. "github.com/gtechx/base/common"
 	"github.com/gtechx/chatserver/db"
 )
 
 type AppController struct {
-	beego.Controller
+	AdminBaseController
 }
 
 func (c *AppController) Prepare() {
 	account := String(c.GetSession("account"))
-	if account == "" {
+	if account == "" || !c.checkPrivilege() {
 		c.Redirect("/", 302)
 		return
 	}
