@@ -145,6 +145,11 @@ func (c *AdminController) Update() {
 		goto end
 	}
 
+	if account == String(c.GetSession("account")) {
+		c.Data["error"] = "不能修改自己的权限"
+		goto end
+	}
+
 	old_admin, err = dbManager.GetAdmin(account)
 
 	if err != nil {
@@ -228,11 +233,20 @@ end:
 func (c *AdminController) Del() {
 	accounts := c.GetStrings("account[]")
 	fmt.Println(accounts)
+	newaccounts := make([]string, 0)
+	for _, account := range accounts {
+		if account != String(c.GetSession("account")) {
+			newaccounts = append(newaccounts, account)
+		}
+	}
 
 	errtext := ""
-	err := gtdb.Manager().DelAdmins(accounts)
-	if err != nil {
-		errtext = "数据库错误:" + err.Error()
+
+	if len(newaccounts) > 0 {
+		err := gtdb.Manager().DelAdmins(newaccounts)
+		if err != nil {
+			errtext = "数据库错误:" + err.Error()
+		}
 	}
 
 	c.Ctx.Output.Body([]byte("{\"error\":\"" + errtext + "\"}"))

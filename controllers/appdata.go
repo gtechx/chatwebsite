@@ -209,9 +209,12 @@ func (c *AppDataController) Del() {
 	}
 
 	errtext := ""
-	err := gtdb.Manager().DeleteAppDatas(appdatas)
-	if err != nil {
-		errtext = "数据库错误:" + err.Error()
+
+	if len(appdatas) > 0 {
+		err := gtdb.Manager().DeleteAppDatas(appdatas)
+		if err != nil {
+			errtext = "数据库错误:" + err.Error()
+		}
 	}
 
 	c.Ctx.Output.Body([]byte("{\"error\":\"" + errtext + "\"}"))

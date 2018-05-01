@@ -106,9 +106,8 @@ func (c *ZoneController) Del() {
 	// 	goto end
 	// }
 
-	for _, zonename := range zonenames {
-		err := dataManager.RemoveAppZone(appname, zonename)
-
+	if len(zonenames) > 0 {
+		err := dataManager.RemoveAppZones(appname, zonenames)
 		if err != nil {
 			errtext = "数据库错误:" + err.Error()
 		}

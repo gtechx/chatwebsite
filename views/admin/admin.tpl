@@ -7,32 +7,32 @@
             <input type="text" class="rounded" style="width:100px" name="account" id="account" placeholder="">
         </div>
         <div class="p-1">
-            <label for="adminadmin" class="checkbox-inline border border-success">
+            <label for="adminadmin" class="checkbox-inline">
                 <input type="checkbox" class="" name="adminadmin" id="adminadmin" placeholder="">adminadmin
             </label>
         </div>
         <div class="p-1">
-            <label for="adminuser" class="checkbox-inline border border-success">
+            <label for="adminuser" class="checkbox-inline">
                 <input type="checkbox" class="" name="adminuser" id="adminuser" placeholder="">adminuser
             </label>
         </div>
         <div class="p-1">
-            <label for="adminapp" class="checkbox-inline border border-success">
+            <label for="adminapp" class="checkbox-inline">
                 <input type="checkbox" class="" name="adminapp" id="adminapp" placeholder="">adminapp
             </label>
         </div>
         <div class="p-1">
-            <label for="adminappdata" class="checkbox-inline border border-success">
+            <label for="adminappdata" class="checkbox-inline">
                 <input type="checkbox" class="" name="adminappdata" id="adminappdata" placeholder="">adminappdata
             </label>
         </div>
         <div class="p-1">
-            <label for="adminonline" class="checkbox-inline border border-success">
+            <label for="adminonline" class="checkbox-inline">
                 <input type="checkbox" class="" name="adminonline" id="adminonline" placeholder="">adminonline
             </label>
         </div>
         <div class="p-1">
-            <label for="adminmessage" class="checkbox-inline border border-success">
+            <label for="adminmessage" class="checkbox-inline">
                 <input type="checkbox" class="" name="adminmessage" id="adminmessage" placeholder="">adminmessage
             </label>
         </div>
@@ -190,6 +190,9 @@
               align: 'center',
               valign: 'middle',
               formatter: function (value, row, index) {
+                  if(value == {{.account}})
+                  return value;
+                  else
                   return '<a class="" href="update?account='+value+'">'+value+'</a>';
               }
           }, {
