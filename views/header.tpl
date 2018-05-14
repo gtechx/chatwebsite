@@ -26,6 +26,9 @@
   <a class="navbar-brand mr-md-auto" href="/">
     WebSite
   </a>
+  <a class="mr-2" href="/webapp">
+    [app login]
+  </a>
   
   {{if .account}}
   <div class="mr-md-2">
@@ -37,7 +40,7 @@
 <div class="container-fluid">
   <div class="row">
   {{if .account}}
-    <nav class="col-md-2 d-none d-md-block bg-light sidebar border-right">
+    <nav class="col-md-2 bg-light border-right">
       <div class="sidebar-sticky">
         <ul class="nav nav-pills flex-column">
          <li class="nav-item">
