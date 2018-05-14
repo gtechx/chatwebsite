@@ -14,6 +14,7 @@ type WebAppController struct {
 
 func (c *WebAppController) Prepare() {
 	//c.BaseController.Prepare()
+	c.Data["appaccount"] = String(c.GetSession("account"))
 }
 
 func (c *WebAppController) Index() {

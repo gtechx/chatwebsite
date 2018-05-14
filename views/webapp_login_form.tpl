@@ -23,7 +23,7 @@
   </div>
   <div class="form-group">
     <label for="account">账号：</label>
-    <input type="text" class="form-control" name="account" id="account" placeholder="Account">
+    <input type="text" class="form-control" name="account" id="account" placeholder="Account" value="{{.appaccount}}">
   </div>
   <div class="form-group">
     <label for="password1">密码：</label>
