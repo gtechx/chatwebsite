@@ -27,12 +27,12 @@ func RandString() string {
 }
 
 func main() {
+	defer gtdb.Manager().UnInitialize()
 	err := gtdb.Manager().InitializeRedis(config.RedisAddr, config.RedisPassword, config.RedisDefaultDB)
 	if err != nil {
 		println("InitializeRedis err:", err.Error())
 		return
 	}
-	defer gtdb.Manager().UnInitialize()
 
 	err = gtdb.Manager().InitializeMysql(config.MysqlAddr, config.MysqlUserPassword, config.MysqlDefaultDB, config.MysqlTablePrefix)
 	if err != nil {

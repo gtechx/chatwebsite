@@ -71,7 +71,7 @@
 
   var client = null;
   function login() {
-    client = WsClient.new("192.168.93.198:12345");
+    client = WsClient.new("127.0.0.1:9090");
     client.onopen = function () {
       console.info("connect success")
     }

@@ -104,7 +104,7 @@ func (c *AppDataController) Create() {
 			c.Data["error"] = "nickname不能为空"
 			goto end
 		}
-		flag, err = dbManager.IsNicknameExists(appname, zonename, nickname)
+		flag, err = dbManager.IsNicknameExists(appname, zonename, account, nickname)
 		if err != nil {
 			println(err.Error())
 			c.Data["error"] = "数据库错误:" + err.Error()
