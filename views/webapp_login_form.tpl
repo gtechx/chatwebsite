@@ -80,11 +80,14 @@
       var buffer = new ArrayBuffer(size);
       var int8View = new Int8Array(buffer);
       var dataView = new DataView(buffer);
-      dataView.setUint8(account.byteLength)
+      console.info(account)
+      console.info(password)
+      dataView.setUint8(0, account.byteLength)
       int8View.set(account, 1)
-      dataView.setUint8(password.byteLength)
-      int8View.set(password, 1)
+      dataView.setUint8(account.byteLength + 1, password.byteLength)
+      int8View.set(password, 1 + account.byteLength + 1)
       console.info("buffer.byteLength " + buffer.byteLength)
+      console.info(new TextDecoder("utf-8").decode(buffer.slice(1, account.byteLength + 1)))
       sendMsg(MsgType.ReqFrame, size, 1000, buffer, onLogined)
     }
     client.onclose = function () {
@@ -100,20 +103,34 @@
   };
 
   function onLogined(token) {
-    console.info("onLogined:" + token)
+    var dataView = new DataView(token);
+    console.info("onLogined:" + token.byteLength)
+    console.info("errcode:" + dataView.getUint16(0, true))
+    console.info("token:" + new TextDecoder("utf-8").decode(token.slice(2)))
   }
 
   function packageMsg(type, id, size, msgid, databuff) {
     var buffer = new ArrayBuffer(databuff.byteLength + 7);
-    console.info("buffer.byteLength " + buffer.byteLength)
+    console.info("type " + type)
+    console.info("id " + id)
+    console.info("size " + size)
+    console.info("msgid " + msgid)
+    console.info("databuff " + new TextDecoder("utf-8").decode(databuff))
     var dataView = new DataView(buffer);
     
     dataView.setUint8(0, type)
     dataView.setUint16(1, id, true)
-    dataView.setUint16(2, size, true)
+    dataView.setUint16(3, size, true)
     dataView.setUint16(5, msgid, true)
-    var int8View = new Int8Array(buffer);
-    int8View.set(databuff, 7)
+    var int8View = new Uint8Array(buffer);
+    int8View.set(new Uint8Array(databuff), 7)
+
+    console.info("type " + dataView.getUint8(0))
+    console.info("id " + dataView.getUint16(1, true))
+    console.info("size " + dataView.getUint16(3, true))
+    console.info("msgid " + dataView.getUint16(5, true))
+    console.info("account " + new TextDecoder("utf-8").decode(buffer.slice(8)))
+    
     return buffer
   }
 
@@ -128,6 +145,7 @@ var cbMap = {}
 
   function onMessage(buffer) {
     var header = readMsgHeader(buffer)
+    console.info(header)
     switch(header.type){
       case MsgType.TickFrame:
         console.info("recv tick from server..")
@@ -136,9 +154,9 @@ var cbMap = {}
         console.info("recv echo from server:" + header.databuff)
         break;
       default:
-        if(dbMap[header.id]){
-          dbMap[header.id](header.databuff)
-          delete dbMap[header.id]
+        if(cbMap[header.id]){
+          cbMap[header.id](header.databuff)
+          delete cbMap[header.id]
         }
     }
   }
