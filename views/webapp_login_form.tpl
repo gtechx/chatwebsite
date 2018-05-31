@@ -74,6 +74,18 @@
     client = WsClient.new("127.0.0.1:9090");
     client.onopen = function () {
       console.info("connect success")
+      var account = new TextEncoder("utf-8").encode("wyq");
+      var password = new TextEncoder("utf-8").encode("123");
+      var size = account.byteLength + password.byteLength + 2;
+      var buffer = new ArrayBuffer(size);
+      var int8View = new Int8Array(buffer);
+      var dataView = new DataView(buffer);
+      dataView.setUint8(account.byteLength)
+      int8View.set(account, 1)
+      dataView.setUint8(password.byteLength)
+      int8View.set(password, 1)
+      console.info("buffer.byteLength " + buffer.byteLength)
+      sendMsg(MsgType.ReqFrame, size, 1000, buffer, onLogined)
     }
     client.onclose = function () {
       console.info("disconnect")
@@ -81,10 +93,77 @@
     client.onerror = function (evt) {
       console.info("error " + evt)
     }
-    client.setHeaderParser(headerParser);
-    client.setMsgParser(msgParser);
+    client.onmessage = onMessage
+    //client.setHeaderParser(headerParser);
+    //client.setMsgParser(msgParser);
     client.connect();
   };
+
+  function onLogined(token) {
+    console.info("onLogined:" + token)
+  }
+
+  function packageMsg(type, id, size, msgid, databuff) {
+    var buffer = new ArrayBuffer(databuff.byteLength + 7);
+    console.info("buffer.byteLength " + buffer.byteLength)
+    var dataView = new DataView(buffer);
+    
+    dataView.setUint8(0, type)
+    dataView.setUint16(1, id, true)
+    dataView.setUint16(2, size, true)
+    dataView.setUint16(5, msgid, true)
+    var int8View = new Int8Array(buffer);
+    int8View.set(databuff, 7)
+    return buffer
+  }
+
+var id = 0;
+var cbMap = {}
+  function sendMsg(type, size, msgid, databuff, cb){
+    id++;
+    var sendbuff = packageMsg(type, id, size, msgid, databuff);
+    cbMap[id] = cb;
+    client.send(sendbuff);
+  }
+
+  function onMessage(buffer) {
+    var header = readMsgHeader(buffer)
+    switch(header.type){
+      case MsgType.TickFrame:
+        console.info("recv tick from server..")
+        break;
+      case MsgType.EchoFrame:
+        console.info("recv echo from server:" + header.databuff)
+        break;
+      default:
+        if(dbMap[header.id]){
+          dbMap[header.id](header.databuff)
+          delete dbMap[header.id]
+        }
+    }
+  }
+
+  function readMsgHeader(buffer) {
+    var dataView = new DataView(buffer);
+    var ret = {};
+    ret.type = dataView.getUint8();
+    if(ret.type == MsgType.TickFrame)
+      return ret;
+    ret.id = dataView.getUint16(1, true);
+    ret.size = dataView.getUint16(3, true);
+    ret.msgid = dataView.getUint16(5, true);
+    if(ret.size == 0)
+      return ret;
+    ret.databuff = buffer.slice(7);
+    return ret;
+  }
+
+  var MsgType = {
+    ReqFrame: 0,
+    RetFrame: 1,
+    TickFrame: 2,
+    EchoFrame: 3,
+  }
 
   function headerParser(buffer) {
     var dataView = new DataView(buffer);

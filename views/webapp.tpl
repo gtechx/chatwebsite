@@ -6,7 +6,7 @@
             var client = {};
             client.addr = addr;
             client.onopen = null;
-            //client.onmessage = nil;
+            client.onmessage = null;
             client.onclose = null;
             client.onerror = null;
 
@@ -41,11 +41,14 @@
                 }
             };
             function onmessage(evt) {
-                if(headerParser != null) {
-                    var datasize = headerParser(evt.data);
-                    if(datasize > 0) {
-                        msgParser(evt.data.slice(2));
-                    }
+                // if(headerParser != null) {
+                //     var datasize = headerParser(evt.data);
+                //     if(datasize > 0) {
+                //         msgParser(evt.data.slice(2));
+                //     }
+                // }
+                if(client.onmessage != null){
+                    client.onmessage(evt.data);
                 }
             };
             function onclose(evt) {
