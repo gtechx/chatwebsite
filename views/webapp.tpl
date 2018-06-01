@@ -69,4 +69,6 @@
 
 {{template "webapp_login_form.tpl" .}}
 
+<script src="/static/js/webapp.js"></script>
+
 {{template "footer.tpl" .}}
