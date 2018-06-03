@@ -5,137 +5,141 @@ var MsgType = {
   EchoFrame: 3,
 }
 
-$(function () {
-  onAppnameChange(document.getElementsByName("appname")[0]);
-});
+var ws = null;
+var sendstream = BinaryStream.new();
+var recvstream = BinaryStream.new();
 
-function onAppnameChange(obj) {
-  if (obj.selectedIndex == -1)
-    return;
-  var opt = obj.options[obj.selectedIndex];
+function login(account, password, appname, zonename) {
+  ws = new WebSocket("ws://" + "127.0.0.1:9090");
+  ws.binaryType = "arraybuffer";
 
-  $.post("/webapp/zonelist", { 'appname': $('#appname').val() },
-    function (data) {
-      var jsondata = JSON.parse(data);
-      var liststr = '';
-      var count = jsondata["total"];
-      var html = "";
-      for (i in jsondata["rows"]) {
-        var row = jsondata["rows"][i];
-        html += '<option>' + row.zonename + '</option>';
-      }
-      $('#zonename').html(html);
-    });
-};
-
-function stringToBytes(str) {
-  return new TextEncoder("utf-8").encode(str);
-}
-
-function appendString(buffer, str) {
-  var bytes = stringToBytes(str)
-  var newbuffer = new ArrayBuffer(buffer.byteLength + bytes.byteLength);
-  var uint8View = new Uint8Array(newbuffer);
-  uint8View.set(0, new Uint8Array(buffer))
-  uint8View.set(buffer.byteLength, bytes)
-  return newbuffer
-}
-
-function appendArrayBuffer(buffer, arrbuffer) {
-  var newbuffer = new ArrayBuffer(buffer.byteLength + arrbuffer.byteLength);
-  var uint8View = new Uint8Array(newbuffer);
-  uint8View.set(0, new Uint8Array(buffer))
-  uint8View.set(buffer.byteLength, new Uint8Array(arrbuffer))
-  return newbuffer
-}
-
-var BinaryStream = {
-  new: function () {
-    var stream = {};
-    stream.length = 0;
-    stream.cur = 0;
-    stream.cap = 512;
-    stream.buffer = new ArrayBuffer(stream.cap);
-    stream.dataview = new DataView(stream.buffer);
-    stream.littleEndian = true;
-
-    stream.writeUint8 = function (data){
-      stream.dataview.setUint8(stream.cur, data);
-      stream.cur = stream.cur + 1;
-    };
-
-    stream.writeUint16 = function (data){
-      stream.dataview.setUint8(stream.cur, data, stream.littleEndian);
-      stream.cur = stream.cur + 2;
-    };
-
-    return stream;
-  }
-}
-
-var client = null;
-function login() {
-  client = WsClient.new("127.0.0.1:9090");
-  client.onopen = function () {
+  // ws.onopen = onopen;
+  // ws.onmessage = onmessage;
+  // ws.onclose = onclose;
+  // ws.onerror = onerror;
+  // client = WsClient.new("127.0.0.1:9090");
+  ws.onopen = function () {
     console.info("connect success")
-    var account = stringToBytes("wyq");
-    var password = stringToBytes("123");
-    var size = account.byteLength + password.byteLength + 2;
-    var buffer = new ArrayBuffer(size);
-    var int8View = new Int8Array(buffer);
-    var dataView = new DataView(buffer);
-    console.info(account)
-    console.info(password)
-    dataView.setUint8(0, account.byteLength)
-    int8View.set(account, 1)
-    dataView.setUint8(account.byteLength + 1, password.byteLength)
-    int8View.set(password, 1 + account.byteLength + 1)
-    console.info("buffer.byteLength " + buffer.byteLength)
-    console.info(new TextDecoder("utf-8").decode(buffer.slice(1, account.byteLength + 1)))
-    sendMsg(MsgType.ReqFrame, size, 1000, buffer, onLogined)
+    var accountbytes = stringToBytes(account);
+    var passwordbytes = stringToBytes(password);
+    var appnamebytes = stringToBytes(appname);
+    var zonenamebytes = stringToBytes(zonename);
+
+    sendstream.writeUint8(accountbytes.byteLength);
+    sendstream.writeArray(accountbytes);
+    sendstream.writeUint8(passwordbytes.byteLength);
+    sendstream.writeArray(passwordbytes);
+    sendstream.writeUint8(appnamebytes.byteLength);
+    sendstream.writeArray(appnamebytes);
+    sendstream.writeUint8(zonenamebytes.byteLength);
+    sendstream.writeArray(zonenamebytes);
+    //console.info(sendstream.length);
+    //console.info(sendstream.getBuffer());
+    sendMsg(MsgType.ReqFrame, sendstream.length, 1001, sendstream.getBuffer(), onLogined)
   }
-  client.onclose = function () {
+  ws.onclose = function () {
     console.info("disconnect")
   }
-  client.onerror = function (evt) {
+  ws.onerror = function (evt) {
     console.info("error " + evt)
   }
-  client.onmessage = onMessage
+  ws.onmessage = onMessage
   //client.setHeaderParser(headerParser);
   //client.setMsgParser(msgParser);
-  client.connect();
+  //ws.connect();
 };
 
+function enterChat(id) {
+  console.info("id:" + typeof(id));
+  var appdataid = Long.fromString(id, true, 10);
+  sendstream.reset();
+  //sendstream.writeUint8(nicknamebytes.byteLength);
+  sendstream.writeUint64(appdataid);
+  sendMsg(MsgType.ReqFrame, sendstream.length, 1002, sendstream.getBuffer(), onEnterChatSuccess);
+}
+
+var tickinstance = null;
+function onEnterChatSuccess(buffer){
+  var bs = BinaryStream.new(buffer);
+  var errcode = bs.readUint16();
+  console.info("errcode:" + errcode);
+  if(errcode == 0) {
+    tickinstance = setInterval("sendTick();",5000);
+  }
+}
+
+function onTick() {
+  console.info("recv tick from server..");
+}
+
+function sendTick() {
+  var bs = BinaryStream.new();
+  sendMsg(MsgType.TickFrame, 0, 0, null, null);
+}
+
 function onLogined(token) {
-  var dataView = new DataView(token);
-  console.info("onLogined:" + token.byteLength)
-  console.info("errcode:" + dataView.getUint16(0, true))
-  console.info("token:" + new TextDecoder("utf-8").decode(token.slice(2)))
+  var bs = BinaryStream.new(token);
+  console.info("onLogined:" + bs.length)
+  var errcode = bs.readUint16();
+  console.info("errcode:" + errcode);
+
+  if(errcode == 0) {
+    var idcount = (bs.length - 2) / 8;
+    console.info("id count:" + idcount);
+    console.info(token);
+    if(idcount == 0){
+      sendstream.reset();
+      var nicknamebytes = stringToBytes("testnickname");
+      //sendstream.writeUint8(nicknamebytes.byteLength);
+      sendstream.writeArray(nicknamebytes);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1004, sendstream.getBuffer(), onAppDataCreated);
+    } else {
+      var appdataid = bs.readUint64();
+      console.info("appdataid:" + appdataid.toString());
+      var html = '<button type="button" onclick="enterChat(\''+appdataid.toString()+'\');" class="list-group-item list-group-item-action">';
+      html += appdataid;
+      html += '</button>';
+      $("#idlist").html(html);
+
+      $("#idselect").removeClass('d-none');
+      $("#loginpanel").addClass('d-none');
+    }
+  }
+}
+
+function onAppDataCreated(data) {
+  var bs = BinaryStream.new(data);
+  console.info("onAppDataCreated:" + bs.length);
+  var errcode = bs.readUint16();
+  console.info("errcode:" + errcode);
+  if(errcode == 0) {
+    var appdataid = bs.readUint64();
+    console.info("appdataid:" + appdataid);
+  }
 }
 
 function packageMsg(type, id, size, msgid, databuff) {
-  var buffer = new ArrayBuffer(databuff.byteLength + 7);
-  console.info("type " + type)
-  console.info("id " + id)
-  console.info("size " + size)
-  console.info("msgid " + msgid)
-  console.info("databuff " + new TextDecoder("utf-8").decode(databuff))
-  var dataView = new DataView(buffer);
+  sendstream.reset();
+  sendstream.writeUint8(type);
+  if(type != MsgType.TickFrame) {
+    sendstream.writeUint16(id);
+    sendstream.writeUint16(size);
+    sendstream.writeUint16(msgid);
+    sendstream.writeArrayBuffer(databuff);
+  }
 
-  dataView.setUint8(0, type)
-  dataView.setUint16(1, id, true)
-  dataView.setUint16(3, size, true)
-  dataView.setUint16(5, msgid, true)
-  var int8View = new Uint8Array(buffer);
-  int8View.set(new Uint8Array(databuff), 7)
+  //
+  // var tmpbs = BinaryStream.new(sendstream.getBuffer());
+  // console.info("length " + tmpbs.length)
+  // console.info("type " + tmpbs.readUint8())
+  // console.info("id " + tmpbs.readUint16())
+  // console.info("size " + tmpbs.readUint16())
+  // console.info("msgid " + tmpbs.readUint16())
+  // var alen = tmpbs.readUint8();
+  // console.info("alen " + alen)
+  // console.info("account " + tmpbs.readString(alen));
 
-  console.info("type " + dataView.getUint8(0))
-  console.info("id " + dataView.getUint16(1, true))
-  console.info("size " + dataView.getUint16(3, true))
-  console.info("msgid " + dataView.getUint16(5, true))
-  console.info("account " + new TextDecoder("utf-8").decode(buffer.slice(8)))
-
-  return buffer
+  return sendstream.getBuffer();
 }
 
 var id = 0;
@@ -143,40 +147,42 @@ var cbMap = {}
 function sendMsg(type, size, msgid, databuff, cb) {
   id++;
   var sendbuff = packageMsg(type, id, size, msgid, databuff);
-  cbMap[id] = cb;
-  client.send(sendbuff);
+  if(cb != null)
+    cbMap[id] = cb;
+  ws.send(sendbuff);
 }
 
-function onMessage(buffer) {
-  var header = readMsgHeader(buffer)
+function onMessage(evt) {
+  var header = readMsgHeader(evt.data)
   console.info(header)
   switch (header.type) {
     case MsgType.TickFrame:
-      console.info("recv tick from server..")
+      console.info("recv tick from server..");
       break;
     case MsgType.EchoFrame:
-      console.info("recv echo from server:" + header.databuff)
+      console.info("recv echo from server:" + header.databuff);
       break;
     default:
       if (cbMap[header.id]) {
-        cbMap[header.id](header.databuff)
-        delete cbMap[header.id]
+        cbMap[header.id](header.databuff);
+        delete cbMap[header.id];
       }
   }
 }
 
 function readMsgHeader(buffer) {
+  recvstream.reset(buffer);
   var dataView = new DataView(buffer);
   var ret = {};
-  ret.type = dataView.getUint8();
+  ret.type = recvstream.readUint8();
   if (ret.type == MsgType.TickFrame)
     return ret;
-  ret.id = dataView.getUint16(1, true);
-  ret.size = dataView.getUint16(3, true);
-  ret.msgid = dataView.getUint16(5, true);
+  ret.id = recvstream.readUint16();
+  ret.size = recvstream.readUint16();
+  ret.msgid = recvstream.readUint16();
   if (ret.size == 0)
     return ret;
-  ret.databuff = buffer.slice(7);
+  ret.databuff = recvstream.readArrayBuffer(ret.size);
   return ret;
 }
 
@@ -204,7 +210,7 @@ function sendmsg() {
   int8View.set(uint8Array, 2)
   //dataView.setInt32(0, 0x1234ABCD);
   console.info(int8View.buffer)
-  client.send(int8View.buffer);
+  ws.send(int8View.buffer);
 
   document.getElementById("msg").value = "";
 }

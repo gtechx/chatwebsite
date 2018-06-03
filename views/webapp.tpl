@@ -66,9 +66,11 @@
         }
     };
 </script>
+<script src="/static/js/long.js"></script>
 
 {{template "webapp_login_form.tpl" .}}
 
-<script src="/static/js/webapp.js"></script>
+<script src="/static/js/webapp/binarystream.js?{{RandString}}"></script>
+<script src="/static/js/webapp.js?{{RandString}}"></script>
 
 {{template "footer.tpl" .}}
