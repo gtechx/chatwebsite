@@ -40,7 +40,7 @@
   <button onclick="dologin(); return false;" class="btn btn-outline-primary btn-lg btn-block">登录</button>
 </form>
       <div id="sse">
-          <input id="msg" type="textarea"></input>
+          <input id="msg" type="textarea" />
 		      <button onclick="sendmsg();">send</button>
       </div>
   <script type="text/javascript">
@@ -76,6 +76,7 @@
   <div id="idselect" class="d-none">
     <div id="idlist" class="list-group">
     </div>
+    <button onclick="quitChat();" class="btn btn-outline-primary btn-lg btn-block">退出聊天</button>
   </div>
 </div>
 

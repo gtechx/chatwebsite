@@ -38,6 +38,7 @@ var BinaryStream = {
         stream.length = 0;
       }
       stream.cur = 0;
+      return stream;
     };
 
     stream.writeUint8 = function (data){
