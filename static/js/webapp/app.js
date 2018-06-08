@@ -54,6 +54,7 @@ var App = {
       var appnamebytes = stringToBytes(appname);
       var zonenamebytes = stringToBytes(zonename);
 
+      sendstream.reset();
       sendstream.writeUint8(accountbytes.byteLength);
       sendstream.writeArray(accountbytes);
       sendstream.writeUint8(passwordbytes.byteLength);

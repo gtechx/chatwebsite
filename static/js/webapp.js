@@ -11,6 +11,12 @@ function login(account, password, appname, zonename) {
   myapp.onconnected = function(){
     myapp.login(account, password, appname, zonename);
   };
+  myapp.onclose = function() {
+    console.info("disconnect from server");
+  };
+  myapp.onerror = function(evt) {
+    console.info("error:"+evt.data);
+  };
   myapp.connect("127.0.0.1:9090");
 }
 
@@ -23,14 +29,14 @@ function onLogined(idlist) {
     for(var i = 0; i < idlist.length; i++) {
       var appdataid = idlist[i];
       console.info("appdataid:" + appdataid.toString());
-      html += '<button type="button" onclick="enterChat(\''+appdataid.toString()+'\');" class="list-group-item list-group-item-action">';
-      html += appdataid;
+      html += '<button type="button" onclick="enterChat(\''+appdataid.toString()+'\');" style="min-width:200px;" class="btn btn-default btn-block">';
+      html += 'Sign in with ID: ' + appdataid;
       html += '</button>';
     }
     $("#idlist").html(html);
 
-    $("#idselect").removeClass('d-none');
-    $("#loginpanel").addClass('d-none');
+    $("#idselect").removeClass('hide');
+    $("#loginpanel").addClass('hide');
   }
 }
 
@@ -54,6 +60,8 @@ function onEnterChat(errcode){
 
 function quitChat() {
   myapp.quitchat();
+  $("#loginpanel").removeClass('hide');
+  $("#idselect").addClass('hide');
 }
 
 function sendmsg() {

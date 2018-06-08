@@ -1,18 +1,12 @@
 <div style="position:absolute;top:40%;left:50%; transform:translate(-50%, -50%);">  
 
-<div id="loading" class="loader-inner line-scale d-flex justify-content-center">
-  <div class="bg-info"></div>
-  <div class="bg-info"></div>
-  <div class="bg-info"></div>
-  <div class="bg-info"></div>
-  <div class="bg-info"></div>
-</div>
-<br/>
+  <div class="alert alert-danger hide" id="error">dfdddd</div>
+  <br/>
 
-    <div class="alert alert-danger d-none" id="error">dfdddd</div>
-    <br/>
-
-<div id="loginpanel">
+  <div id="loginpanel" class="box box-widget">
+  <div class="overlay hide">
+    <i class="fa fa-refresh fa-spin"></i>
+  </div>
 <form class="animated" onsubmit="return false;">
   <div class="form-group">
     <label for="appname">选择应用：</label>
@@ -39,10 +33,7 @@
   </div>
   <button onclick="dologin(); return false;" class="btn btn-outline-primary btn-lg btn-block">登录</button>
 </form>
-      <div id="sse">
-          <input id="msg" type="textarea" />
-		      <button onclick="sendmsg();">send</button>
-      </div>
+
   <script type="text/javascript">
     $(function () {
       onAppnameChange(document.getElementsByName("appname")[0]);
@@ -73,12 +64,25 @@
   </script>
   </div>
 
-  <div id="idselect" class="d-none">
-    <div id="idlist" class="list-group">
+  <div id="idselect" class="hide">
+    <div id="idlist" class="box-body">
+    <button type="button" class="btn btn-default btn-block">.btn-block</button>
+    <button type="button" class="btn btn-default btn-block">.btn-block</button>
     </div>
-    <button onclick="quitChat();" class="btn btn-outline-primary btn-lg btn-block">退出聊天</button>
+    <button onclick="quitChat();" class="btn btn-outline-primary btn-lg btn-block">退出</button>
   </div>
 </div>
 
+
+<div class="col-md-3">
+<div id="resizable" class="ui-widget-content">
+  <h3 class="ui-widget-header">Resizable</h3>
+</div>
+</div>
+<script>
+  $( function() {
+    $( "#resizable" ).resizable({ghost:false,handles: "n, e, s, w"});
+  } );
+  </script>
 
 
