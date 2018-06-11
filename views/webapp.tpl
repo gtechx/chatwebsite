@@ -5,6 +5,7 @@
 
 {{template "webapp_login_form.tpl" .}}
 {{template "fpanel.tpl" .}}
+{{template "chatpanel.tpl" .}}
 <script src="/static/js/webapp/app.js?{{RandString}}"></script>
 <script src="/static/js/webapp.js?{{RandString}}"></script>
 
