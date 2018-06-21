@@ -149,6 +149,24 @@ var App = {
       ws.send(tickbuffer);
     }
 
+    var userinfocb = null;
+    app.requserdata = function (cb) {
+      userinfocb = cb;
+      sendMsg(MsgType.ReqFrame, 0, 1005, null, onUserData);
+    }
+
+    function onUserData(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      var strdata = "";
+      if(errcode == 0) {
+        strdata = readstream.readString(buffer.byteLength - 2);
+      }
+      var jsondata = JSON.parse(strdata);
+      if(userinfocb != null)
+        userinfocb(errcode, jsondata);
+    }
+
     function packageMsg(type, id, size, msgid, databuff) {
       sendstream.reset();
       sendstream.writeUint8(type);
@@ -176,10 +194,10 @@ var App = {
 
     function onMessage(evt) {
       var header = readMsgHeader(evt.data)
-      console.info(header)
+      //console.info(header)
       switch (header.type) {
         case MsgType.TickFrame:
-          console.info("recv tick from server..");
+          //console.info("recv tick from server..");
           break;
         case MsgType.EchoFrame:
           console.info("recv echo from server:" + header.databuff);

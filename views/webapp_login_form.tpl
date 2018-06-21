@@ -72,17 +72,7 @@
     <button onclick="quitChat();" class="btn btn-outline-primary btn-lg btn-block">退出</button>
   </div>
 </div>
+<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-search"></i></button>
 
-
-<div class="col-md-3">
-<div id="resizable" class="ui-widget-content">
-  <h3 class="ui-widget-header">Resizable</h3>
-</div>
-</div>
-<script>
-  $( function() {
-    $( "#resizable" ).resizable({ghost:false,handles: "n, e, s, w"});
-  } );
-  </script>
 
 

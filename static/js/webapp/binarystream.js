@@ -3,6 +3,10 @@ function stringToBytes(str) {
   return new TextEncoder("utf-8").encode(str);
 }
 
+function bytesToString(buffer) {
+  return new TextEncoder("utf-8").decode(buffer);
+}
+
 var BinaryStream = {
   new: function () {
     var stream = {};

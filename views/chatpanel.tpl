@@ -1,4 +1,4 @@
-<div class="col-md-3" id="chatpanel">
+<div class="col-md-3 hide" id="chatpanel">
     <!-- DIRECT CHAT PRIMARY -->
     <div class="box box-primary direct-chat direct-chat-primary">
         <div class="box-header with-border">

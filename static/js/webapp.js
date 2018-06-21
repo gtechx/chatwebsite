@@ -2,6 +2,7 @@
 console.info(Long.fromString("18446744073709551615", true, 10).toBytes());
 console.info(5/2);
 
+var user = null;
 var myapp = App.new();
 function login(account, password, appname, zonename) {
   myapp.onlogined = onLogined
@@ -55,6 +56,17 @@ function enterChat(strid) {
 function onEnterChat(errcode){
   console.info("onEnterChat errcode:" + errcode);
   if(errcode == 0) {
+    myapp.requserdata(onUserData);
+  }
+}
+
+function onUserData(errcode, jsondata) {
+  console.info("onUserData errcode:" + errcode);
+  if(errcode == 0) {
+    console.info(jsondata);
+    $("#idselect").addClass('hide');
+    $("#fpanel").removeClass('hide');
+    $("#fpanelheader .box-title").html(jsondata.nickname);
   }
 }
 
