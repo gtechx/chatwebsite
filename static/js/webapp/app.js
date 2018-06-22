@@ -5,6 +5,16 @@ var MsgType = {
   EchoFrame: 3,
 }
 
+var PresenceType = {
+  PresenceType_Subscribe: 0,
+  PresenceType_Subscribed: 1,
+  PresenceType_Unsubscribe: 2,
+  PresenceType_Unsubscribed: 3,
+  PresenceType_Available: 4,
+  PresenceType_Unavailable: 5,
+  PresenceType_Invisible: 6,
+}
+
 var App = {
   new: function () {
     var app = {};
