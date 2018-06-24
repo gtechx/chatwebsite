@@ -23,6 +23,7 @@ var App = {
     app.onloginfailed = null;
     app.onerror = null;
     app.onclose = null;
+    app.onpresence = null;
 
     var ws = null;
     var sendstream = BinaryStream.new();
@@ -35,7 +36,7 @@ var App = {
       ws.onopen = onopen;
       ws.onclose = onclose;
       ws.onerror = onerror;
-      ws.onmessage = onMessage;
+      ws.onmessage = onData;
     };
 
     function onopen() {
@@ -177,6 +178,39 @@ var App = {
         userinfocb(errcode, jsondata);
     }
 
+    var addfriendcb = null;
+    app.addfriend = function (idstr, message, cb) {
+      addfriendcb = cb;
+      sendstream.reset();
+      var jsondata = {}
+      jsondata.presencetype = PresenceType_Subscribe;
+      jsondata.who = idstr;
+      jsondata.message = message;
+      sendstream.writeString(JSON.stringify(jsondata))
+      // sendstream.writeUint8(PresenceType_Subscribe);
+      // sendstream.writeUint64(Long.fromString(idstr));
+      // sendstream.writeInt64(Long.fromNumber((new Date()).getTime()));
+      // sendstream.writeString(message);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1007, sendstream.getBuffer(), onAddFriend);
+    }
+
+    function onAddFriend(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(addfriendcb != null)
+        addfriendcb(errcode);
+    }
+
+    function onPresence(buffer) {
+      var bs = readstream.reset(buffer);
+      
+      if(onpresence != null)
+      {
+        var presence = JSON.parse(bs.readStringAll());
+        onpresence(presence);
+      }
+    }
+
     function packageMsg(type, id, size, msgid, databuff) {
       sendstream.reset();
       sendstream.writeUint8(type);
@@ -202,7 +236,7 @@ var App = {
       ws.send(sendbuff);
     }
 
-    function onMessage(evt) {
+    function onData(evt) {
       var header = readMsgHeader(evt.data)
       //console.info(header)
       switch (header.type) {

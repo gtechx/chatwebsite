@@ -1,6 +1,7 @@
 
 console.info(Long.fromString("18446744073709551615", true, 10).toBytes());
 console.info(5/2);
+console.info((new Date()).getTime());
 
 var user = null;
 var myapp = App.new();

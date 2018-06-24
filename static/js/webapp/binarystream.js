@@ -215,6 +215,12 @@ var BinaryStream = {
       return ret;
     };
 
+    stream.readStringAll = function (){
+      var ret = new TextDecoder("utf-8").decode(stream.buffer.slice(stream.cur));
+      stream.cur = stream.length - 1;
+      return ret;
+    };
+
     stream.readArrayBuffer = function (len){
       var ret = stream.buffer.slice(stream.cur, stream.cur + len);
       stream.cur = stream.cur + len;
