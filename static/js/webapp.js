@@ -19,6 +19,7 @@ function login(account, password, appname, zonename) {
   myapp.onerror = function(evt) {
     console.info("error:"+evt.data);
   };
+  myapp.onpresence = onPresence;
   myapp.connect("127.0.0.1:9090");
 }
 
@@ -69,6 +70,18 @@ function onUserData(errcode, jsondata) {
     $("#fpanel").removeClass('hide');
     $("#fpanelheader .box-title").html(jsondata.nickname);
   }
+}
+
+function addFriend(idstr, message) {
+  myapp.addfriend(idstr, message, onAddFriendResult);
+}
+
+function onAddFriendResult(errcode) {
+  console.info("onAddFriendResult errcode:" + errcode);
+}
+
+function onPresence(jsondata) {
+  console.info("onPresence jsondata:" + jsondata);
 }
 
 function quitChat() {

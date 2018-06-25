@@ -6,15 +6,53 @@
     <div class="box-header with-border" id="fpanelheader">
       <h3 class="box-title">Collapsable</h3>
 
-      <div class="box-tools pull-right hide">
-        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-        </button>
-      </div>
+      
       <!-- /.box-tools -->
     </div>
     <!-- /.box-header -->
-    <div id="fpanelbody" class="box-body">
+    <div id="fpanelbody" class="box-body" style="padding:2px;width:100%;">
         <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
+        <!-- Custom Tabs -->
+        <div style="width:100%;margin-bottom:2px;" class="btn-group" data-toggle="buttons">
+        <button style="width:50%;" class="btn btn-primary active" id="btn_friend" onclick="$('#tab_presence').hide('slide', {direction:'right'});$('#tab_friend').show('slide', {direction:'left'});">
+            <span>6</span><input type="radio" autocomplete="off" checked /> <i class="fa fa-users"></i>
+        </button>
+        <button style="width:50%;" class="btn btn-primary" id="btn_presence" onclick="$('#tab_friend').hide('slide', {direction:'left'});$('#tab_presence').show('slide', {direction:'right'});">
+            <span>6</span><input type="radio" autocomplete="off" /> <i class="fa fa-comments"></i>
+        </button>
+      </div>
+
+                <div class="tab-pane" id="tab_friend" style="max-height:400px;overflow-y:auto;">
+                            
+                </div>
+                <!-- /.tab-pane -->
+                <div class="tab-pane" id="tab_presence" style="max-height:400px;overflow-y:auto;">
+                    <ul class="products-list product-list-in-box">
+                        <li class="item">
+                            <div class="">
+                                <a href="javascript:void(0)" class="product-title">ID:222222 request friend
+                                <span class="label label-warning pull-right">2018/9/10</span></a>
+                                <span class="product-description">
+                                Samsung 32" 1080p 60Hz LED Smart HDTV.
+                                </span>
+                                <button>add</button>
+                                <button>refuse</button>
+                            </div>
+                        </li>
+                        <li class="item">
+                            <div class="">
+                                <a href="javascript:void(0)" class="product-title">ID:222222 request friend
+                                <span class="label label-warning pull-right">2018/9/10</span></a>
+                                <span class="product-description">
+                                Samsung 32" 1080p 60Hz LED Smart HDTV.
+                                </span>
+                                <button>add</button>
+                                <button>refuse</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.tab-pane -->
     </div>
   <!-- /.box-body -->
     <div class="bg-yellow-gradient" style="width:100%;position:absolute;bottom:0;">
@@ -25,11 +63,19 @@
   
 </div>
 
+
+  
+
+
 <script>
     $( function() {
         $( "#fpanel" ).draggable({handle: "#fpanelheader", cursor: "move"});
         $("#fpanelpart").resizable({handles: "se", minWidth: 250, maxWidth:500, minHeight:500, maxHeight:650});
         $("#fpanelpart").css("height", 500).css("width", 250);
+        $('#tab_presence').hide();
+        $('#tab_friend').show('slide');
+        //$('#btn_friend').addClass('active');
+        $( "#radio" ).controlgroup();
     } );
 
     function createGroup(name) {
@@ -74,7 +120,15 @@
         return html;
     }
 
-    $("#fpanelbody").append(createGroup("GroupC"));
+$("#tab_friend").append(createGroup("GroupC1"));
+$("#tab_friend").append(createGroup("GroupC2"));
+$("#tab_friend").append(createGroup("GroupC3"));
+$("#tab_friend").append(createGroup("GroupC4"));
+$("#tab_friend").append(createGroup("GroupC5"));
+$("#tab_friend").append(createGroup("GroupC6"));
+$("#tab_friend").append(createGroup("GroupC7"));
+$("#tab_friend").append(createGroup("GroupC8"));
+    $("#tab_friend").append(createGroup("GroupC"));
     $("#groupGroupC").append(createContactItem({name:"WYQ", desc:"How are you?"}));
     $("#groupGroupC").append(createContactItem({name:"WLN", desc:"How are you?"}));
 </script>
@@ -88,35 +142,15 @@
             <h6 class="modal-title">Add Friend</h6>
             </div>
             <div class="modal-body">
-                <!-- Custom Tabs -->
-                <div class="nav-tabs-custom">
-                    <ul class="nav nav-tabs">
-                        <li class="active"><a href="#tab_1" data-toggle="tab">ID</a></li>
-                        <li><a href="#tab_2" data-toggle="tab">Nickname</a></li>
-                    </ul>
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="tab_1">
-                            <div class="form-group">
-                            <label>ID</label>
-                            <input id="ID" type="text" class="form-control" placeholder="Enter id...">
-                            </div>
-                            
-                            <button type="button" class="btn btn-primary">Add</button>
-                        </div>
-                        <!-- /.tab-pane -->
-                        <div class="tab-pane" id="tab_2">
-                            <div class="form-group">
-                            <label>Nickname</label>
-                            <input id="nickname" type="text" class="form-control" placeholder="Enter nickname...">
-                            </div>
-                            <button type="button" class="btn btn-primary">Add</button>
-                        </div>
-                        <!-- /.tab-pane -->
+                <div class="form-group">
+                    <label>ID</label>
+                    <input id="ID" type="text" class="form-control" placeholder="Enter id...">
+                    <label>Message</label>
+                    <input id="message" type="text" class="form-control" placeholder="Enter message...">
                     </div>
-                    <!-- /.tab-content -->
+                    
+                    <button type="button" class="btn btn-primary">Add</button>
                 </div>
-                <!-- nav-tabs-custom -->
-                
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
