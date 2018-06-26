@@ -1,4 +1,4 @@
-<div class="col-md-3 hide" id="chatpanel">
+<div class="col-md-3 hide" id="chatpanel" style="position:absolute;">
     <!-- DIRECT CHAT PRIMARY -->
     <div class="box box-primary direct-chat direct-chat-primary">
         <div class="box-header with-border">
@@ -12,7 +12,7 @@
                 <button type="button" class="btn btn-box-tool hide" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Contacts">
                     <i class="fa fa-comments"></i>
                 </button>
-                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                <button type="button" class="btn btn-box-tool" onclick="$('#chatpanel').addClass('hide');"><i class="fa fa-times"></i></button>
             </div>
         </div>
         <!-- /.box-header -->
@@ -45,6 +45,11 @@ $( function() {
     $( "#chatpanel" ).draggable({handle: ".direct-chat .box-header", cursor: "move"});
 } );
 
+function openChatPanel(data) {
+    $( "#chatpanel" ).removeClass("hide");
+    $(".direct-chat .box-header h3").html(data.nickname);
+}
+
 function getChatTitle() {
     return $(".direct-chat .box-header h3").html();
 }
@@ -56,7 +61,7 @@ function getChatId() {
 function addMessage(msg) {
     var html = '<div class="direct-chat-msg">' +
         '<div class="direct-chat-info clearfix">' +
-            '<span class="direct-chat-name pull-left">' + msg.name + '</span>' +
+            '<span class="direct-chat-name pull-left">' + msg.nickname + '</span>' +
             '<span class="direct-chat-timestamp pull-right">' + msg.time + '</span>' +
         '</div>' +
         '<img class="direct-chat-img" src="static/dist/img/user1-128x128.jpg" alt="Message User Image">' +
@@ -71,7 +76,7 @@ function addMessage(msg) {
 function sendMessage(msg) {
     var html = '<div class="direct-chat-msg right">' +
         '<div class="direct-chat-info clearfix">' +
-            '<span class="direct-chat-name pull-right">' + msg.name + '</span>' +
+            '<span class="direct-chat-name pull-right">' + msg.nickname + '</span>' +
             '<span class="direct-chat-timestamp pull-left">' + msg.time + '</span>' +
         '</div>' +
         '<img class="direct-chat-img" src="static/dist/img/user1-128x128.jpg" alt="Message User Image">' +
@@ -85,37 +90,18 @@ function sendMessage(msg) {
     //console.info($(".direct-chat-msg:last").scrollTop());
     $(".direct-chat-messages").scrollTop(9999);
 }
-addMessage({name:"WYQ", time:"2018/6/11", text:"Hello, How are you?"});
-sendMessage({name:"WLN", time:"2018/6/11", text:"Hello, I'm fine."});
+addMessage({nickname:"WYQ", time:"2018/6/11", text:"Hello, How are you?"});
+sendMessage({nickname:"WLN", time:"2018/6/11", text:"Hello, I'm fine."});
 
 function startSendMessage() {
     var text = $("#msginput").val();
 
     var msg = {};
-    msg.name = "WYQ";
+    msg.nickname = "WYQ";
     msg.time = new Date().Format("yyyy/MM/dd hh:mm:ss");
     msg.text = text;
 
     sendMessage(msg);
     $("#msginput").val("");
-}
-
-Date.prototype.Format = function (fmt) { // author: meizz
-    if(fmt == "" || fmt == undefined)
-        fmt = "yyyy/MM/dd hh:mm:ss";
-    var o = {
-        "M+": this.getMonth() + 1, // 月份
-        "d+": this.getDate(), // 日
-        "h+": this.getHours(), // 小时
-        "m+": this.getMinutes(), // 分
-        "s+": this.getSeconds(), // 秒
-        "q+": Math.floor((this.getMonth() + 3) / 3), // 季度
-        "S": this.getMilliseconds() // 毫秒
-    };
-    if (/(y+)/.test(fmt))
-        fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-    for (var k in o)
-        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-            return fmt;
 }
 </script>

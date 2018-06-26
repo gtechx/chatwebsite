@@ -15,6 +15,15 @@ var PresenceType = {
   PresenceType_Invisible: 6,
 }
 
+var DataType = {
+  DataType_Friend: 0,
+  DataType_Presence: 1,
+  DataType_Room: 2,
+  DataType_Black: 3,
+  DataType_Offline_Message: 4,
+  DataType_RoomMessage: 5,
+}
+
 var App = {
   new: function () {
     var app = {};
@@ -183,9 +192,10 @@ var App = {
       addfriendcb = cb;
       sendstream.reset();
       var jsondata = {}
-      jsondata.presencetype = PresenceType_Subscribe;
+      jsondata.presencetype = PresenceType.PresenceType_Subscribe;
       jsondata.who = idstr;
       jsondata.message = message;
+      console.info(JSON.stringify(jsondata));
       sendstream.writeString(JSON.stringify(jsondata))
       // sendstream.writeUint8(PresenceType_Subscribe);
       // sendstream.writeUint64(Long.fromString(idstr));
@@ -199,6 +209,48 @@ var App = {
       var errcode = bs.readUint16();
       if(addfriendcb != null)
         addfriendcb(errcode);
+    }
+
+    app.agreefriend = function (idstr, cb) {
+      addfriendcb = cb;
+      sendstream.reset();
+      var jsondata = {}
+      jsondata.presencetype = PresenceType.PresenceType_Subscribed;
+      jsondata.who = idstr;
+      sendstream.writeString(JSON.stringify(jsondata))
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1007, sendstream.getBuffer(), onAddFriend);
+    }
+
+    app.refusefriend = function (idstr, cb) {
+      addfriendcb = cb;
+      sendstream.reset();
+      var jsondata = {}
+      jsondata.presencetype = PresenceType.PresenceType_Unsubscribed;
+      jsondata.who = idstr;
+      sendstream.writeString(JSON.stringify(jsondata))
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1007, sendstream.getBuffer(), onAddFriend);
+    }
+
+    var presencelistcb = null;
+    app.reqpresencelist = function (cb) {
+      presencelistcb = cb;
+      sendstream.reset();
+      sendstream.writeUint8(DataType.DataType_Presence);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1014, sendstream.getBuffer(), onDataList);
+    }
+
+    function onDataList(buffer) {
+      var bs = readstream.reset(buffer);
+      
+      var errcode = bs.readUint16();
+      var datatype = bs.readUint8();
+      if(datatype == DataType.DataType_Presence){
+        if(presencelistcb != null)
+        {
+          var presencelist = JSON.parse(bs.readStringAll());
+          presencelistcb(presence);
+        }
+      }
     }
 
     function onPresence(buffer) {

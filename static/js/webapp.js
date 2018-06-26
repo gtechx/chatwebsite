@@ -2,6 +2,9 @@
 console.info(Long.fromString("18446744073709551615", true, 10).toBytes());
 console.info(5/2);
 console.info((new Date()).getTime());
+var timestamp4 = new Date((new Date()).getTime());
+var ThisInt = '1529994598312'
+console.info(parseInt(ThisInt))
 
 var user = null;
 var myapp = App.new();
@@ -69,11 +72,30 @@ function onUserData(errcode, jsondata) {
     $("#idselect").addClass('hide');
     $("#fpanel").removeClass('hide');
     $("#fpanelheader .box-title").html(jsondata.nickname);
+
+    reqPresenceList();
   }
 }
 
 function addFriend(idstr, message) {
   myapp.addfriend(idstr, message, onAddFriendResult);
+}
+
+function agreeFriend(idstr) {
+  myapp.addfriend(idstr, onAddFriendResult);
+}
+
+function refuseFriend(idstr) {
+  myapp.addfriend(idstr, onAddFriendResult);
+}
+
+function reqPresenceList() {
+  myapp.reqpresencelist(onPresenceList);
+}
+
+function onPresenceList(errcode, data) {
+  console.info("onPresenceList errcode:" + errcode);
+  console.info("onPresenceList data:" + data);
 }
 
 function onAddFriendResult(errcode) {

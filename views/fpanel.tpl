@@ -1,4 +1,4 @@
-<div class="col-md-3" id="fpanel">
+<div class="col-md-3 hide" id="fpanel" style="position:absolute;">
   <div id="fpanelpart" class="box box-warning box-solid">
     <div class="overlay hide">
       <i class="fa fa-refresh fa-spin"></i>
@@ -22,34 +22,13 @@
         </button>
       </div>
 
-                <div class="tab-pane" id="tab_friend" style="max-height:400px;overflow-y:auto;">
+                <div class="tab-pane dragscroll" id="tab_friend" style="max-height:390px;overflow-y:auto;position:absolute;width:245px;">
                             
                 </div>
                 <!-- /.tab-pane -->
-                <div class="tab-pane" id="tab_presence" style="max-height:400px;overflow-y:auto;">
-                    <ul class="products-list product-list-in-box">
-                        <li class="item">
-                            <div class="">
-                                <a href="javascript:void(0)" class="product-title">ID:222222 request friend
-                                <span class="label label-warning pull-right">2018/9/10</span></a>
-                                <span class="product-description">
-                                Samsung 32" 1080p 60Hz LED Smart HDTV.
-                                </span>
-                                <button>add</button>
-                                <button>refuse</button>
-                            </div>
-                        </li>
-                        <li class="item">
-                            <div class="">
-                                <a href="javascript:void(0)" class="product-title">ID:222222 request friend
-                                <span class="label label-warning pull-right">2018/9/10</span></a>
-                                <span class="product-description">
-                                Samsung 32" 1080p 60Hz LED Smart HDTV.
-                                </span>
-                                <button>add</button>
-                                <button>refuse</button>
-                            </div>
-                        </li>
+                <div class="tab-pane" id="tab_presence" style="max-height:390px;overflow-y:auto;position:absolute;width:245px;">
+                    <ul id="presencelist" class="products-list product-list-in-box">
+                        
                     </ul>
                 </div>
                 <!-- /.tab-pane -->
@@ -63,10 +42,6 @@
   
 </div>
 
-
-  
-
-
 <script>
     $( function() {
         $( "#fpanel" ).draggable({handle: "#fpanelheader", cursor: "move"});
@@ -76,14 +51,18 @@
         $('#tab_friend').show('slide');
         //$('#btn_friend').addClass('active');
         $( "#radio" ).controlgroup();
+
+        // $('#tab_friend').slimScroll({
+        //         height: '500px'
+        //     });
     } );
 
     function createGroup(name) {
-        //var div = document.createElement("div");
-        //div.addClass("box box-primary collapsed-box");
+        var div = $(document.createElement("div"));
+        div.addClass("box box-primary collapsed-box");
 
-        var html = '<div class="box box-primary collapsed-box">\
-            <div class="box-header with-border">\
+        //var html = '<div class="box box-primary collapsed-box">\
+        var html = '<div class="box-header with-border">\
                 <h3 class="box-title">';
         html += name;
         html += '</h3>\
@@ -97,40 +76,99 @@
         html += 'group' + name;
         html += '" class="contacts-list">\
                 </ul>\
-            </div>\
-        </div>';
+            </div>';
+        //</div>';
 
-        //div.append(html);
-        return html;
+        div.append(html);
+        return div;
     }
 
     function createContactItem(data) {
-        var html = '<li>\
-            <a href="#">\
+        var li = $(document.createElement("li"));
+        li.data("user", data);
+        li.dblclick(function(){
+            openChatPanel(data);
+        });
+        //var html = '<li>\
+        var html = '<a href="#">\
             <img class="contacts-list-img" src="static/dist/img/user1-128x128.jpg" alt="User Image">\
             <div class="contacts-list-info">\
                     <span class="contacts-list-name text-black">';
-        html += data.name;//     Count Dracula
+        html += data.nickname;//     Count Dracula
         html +=     '</span>\
                 <span class="contacts-list-msg">';
         html += data.desc + '</span>\
             </div>\
-            </a>\
-        </li>';
-        return html;
+            </a>';
+        //</li>';
+        li.append(html);
+        return li;
     }
 
-$("#tab_friend").append(createGroup("GroupC1"));
-$("#tab_friend").append(createGroup("GroupC2"));
-$("#tab_friend").append(createGroup("GroupC3"));
-$("#tab_friend").append(createGroup("GroupC4"));
-$("#tab_friend").append(createGroup("GroupC5"));
-$("#tab_friend").append(createGroup("GroupC6"));
-$("#tab_friend").append(createGroup("GroupC7"));
-$("#tab_friend").append(createGroup("GroupC8"));
-    $("#tab_friend").append(createGroup("GroupC"));
-    $("#groupGroupC").append(createContactItem({name:"WYQ", desc:"How are you?"}));
-    $("#groupGroupC").append(createContactItem({name:"WLN", desc:"How are you?"}));
+    var groups = {};
+    function addGroup(data) {
+        var group = groups[data.group];
+        if(group == null){
+            group = createGroup(data.group);
+            groups[data.group] = group;
+        }
+        $("#tab_friend").append(group);
+        group.find('ul').append(createContactItem(data));
+    }
+
+    function createPresence(data) {
+        var newDate=new Date(parseInt(data.timestamp));
+        //var html = '<li class="item"> \
+        var html = '';
+        if(data.presencetype == PresenceType.PresenceType_Subscribe)
+            html += '<div>friend request:</div>';
+        else if(data.presencetype == PresenceType.PresenceType_Subscribed)
+            html += '<div>friend agree:</div>';
+        else if(data.presencetype == PresenceType.PresenceType_Unsubscribe)
+            html += '<div>friend delete:</div>';
+        else if(data.presencetype == PresenceType.PresenceType_Unsubscribed)
+            html += '<div>friend refuse:</div>';
+        else if(data.presencetype == PresenceType.PresenceType_Available)
+            html += '<div>friend online:</div>';
+        else if(data.presencetype == PresenceType.PresenceType_Unavailable)
+            html += '<div>friend offline:</div>';
+        else if(data.presencetype == PresenceType.PresenceType_Invisible)
+            html += '<div>friend hidden:</div>';
+        else
+            return null;
+        html += '<a href="javascript:void(0)" class="product-title">';
+        html += 'ID:' + data.who + ' nickname:' + data.nickname;
+        html += '</a>';
+        
+        if(data.presencetype == PresenceType.PresenceType_Subscribe){
+            html += '<span class="product-description">';
+            html += data.message;
+            html += '</span> \
+                <button onclick="agreeFriend('+data.who+')">add</button> \
+                <button onclick="refuseFriend('+data.who+')">refuse</button>';
+        }
+            
+        html += '<span class="label label-warning pull-left">' + newDate.Format() + '</span></a>';
+        //</li>';
+
+        var li = $(document.createElement("li"));
+        li.data("user", data);
+        li.addClass("item");
+        li.append(html);
+
+        return li;
+    }
+
+    function addPresence(data) {
+        var presence = createPresence(data);
+        $("#presencelist").append(presence);
+    }
+
+    addGroup({nickname:"WYQ", desc:"How are you?", group:"GroupC"});
+    addGroup({nickname:"WLN", desc:"How are you?", group:"GroupC"});
+
+    addPresence({presencetype:0, who:"123456", nickname:"wyq", timestamp:"1529994598312", message:"Hello, friend please"});
+    addPresence({presencetype:1, who:"523455", nickname:"wln", timestamp:"1529994598312", message:"Hello, friend please"});
 </script>
 
 <div class="modal fade" id="modal-add" style="display: none;">
@@ -144,12 +182,12 @@ $("#tab_friend").append(createGroup("GroupC8"));
             <div class="modal-body">
                 <div class="form-group">
                     <label>ID</label>
-                    <input id="ID" type="text" class="form-control" placeholder="Enter id...">
+                    <input id="ID" type="text" value="3" class="form-control" placeholder="Enter id...">
                     <label>Message</label>
-                    <input id="message" type="text" class="form-control" placeholder="Enter message...">
+                    <input id="message" type="text" value="hello!" class="form-control" placeholder="Enter message...">
                     </div>
                     
-                    <button type="button" class="btn btn-primary">Add</button>
+                    <button onclick='addFriend($("#ID").val(), $("#message").val());$("#modal-add").modal("hide");' type="button" class="btn btn-primary">Add</button>
                 </div>
             </div>
             <div class="modal-footer">

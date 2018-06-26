@@ -32,6 +32,8 @@
 <!-- AdminLTE App -->
 <script src="static/dist/js/adminlte.min.js"></script>
 
+<script src="https://cdn.bootcss.com/dragscroll/0.0.8/dragscroll.min.js"></script>
+
 <header class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
   <a class="navbar-brand mr-md-auto" href="/">
     WebSite
