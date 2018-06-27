@@ -74,19 +74,24 @@ function onUserData(errcode, jsondata) {
     $("#fpanelheader .box-title").html(jsondata.nickname);
 
     reqPresenceList();
+    reqFriendList();
   }
 }
 
 function addFriend(idstr, message) {
-  myapp.addfriend(idstr, message, onAddFriendResult);
+  myapp.addfriend(idstr, message, onPresenceResult);
+}
+
+function delFriend(idstr, message) {
+  myapp.delfriend(idstr, onPresenceResult);
 }
 
 function agreeFriend(idstr) {
-  myapp.addfriend(idstr, onAddFriendResult);
+  myapp.agreefriend(idstr, onPresenceResult);
 }
 
 function refuseFriend(idstr) {
-  myapp.addfriend(idstr, onAddFriendResult);
+  myapp.refusefriend(idstr, onPresenceResult);
 }
 
 function reqPresenceList() {
@@ -95,15 +100,42 @@ function reqPresenceList() {
 
 function onPresenceList(errcode, data) {
   console.info("onPresenceList errcode:" + errcode);
-  console.info("onPresenceList data:" + data);
+  console.info("onPresenceList data length:" + data.length);
+  for(var i = 0; i < data.length; i ++) {
+    console.info("onPresenceList data:" + JSON.stringify(data[i]));
+    addPresence(data[i]);
+  }
 }
 
-function onAddFriendResult(errcode) {
-  console.info("onAddFriendResult errcode:" + errcode);
+function reqFriendList() {
+  myapp.reqfriendlist(onFriendList);
+}
+
+function onFriendList(errcode, data) {
+  console.info("onFriendList errcode:" + errcode);
+  console.info("onFriendList data length:" + data.length);
+  for(var i = 0; i < data.length; i ++) {
+    console.info("onFriendList data:" + JSON.stringify(data[i]));
+    console.info(data[i].nickname + " " + data[i].group);
+    addFriendItem(data[i]);
+  }
+}
+
+function onPresenceResult(errcode) {
+  console.info("onPresenceResult errcode:" + errcode);
 }
 
 function onPresence(jsondata) {
   console.info("onPresence jsondata:" + jsondata);
+  addPresence(jsondata);
+}
+
+function sendMessage(msg) {
+  myapp.sendmessage(msg, onMessageResult);
+}
+
+function onMessageResult(errcode) {
+  console.info("onMessageResult errcode:" + errcode);
 }
 
 function quitChat() {

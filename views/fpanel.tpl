@@ -60,6 +60,7 @@
     function createGroup(name) {
         var div = $(document.createElement("div"));
         div.addClass("box box-primary collapsed-box");
+        div.boxWidget();
 
         //var html = '<div class="box box-primary collapsed-box">\
         var html = '<div class="box-header with-border">\
@@ -106,7 +107,7 @@
     }
 
     var groups = {};
-    function addGroup(data) {
+    function addFriendItem(data) {
         var group = groups[data.group];
         if(group == null){
             group = createGroup(data.group);
@@ -117,7 +118,7 @@
     }
 
     function createPresence(data) {
-        var newDate=new Date(parseInt(data.timestamp));
+        var newDate=new Date(parseInt(data.timestamp) * 1000);
         //var html = '<li class="item"> \
         var html = '';
         if(data.presencetype == PresenceType.PresenceType_Subscribe)
@@ -143,9 +144,9 @@
         if(data.presencetype == PresenceType.PresenceType_Subscribe){
             html += '<span class="product-description">';
             html += data.message;
-            html += '</span> \
-                <button onclick="agreeFriend('+data.who+')">add</button> \
-                <button onclick="refuseFriend('+data.who+')">refuse</button>';
+            html += '</span> <span>\
+                <button onclick="agreeFriend(\''+data.who+'\');$(this).parent().html(\'agreed\');">add</button> \
+                <button onclick="refuseFriend(\''+data.who+'\');$(this).parent().html(\'refused\');">refuse</button></span>';
         }
             
         html += '<span class="label label-warning pull-left">' + newDate.Format() + '</span></a>';
@@ -161,14 +162,15 @@
 
     function addPresence(data) {
         var presence = createPresence(data);
-        $("#presencelist").append(presence);
+        $("#presencelist").prepend(presence);
     }
 
-    addGroup({nickname:"WYQ", desc:"How are you?", group:"GroupC"});
-    addGroup({nickname:"WLN", desc:"How are you?", group:"GroupC"});
+    addFriendItem({nickname:"WYQ", desc:"How are you?", group:"GroupC"});
+    addFriendItem({nickname:"WLN", desc:"How are you?", group:"GroupC"});
+    addFriendItem({"dataid":4, "nickname":"WLN", "desc":"How are you?", "group":"GroupC1","comment":""});
 
-    addPresence({presencetype:0, who:"123456", nickname:"wyq", timestamp:"1529994598312", message:"Hello, friend please"});
-    addPresence({presencetype:1, who:"523455", nickname:"wln", timestamp:"1529994598312", message:"Hello, friend please"});
+    addPresence({presencetype:0, who:"123456", nickname:"wyq", timestamp:"1529994598", message:"Hello, friend please"});
+    addPresence({presencetype:1, who:"523455", nickname:"wln", timestamp:"1529994598", message:"Hello, friend please"});
 </script>
 
 <div class="modal fade" id="modal-add" style="display: none;">

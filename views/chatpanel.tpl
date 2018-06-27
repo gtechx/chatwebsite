@@ -12,7 +12,7 @@
                 <button type="button" class="btn btn-box-tool hide" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Contacts">
                     <i class="fa fa-comments"></i>
                 </button>
-                <button type="button" class="btn btn-box-tool" onclick="$('#chatpanel').addClass('hide');"><i class="fa fa-times"></i></button>
+                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
             </div>
         </div>
         <!-- /.box-header -->
@@ -25,9 +25,9 @@
         <!-- /.box-body -->
         <div class="box-footer">
             <div class="input-group">
-                <input type="text" id="msginput" name="message" placeholder="Type Message ..." class="form-control" />
+                <input type="text" name="message" placeholder="Type Message ..." class="form-control" />
                     <span class="input-group-btn">
-                    <button type="submit" onclick="startSendMessage();" class="btn btn-primary btn-flat">Send</button>
+                    <button type="submit" class="btn btn-primary btn-flat">Send</button>
                     </span>
             </div>
         </div>
@@ -45,9 +45,46 @@ $( function() {
     $( "#chatpanel" ).draggable({handle: ".direct-chat .box-header", cursor: "move"});
 } );
 
+var chatpanellist = {};
+var curz = 10;
 function openChatPanel(data) {
-    $( "#chatpanel" ).removeClass("hide");
-    $(".direct-chat .box-header h3").html(data.nickname);
+    //onclick="$('#chatpanel').addClass('hide');"
+    if(chatpanellist["chatpanel-" + data.nickname] != null){
+        chatpanellist["chatpanel-" + data.nickname].css("z-index", curz);
+        curz++;
+        return;
+    }
+    var newchatpanel = $( "#chatpanel" ).clone();
+    newchatpanel.find(".direct-chat").directChat();
+    newchatpanel.find(".direct-chat").boxWidget();
+    newchatpanel.attr("id", "chatpanel-" + data.nickname);
+    newchatpanel.removeClass("hide");
+    newchatpanel.find(".direct-chat .box-header h3").html(data.nickname);
+    newchatpanel.draggable({handle: ".direct-chat .box-header", cursor: "move"});
+    newchatpanel.css("z-index", curz);
+    curz++;
+    chatpanellist["chatpanel-" + data.nickname] = newchatpanel;
+
+    newchatpanel.mousedown(function(){
+        newchatpanel.css("z-index", curz);
+        curz++;
+    });
+
+    newchatpanel.find(".box-footer button").click(function(){
+        var msginput = newchatpanel.find(".box-footer input");
+        startSendMessage(data, msginput.val());
+        msginput.val('');
+    });
+
+    newchatpanel.on('removed.boxwidget', function (event) {
+      newchatpanel.remove();
+      delete chatpanellist["chatpanel-" + data.nickname];
+      return true;
+    });
+
+    $( "#chatpanel" ).parent().append(newchatpanel);
+    // $( "#chatpanel" ).removeClass("hide");
+    // $(".direct-chat .box-header h3").html(data.nickname);
 }
 
 function getChatTitle() {
@@ -62,7 +99,7 @@ function addMessage(msg) {
     var html = '<div class="direct-chat-msg">' +
         '<div class="direct-chat-info clearfix">' +
             '<span class="direct-chat-name pull-left">' + msg.nickname + '</span>' +
-            '<span class="direct-chat-timestamp pull-right">' + msg.time + '</span>' +
+            '<span class="direct-chat-timestamp pull-right">' + msg.timestamp + '</span>' +
         '</div>' +
         '<img class="direct-chat-img" src="static/dist/img/user1-128x128.jpg" alt="Message User Image">' +
         '<div class="direct-chat-text">'+
@@ -73,7 +110,7 @@ function addMessage(msg) {
     $(".direct-chat-messages").append(html);
 }
 
-function sendMessage(msg) {
+function addSendMessage(msg) {
     var html = '<div class="direct-chat-msg right">' +
         '<div class="direct-chat-info clearfix">' +
             '<span class="direct-chat-name pull-right">' + msg.nickname + '</span>' +
@@ -81,7 +118,7 @@ function sendMessage(msg) {
         '</div>' +
         '<img class="direct-chat-img" src="static/dist/img/user1-128x128.jpg" alt="Message User Image">' +
         '<div class="direct-chat-text">'+
-            msg.text + 
+            msg.message + 
         '</div>'+
     '</div>';
 
@@ -90,18 +127,17 @@ function sendMessage(msg) {
     //console.info($(".direct-chat-msg:last").scrollTop());
     $(".direct-chat-messages").scrollTop(9999);
 }
-addMessage({nickname:"WYQ", time:"2018/6/11", text:"Hello, How are you?"});
-sendMessage({nickname:"WLN", time:"2018/6/11", text:"Hello, I'm fine."});
+addMessage({nickname:"WYQ", timestamp:"2018/6/11", message:"Hello, How are you?"});
+addSendMessage({nickname:"WLN", timestamp:"2018/6/11", message:"Hello, I'm fine."});
 
-function startSendMessage() {
-    var text = $("#msginput").val();
-
+function startSendMessage(data, message) {
     var msg = {};
-    msg.nickname = "WYQ";
-    msg.time = new Date().Format("yyyy/MM/dd hh:mm:ss");
-    msg.text = text;
+    msg.nickname = data.nickname;
+    msg.timestamp = new Date().Format("yyyy/MM/dd hh:mm:ss");
+    msg.message = message;
+    msg.id = data.dataid;
 
+    addSendMessage(msg);
     sendMessage(msg);
-    $("#msginput").val("");
 }
 </script>

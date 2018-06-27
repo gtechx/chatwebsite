@@ -33,6 +33,7 @@ var App = {
     app.onerror = null;
     app.onclose = null;
     app.onpresence = null;
+    app.onmessage = null;
 
     var ws = null;
     var sendstream = BinaryStream.new();
@@ -187,9 +188,26 @@ var App = {
         userinfocb(errcode, jsondata);
     }
 
-    var addfriendcb = null;
+    var msgcb = null;
+    app.sendmessage = function (msg, cb) {
+      msgcb = cb;
+      sendstream.reset();
+      sendstream.writeUint64(Long.fromString(msg.id, true));
+      sendstream.writeint64(Long.fromString(msg.timestamp, false));
+      sendstream.writeString(msg.message);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1008, sendstream.getBuffer(), onMsgResult);
+    }
+
+    function onMsgResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(msgcb != null)
+        msgcb(errcode);
+    }
+
+    var presencecb = null;
     app.addfriend = function (idstr, message, cb) {
-      addfriendcb = cb;
+      presencecb = cb;
       sendstream.reset();
       var jsondata = {}
       jsondata.presencetype = PresenceType.PresenceType_Subscribe;
@@ -201,34 +219,44 @@ var App = {
       // sendstream.writeUint64(Long.fromString(idstr));
       // sendstream.writeInt64(Long.fromNumber((new Date()).getTime()));
       // sendstream.writeString(message);
-      sendMsg(MsgType.ReqFrame, sendstream.length, 1007, sendstream.getBuffer(), onAddFriend);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1007, sendstream.getBuffer(), onPresenceResult);
     }
 
-    function onAddFriend(buffer) {
+    function onPresenceResult(buffer) {
       var bs = readstream.reset(buffer);
       var errcode = bs.readUint16();
-      if(addfriendcb != null)
-        addfriendcb(errcode);
+      if(presencecb != null)
+      presencecb(errcode);
+    }
+
+    app.delfriend = function (idstr, cb) {
+      presencecb = cb;
+      sendstream.reset();
+      var jsondata = {}
+      jsondata.presencetype = PresenceType.PresenceType_Unsubscribe;
+      jsondata.who = idstr;
+      sendstream.writeString(JSON.stringify(jsondata))
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1007, sendstream.getBuffer(), onPresenceResult);
     }
 
     app.agreefriend = function (idstr, cb) {
-      addfriendcb = cb;
+      presencecb = cb;
       sendstream.reset();
       var jsondata = {}
       jsondata.presencetype = PresenceType.PresenceType_Subscribed;
       jsondata.who = idstr;
       sendstream.writeString(JSON.stringify(jsondata))
-      sendMsg(MsgType.ReqFrame, sendstream.length, 1007, sendstream.getBuffer(), onAddFriend);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1007, sendstream.getBuffer(), onPresenceResult);
     }
 
     app.refusefriend = function (idstr, cb) {
-      addfriendcb = cb;
+      presencecb = cb;
       sendstream.reset();
       var jsondata = {}
       jsondata.presencetype = PresenceType.PresenceType_Unsubscribed;
       jsondata.who = idstr;
       sendstream.writeString(JSON.stringify(jsondata))
-      sendMsg(MsgType.ReqFrame, sendstream.length, 1007, sendstream.getBuffer(), onAddFriend);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1007, sendstream.getBuffer(), onPresenceResult);
     }
 
     var presencelistcb = null;
@@ -236,6 +264,22 @@ var App = {
       presencelistcb = cb;
       sendstream.reset();
       sendstream.writeUint8(DataType.DataType_Presence);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1014, sendstream.getBuffer(), onDataList);
+    }
+
+    var friendlistcb = null;
+    app.reqfriendlist = function (cb) {
+      friendlistcb = cb;
+      sendstream.reset();
+      sendstream.writeUint8(DataType.DataType_Friend);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1014, sendstream.getBuffer(), onDataList);
+    }
+
+    var offlinemsglistcb = null;
+    app.reqofflinemsglist = function (cb) {
+      offlinemsglistcb = cb;
+      sendstream.reset();
+      sendstream.writeUint8(DataType.DataType_Offline_Message);
       sendMsg(MsgType.ReqFrame, sendstream.length, 1014, sendstream.getBuffer(), onDataList);
     }
 
@@ -247,8 +291,26 @@ var App = {
       if(datatype == DataType.DataType_Presence){
         if(presencelistcb != null)
         {
-          var presencelist = JSON.parse(bs.readStringAll());
-          presencelistcb(presence);
+          var jsonstr = bs.readStringAll();
+          console.info(jsonstr);
+          var datalist = JSON.parse(jsonstr);
+          presencelistcb(errcode, datalist);
+        }
+      } else if(datatype == DataType.DataType_Friend) {
+        if(friendlistcb != null)
+        {
+          var jsonstr = bs.readStringAll();
+          console.info(jsonstr);
+          var datalist = JSON.parse(jsonstr);
+          friendlistcb(errcode, datalist);
+        }
+      } else if(datatype == DataType.DataType_Offline_Message) {
+        if(offlinemsglistcb != null)
+        {
+          var jsonstr = bs.readStringAll();
+          console.info(jsonstr);
+          var datalist = JSON.parse(jsonstr);
+          offlinemsglistcb(errcode, datalist);
         }
       }
     }
@@ -256,10 +318,22 @@ var App = {
     function onPresence(buffer) {
       var bs = readstream.reset(buffer);
       
-      if(onpresence != null)
+      if(app.onpresence != null)
       {
         var presence = JSON.parse(bs.readStringAll());
-        onpresence(presence);
+        app.onpresence(presence);
+      }
+    }
+
+    function onMessage(buffer) {
+      var bs = readstream.reset(buffer);
+      
+      if(app.onmessage != null)
+      {
+        var who = bs.readUint64();
+        var timestamp = bs.readInt64();
+        var msg = bs.readStringAll();
+        app.onmessage({who: who.toString(), timestamp: timestamp.toString(), message: msg});
       }
     }
 
@@ -302,6 +376,12 @@ var App = {
           if (cbMap[header.id]) {
             cbMap[header.id](header.databuff);
             delete cbMap[header.id];
+          } else {
+            if(header.msgid == 1007){
+              onPresence(header.databuff);
+            } else if(header.msgid == 1008){
+              onMessage(header.databuff);
+            }
           }
       }
     }
