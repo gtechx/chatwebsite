@@ -6,7 +6,8 @@ var timestamp4 = new Date((new Date()).getTime());
 var ThisInt = '1529994598312'
 console.info(parseInt(ThisInt))
 
-var user = null;
+var messagelist = {};
+var userdata = null;
 var myapp = App.new();
 function login(account, password, appname, zonename) {
   myapp.onlogined = onLogined
@@ -23,6 +24,7 @@ function login(account, password, appname, zonename) {
     console.info("error:"+evt.data);
   };
   myapp.onpresence = onPresence;
+  myapp.onmessage = onMessage;
   myapp.connect("127.0.0.1:9090");
 }
 
@@ -69,6 +71,7 @@ function onUserData(errcode, jsondata) {
   console.info("onUserData errcode:" + errcode);
   if(errcode == 0) {
     console.info(jsondata);
+    userdata = jsondata;
     $("#idselect").addClass('hide');
     $("#fpanel").removeClass('hide');
     $("#fpanelheader .box-title").html(jsondata.nickname);
@@ -136,6 +139,17 @@ function sendMessage(msg) {
 
 function onMessageResult(errcode) {
   console.info("onMessageResult errcode:" + errcode);
+}
+
+function onMessage(jsondata) {
+  console.info("onMessage jsondata:" + jsondata);
+  var msgarray = messagelist[jsondata.who];
+  if(msgarray == null){
+    msgarray = new Array();
+    messagelist[jsondata.who] = msgarray;
+  }
+  msgarray[msgarray.length] = jsondata;
+  addMessage(jsondata);
 }
 
 function quitChat() {

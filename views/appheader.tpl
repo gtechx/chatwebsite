@@ -27,12 +27,13 @@
 <!-- jQuery 3 -->
 <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://cdn.bootcss.com/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js"></script>
+<script src="https://cdn.bootcss.com/dragscroll/0.0.8/dragscroll.min.js"></script>
+
 <!-- Bootstrap 3.3.7 -->
 <script src="static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <!-- AdminLTE App -->
 <script src="static/dist/js/adminlte.min.js"></script>
-
-<script src="https://cdn.bootcss.com/dragscroll/0.0.8/dragscroll.min.js"></script>
 
 <header class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
   <a class="navbar-brand mr-md-auto" href="/">
