@@ -90,6 +90,12 @@
         li.dblclick(function(){
             openChatPanel(data);
         });
+        li.mouseup(function(e){
+            if(e.button===2){
+                showFriendMenu(e, data);
+                stopPropagation(e);//调用停止冒泡方法,阻止document方法的执行
+            }
+        });
         //var html = '<li>\
         var html = '<a href="#">\
             <img class="contacts-list-img" src="static/dist/img/user1-128x128.jpg" alt="User Image">\
@@ -171,6 +177,51 @@
 
     addPresence({presencetype:0, who:"123456", nickname:"wyq", timestamp:"1529994598", message:"Hello, friend please"});
     addPresence({presencetype:1, who:"523455", nickname:"wln", timestamp:"1529994598", message:"Hello, friend please"});
+
+    function showFriendMenu(e, data) {
+        var menu = $( "#fmenu" );
+        menu.removeClass("hide");
+        menu.data("user", data);
+        menu.css("top", e.clientY);
+        menu.css("left", e.clientX);
+    }
+
+    function stopPropagation(e) {
+        if (e.stopPropagation) 
+            e.stopPropagation();//停止冒泡  非ie
+        else 
+            e.cancelBubble = true;//停止冒泡 ie
+    }
+    $(document).bind('mousedown',function(e){
+        //$('#fmenu').addClass("hide");
+
+        var e = e || window.event; //浏览器兼容性
+        //console.info(e);
+        var elem = e.target || e.srcElement;
+        while (elem) { //循环判断至跟节点，防止点击的是div子元素
+            if (elem.id && elem.id=='fmenu') {
+                return;
+            }
+
+            elem = elem.parentNode;
+        }
+        $('#fmenu').addClass("hide"); //点击的不是div或其子元素
+    });
+    $(document).bind('click',function(e){
+        //$('#fmenu').addClass("hide");
+
+        var e = e || window.event; //浏览器兼容性
+        var elem = e.target || e.srcElement;
+        while (elem) { //循环判断至跟节点，防止点击的是div子元素
+            if (elem.id && elem.id=='fmenu') {
+                $('#fmenu').addClass("hide");
+                return;
+            }
+
+            elem = elem.parentNode;
+        }
+    });
+    document.oncontextmenu = function(){return false};   //禁止鼠标右键菜单显示
 </script>
 
 <div class="modal fade" id="modal-add" style="display: none;">
@@ -200,3 +251,24 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
+
+<ul id="fmenu" class="hide" style="position:absolute;z-index:9999;">
+    <li onclick="openChatPanel($(this).parent().data('user'));"><div>Send Message</div></li>
+    <li onclick=""><div>Show Data</div></li>
+    <li onclick=""><div>Modify Comment</div></li>
+    
+    <li><div>Move To Group</div>
+        <ul>
+            <li class="ui-state-disabled"><div>Home Entertainment</div></li>
+            <li onclick="$('#fmenu').addClass('hide');"><div>Car Hifi</div></li>
+            <li onclick="$('#fmenu').addClass('hide');"><div>Utilities</div></li>
+        </ul>
+    </li>
+    <li onclick=""><div>Delete</div></li>
+</ul>
+
+<script>
+    $( function() {
+        $( "#fmenu" ).menu();
+    } );
+</script>
