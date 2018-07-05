@@ -76,8 +76,9 @@ function onUserData(errcode, jsondata) {
     $("#fpanel").removeClass('hide');
     $("#fpanelheader .box-title").html(jsondata.nickname);
 
-    reqPresenceList();
     reqFriendList();
+    reqPresenceList();
+    myapp.reqofflinemsglist();
   }
 }
 
@@ -107,6 +108,9 @@ function onPresenceList(errcode, data) {
   for(var i = 0; i < data.length; i ++) {
     console.info("onPresenceList data:" + JSON.stringify(data[i]));
     addPresence(data[i]);
+    if(data[i].presencetype == PresenceType.PresenceType_Unsubscribe){
+      removeFriendItemById(data[i].who);
+    }
   }
 }
 
@@ -117,6 +121,7 @@ function reqFriendList() {
 function onFriendList(errcode, data) {
   console.info("onFriendList errcode:" + errcode);
   console.info("onFriendList data length:" + data.length);
+  clearFriendList();
   for(var i = 0; i < data.length; i ++) {
     console.info("onFriendList data:" + JSON.stringify(data[i]));
     console.info(data[i].nickname + " " + data[i].group);
@@ -126,11 +131,18 @@ function onFriendList(errcode, data) {
 
 function onPresenceResult(errcode) {
   console.info("onPresenceResult errcode:" + errcode);
+  reqFriendList();
 }
 
 function onPresence(jsondata) {
   console.info("onPresence jsondata:" + jsondata);
   addPresence(jsondata);
+  if(jsondata.presencetype == PresenceType.PresenceType_Unsubscribe){
+    console.info("PresenceType_Unsubscribe " + jsondata.who)
+    removeFriendItemById(jsondata.who);
+  } else if(jsondata.presencetype == PresenceType.PresenceType_Subscribed){
+    reqFriendList();
+  }
 }
 
 function sendMessage(msg) {

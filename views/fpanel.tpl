@@ -123,6 +123,44 @@
         group.find('ul').append(createContactItem(data));
     }
 
+    function removeFriendItem(data) {
+        var group = groups[data.group];
+        if(group == null){
+            return;
+        }
+        var childs = group.find('ul').children();
+        for(var i = 0; i < childs.length; i++){
+            var child = $(childs[i]);
+            var childdata = child.data("user");
+            if(childdata.who == data.who) {
+                child.remove();
+                return;
+            }
+        }
+    }
+
+    function removeFriendItemById(idstr) {
+        for(var g in groups) {
+            console.info("groups.g " + g);
+            var group = groups[g];
+            var childs = group.find('ul').children();
+            for(var i = 0; i < childs.length; i++){
+                var child = $(childs[i]);
+                var childdata = child.data("user");
+                console.info(childdata.who);
+                if(childdata.who == idstr) {
+                    child.remove();
+                    return;
+                }
+            }
+        }
+    }
+
+    function clearFriendList() {
+        groups = {};
+        $("#tab_friend").html("");
+    }
+
     function createPresence(data) {
         var newDate=new Date(parseInt(data.timestamp) * 1000);
         //var html = '<li class="item"> \
@@ -259,12 +297,11 @@
     
     <li><div>Move To Group</div>
         <ul>
-            <li class="ui-state-disabled"><div>Home Entertainment</div></li>
-            <li onclick="$('#fmenu').addClass('hide');"><div>Car Hifi</div></li>
-            <li onclick="$('#fmenu').addClass('hide');"><div>Utilities</div></li>
+            <li onclick=""><div>Car Hifi</div></li>
+            <li onclick=""><div>Utilities</div></li>
         </ul>
     </li>
-    <li onclick=""><div>Delete</div></li>
+    <li onclick="if (confirm('确认要该好友吗？')==false){return;};delFriend($(this).parent().data('user').who);removeFriendItem($(this).parent().data('user'));"><div>Delete</div></li>
 </ul>
 
 <script>
