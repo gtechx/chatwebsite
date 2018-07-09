@@ -74,6 +74,7 @@ var App = {
       var passwordbytes = stringToBytes(password);
       var appnamebytes = stringToBytes(appname);
       var zonenamebytes = stringToBytes(zonename);
+      var platformbytes = stringToBytes("web");
 
       sendstream.reset();
       sendstream.writeUint8(accountbytes.byteLength);
@@ -84,6 +85,8 @@ var App = {
       sendstream.writeArray(appnamebytes);
       sendstream.writeUint8(zonenamebytes.byteLength);
       sendstream.writeArray(zonenamebytes);
+      sendstream.writeUint8(platformbytes.byteLength);
+      sendstream.writeArray(platformbytes);
       //console.info(sendstream.length);
       //console.info(sendstream.getBuffer());
       sendMsg(MsgType.ReqFrame, sendstream.length, 1001, sendstream.getBuffer(), onLogined);
@@ -281,7 +284,31 @@ var App = {
       offlinemsglistcb = cb;
       sendstream.reset();
       sendstream.writeUint8(DataType.DataType_Offline_Message);
-      sendMsg(MsgType.ReqFrame, sendstream.length, 1014, sendstream.getBuffer(), onDataList);
+      var id= sendMsg(MsgType.ReqFrame, sendstream.length, 1014, sendstream.getBuffer(), onDataList);
+      addToWaitMap(id, DataType.DataType_Offline_Message, cb);
+    }
+
+    function addToWaitMap(id, data, cb) {
+      waitMap[id] = id;
+      timerinstance = setInterval(timeOut, 15000, id);
+      waitMap[timer] = timerinstance;
+      waitMap[cb] = cb;
+      waitMap[data] = data;
+    }
+
+    function timeOut(id) {
+      if (waitMap[id]) {
+        clearInterval(waitMap[timer]);
+        if(waitMap[cb])
+          waitMap[cb](1, waitMap[data]);
+        delete waitMap[id];
+      }
+    }
+
+    function removeFromWaitMap(id) {
+      if (waitMap[id]) {
+        delete waitMap[id];
+      }
     }
 
     function onDataList(buffer) {
@@ -351,14 +378,23 @@ var App = {
     }
 
     var id = 0;
-    var cbMap = {}
+    var cbMap = {}; //internal use
+    var waitMap = {}; //[id:id, data:jsondata: cb:cb, timer:timer]
     function sendMsg(type, size, msgid, databuff, cb) {
+      if(waitMap.length > 3) {
+        if(app.onerror) {
+          app.onerror(0, "too many sending data")
+        }
+        return;
+      }
       id++;
       id = id % 0xffff;
       var sendbuff = packageMsg(type, id, size, msgid, databuff);
       if(cb != null)
         cbMap[id] = cb;
+      
       ws.send(sendbuff);
+      return id;
     }
 
     function onData(evt) {
@@ -373,6 +409,7 @@ var App = {
           break;
         default:
           if (cbMap[header.id]) {
+            removeFromWaitMap(header.id);
             cbMap[header.id](header.databuff);
             delete cbMap[header.id];
           } else {

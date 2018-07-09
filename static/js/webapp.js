@@ -169,19 +169,3 @@ function quitChat() {
   $("#loginpanel").removeClass('hide');
   $("#idselect").addClass('hide');
 }
-
-function sendmsg() {
-  var msg = document.getElementById("msg").value;
-  console.info("send:" + msg);
-  let uint8Array = new TextEncoder("utf-8").encode(msg);
-  var buffer = new ArrayBuffer(uint8Array.byteLength + 2);
-  var dataView = new DataView(buffer);
-  dataView.setUint16(0, uint8Array.byteLength, true)
-  var int8View = new Int8Array(buffer);
-  int8View.set(uint8Array, 2)
-  //dataView.setInt32(0, 0x1234ABCD);
-  console.info(int8View.buffer)
-  ws.send(int8View.buffer);
-
-  document.getElementById("msg").value = "";
-}
