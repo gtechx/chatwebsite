@@ -291,16 +291,16 @@ var App = {
     function addToWaitMap(id, data, cb) {
       waitMap[id] = id;
       timerinstance = setInterval(timeOut, 15000, id);
-      waitMap[timer] = timerinstance;
-      waitMap[cb] = cb;
-      waitMap[data] = data;
+      waitMap["timer"] = timerinstance;
+      waitMap["cb"] = cb;
+      waitMap["data"] = data;
     }
 
     function timeOut(id) {
       if (waitMap[id]) {
-        clearInterval(waitMap[timer]);
-        if(waitMap[cb])
-          waitMap[cb](1, waitMap[data]);
+        clearInterval(waitMap["timer"]);
+        if(waitMap["cb"])
+          waitMap["cb"](1, waitMap["data"]);
         delete waitMap[id];
       }
     }
@@ -352,6 +352,61 @@ var App = {
         app.onpresence(presence);
       }
     }
+
+    //group msg start
+    var groupcb = null;
+    app.creategroup = function (name, cb) {
+      groupcb = cb;
+      sendstream.reset();
+      var jsondata = {}
+      jsondata.cmd = "create";
+      jsondata.name = name;
+      console.info(JSON.stringify(jsondata));
+      sendstream.writeString(JSON.stringify(jsondata))
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1015, sendstream.getBuffer(), onGroupResult);
+    }
+
+    app.deletegroup = function (name, cb) {
+      groupcb = cb;
+      sendstream.reset();
+      var jsondata = {}
+      jsondata.cmd = "delete";
+      jsondata.name = name;
+      console.info(JSON.stringify(jsondata));
+      sendstream.writeString(JSON.stringify(jsondata))
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1015, sendstream.getBuffer(), onGroupResult);
+    }
+
+    app.renamegroup = function (oldname, newname, cb) {
+      groupcb = cb;
+      sendstream.reset();
+      var jsondata = {}
+      jsondata.cmd = "rename";
+      jsondata.oldname = oldname;
+      jsondata.newname = newname;
+      console.info(JSON.stringify(jsondata));
+      sendstream.writeString(JSON.stringify(jsondata))
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1015, sendstream.getBuffer(), onGroupResult);
+    }
+
+    app.refreshgroup = function (name, cb) {
+      groupcb = cb;
+      sendstream.reset();
+      var jsondata = {}
+      jsondata.cmd = "refresh";
+      jsondata.name = name;
+      console.info(JSON.stringify(jsondata));
+      sendstream.writeString(JSON.stringify(jsondata))
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1015, sendstream.getBuffer(), onGroupResult);
+    }
+
+    function onGroupResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(groupcb != null)
+      groupcb(errcode);
+    }
+    //group msg end
 
     function onMessage(buffer) {
       var bs = readstream.reset(buffer);

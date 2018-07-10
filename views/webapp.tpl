@@ -7,6 +7,7 @@
 
 {{template "webapp_login_form.tpl" .}}
 {{template "chatpanel.tpl" .}}
+{{template "webapp/menu.tpl" .}}
 {{template "fpanel.tpl" .}}
 
 {{template "appfooter.tpl" .}}

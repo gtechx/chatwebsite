@@ -55,12 +55,35 @@
         // $('#tab_friend').slimScroll({
         //         height: '500px'
         //     });
+        $("#fpanelpart").mouseup(function(e){
+            var e = e || window.event;
+            if(e.button===2){
+                var src = e.target||e.srcElement;
+                if(src.id == "fpanelpart") {
+                    showBodyMenu(e);
+                    stopPropagation(e);//调用停止冒泡方法,阻止document方法的执行
+                }
+            }
+        });
+
     } );
 
     function createGroup(name) {
+        var group = groups[name];
+        if(group != null){
+            return;
+        }
+
         var div = $(document.createElement("div"));
         div.addClass("box box-primary collapsed-box");
         div.boxWidget();
+
+        div.mouseup(function(e){
+            if(e.button===2){
+                showGroupMenu(e, name);
+                stopPropagation(e);//调用停止冒泡方法,阻止document方法的执行
+            }
+        });
 
         //var html = '<div class="box box-primary collapsed-box">\
         var html = '<div class="box-header with-border">\
@@ -81,6 +104,8 @@
         //</div>';
 
         div.append(html);
+        groups[name] = div;
+        $("#tab_friend").append(div);
         return div;
     }
 
@@ -119,7 +144,6 @@
             group = createGroup(data.group);
             groups[data.group] = group;
         }
-        $("#tab_friend").append(group);
         group.find('ul').append(createContactItem(data));
     }
 
@@ -215,51 +239,6 @@
 
     addPresence({presencetype:0, who:"123456", nickname:"wyq", timestamp:"1529994598", message:"Hello, friend please"});
     addPresence({presencetype:1, who:"523455", nickname:"wln", timestamp:"1529994598", message:"Hello, friend please"});
-
-    function showFriendMenu(e, data) {
-        var menu = $( "#fmenu" );
-        menu.removeClass("hide");
-        menu.data("user", data);
-        menu.css("top", e.clientY);
-        menu.css("left", e.clientX);
-    }
-
-    function stopPropagation(e) {
-        if (e.stopPropagation) 
-            e.stopPropagation();//停止冒泡  非ie
-        else 
-            e.cancelBubble = true;//停止冒泡 ie
-    }
-    $(document).bind('mousedown',function(e){
-        //$('#fmenu').addClass("hide");
-
-        var e = e || window.event; //浏览器兼容性
-        //console.info(e);
-        var elem = e.target || e.srcElement;
-        while (elem) { //循环判断至跟节点，防止点击的是div子元素
-            if (elem.id && elem.id=='fmenu') {
-                return;
-            }
-
-            elem = elem.parentNode;
-        }
-        $('#fmenu').addClass("hide"); //点击的不是div或其子元素
-    });
-    $(document).bind('click',function(e){
-        //$('#fmenu').addClass("hide");
-
-        var e = e || window.event; //浏览器兼容性
-        var elem = e.target || e.srcElement;
-        while (elem) { //循环判断至跟节点，防止点击的是div子元素
-            if (elem.id && elem.id=='fmenu') {
-                $('#fmenu').addClass("hide");
-                return;
-            }
-
-            elem = elem.parentNode;
-        }
-    });
-    document.oncontextmenu = function(){return false};   //禁止鼠标右键菜单显示
 </script>
 
 <div class="modal fade" id="modal-add" style="display: none;">
@@ -289,23 +268,3 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-
-<ul id="fmenu" class="hide" style="position:absolute;z-index:9999;">
-    <li onclick="openChatPanel($(this).parent().data('user'));"><div>Send Message</div></li>
-    <li onclick=""><div>Show Data</div></li>
-    <li onclick=""><div>Modify Comment</div></li>
-    
-    <li><div>Move To Group</div>
-        <ul>
-            <li onclick=""><div>Car Hifi</div></li>
-            <li onclick=""><div>Utilities</div></li>
-        </ul>
-    </li>
-    <li onclick="if (confirm('确认要该好友吗？')==false){return;};delFriend($(this).parent().data('user').who);removeFriendItem($(this).parent().data('user'));"><div>Delete</div></li>
-</ul>
-
-<script>
-    $( function() {
-        $( "#fmenu" ).menu();
-    } );
-</script>

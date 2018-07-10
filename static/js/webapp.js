@@ -8,6 +8,7 @@ console.info(parseInt(ThisInt))
 
 var messagelist = {};
 var userdata = null;
+var frienddata = null;
 var myapp = App.new();
 function login(account, password, appname, zonename) {
   myapp.onlogined = onLogined
@@ -122,10 +123,14 @@ function onFriendList(errcode, data) {
   console.info("onFriendList errcode:" + errcode);
   console.info("onFriendList data length:" + data.length);
   clearFriendList();
-  for(var i = 0; i < data.length; i ++) {
-    console.info("onFriendList data:" + JSON.stringify(data[i]));
-    console.info(data[i].nickname + " " + data[i].group);
-    addFriendItem(data[i]);
+  frienddata = data;
+  for(var group in data){
+    console.info("onFriendList group:" + group);
+    createGroup(group);
+    for(var i in data[group]){
+      console.info("onFriendList item:" + JSON.stringify(data[group][i]));
+      addFriendItem(data[group][i]);
+    }
   }
 }
 
@@ -169,3 +174,29 @@ function quitChat() {
   $("#loginpanel").removeClass('hide');
   $("#idselect").addClass('hide');
 }
+
+//group start
+function createGroup(name) {
+  myapp.creategroup(name, onGroupResult);
+}
+
+function deleteGroup(name) {
+  if(frienddata[name].length > 0){
+    alert("can't delete group that not empty!");
+    return;
+  }
+  myapp.deletegroup(name, onGroupResult);
+}
+
+function renameGroup(oldname, newname) {
+  myapp.renamegroup(oldname, newname, onGroupResult);
+}
+
+function refreshGroup(name) {
+  myapp.refresjgroup(name, onGroupResult);
+}
+
+function onGroupResult(errcode) {
+  console.info("onGroupResult errcode:" + errcode);
+}
+//group end
