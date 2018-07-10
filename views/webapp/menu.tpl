@@ -87,6 +87,7 @@
             if (elem.id && (elem.id=='fmenu' || elem.id=='gmenu' || elem.id=='bodymenu')) {
                 $('#fmenu').addClass("hide");
                 $('#gmenu').addClass("hide");
+                $('#bodymenu').addClass("hide");
                 return;
             }
 

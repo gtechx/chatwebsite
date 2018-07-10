@@ -174,9 +174,14 @@ var App = {
     }
 
     var userinfocb = null;
-    app.requserdata = function (cb) {
+    app.requserdata = function (idstr, cb) {
       userinfocb = cb;
-      sendMsg(MsgType.ReqFrame, 0, 1005, null, onUserData);
+      
+      sendstream.reset();
+      var id = Long.fromString(idstr, true)
+      sendstream.writeUint64(id)
+
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1005, sendstream.getBuffer(), onUserData);
     }
 
     function onUserData(buffer) {

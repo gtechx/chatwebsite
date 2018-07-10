@@ -64,7 +64,7 @@ function enterChat(strid) {
 function onEnterChat(errcode){
   console.info("onEnterChat errcode:" + errcode);
   if(errcode == 0) {
-    myapp.requserdata(onUserData);
+    myapp.requserdata("0", onUserData);
   }
 }
 
