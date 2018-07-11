@@ -196,6 +196,28 @@ var App = {
         userinfocb(errcode, jsondata);
     }
 
+    var refreshgroupcb = null;
+    app.refreshgroup = function (groupname, cb) {
+      refreshgroupcb = cb;
+      
+      sendstream.reset();
+      sendstream.writeString(groupname)
+
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1016, sendstream.getBuffer(), onGroupFriendData);
+    }
+
+    function onGroupFriendData(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      var strdata = "";
+      if(errcode == 0) {
+        strdata = readstream.readString(buffer.byteLength - 2);
+      }
+      var jsondata = JSON.parse(strdata);
+      if(refreshgroupcb != null)
+      refreshgroupcb(errcode, jsondata);
+    }
+
     var msgcb = null;
     app.sendmessage = function (msg, cb) {
       msgcb = cb;
@@ -389,17 +411,6 @@ var App = {
       jsondata.cmd = "rename";
       jsondata.oldname = oldname;
       jsondata.newname = newname;
-      console.info(JSON.stringify(jsondata));
-      sendstream.writeString(JSON.stringify(jsondata))
-      sendMsg(MsgType.ReqFrame, sendstream.length, 1015, sendstream.getBuffer(), onGroupResult);
-    }
-
-    app.refreshgroup = function (name, cb) {
-      groupcb = cb;
-      sendstream.reset();
-      var jsondata = {}
-      jsondata.cmd = "refresh";
-      jsondata.name = name;
       console.info(JSON.stringify(jsondata));
       sendstream.writeString(JSON.stringify(jsondata))
       sendMsg(MsgType.ReqFrame, sendstream.length, 1015, sendstream.getBuffer(), onGroupResult);

@@ -203,11 +203,24 @@ function renameGroup(oldname, newname) {
   myapp.renamegroup(oldname, newname, onGroupResult);
 }
 
-function refreshGroup(name) {
-  myapp.refresjgroup(name, onGroupResult);
-}
-
 function onGroupResult(errcode) {
   console.info("onGroupResult errcode:" + errcode);
+}
+
+function refreshGroup(name) {
+  myapp.refreshgroup(name, onRefreshGroupResult);
+}
+
+function onRefreshGroupResult(errcode, jsondata) {
+  console.info("onRefreshGroupResult errcode:" + errcode);
+  for(var name in jsondata){
+    clearGroupFriendList(name)
+    frienddata[name] = jsondata[name];
+    console.info("onRefreshGroupResult group:" + name);
+    for(var i in jsondata[name]){
+      console.info("onRefreshGroupResult item:" + JSON.stringify(jsondata[name][i]));
+      addFriendItem(jsondata[name][i]);
+    }
+  }
 }
 //group end

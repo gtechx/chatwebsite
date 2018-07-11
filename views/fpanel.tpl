@@ -185,6 +185,15 @@
         $("#tab_friend").html("");
     }
 
+    function clearGroupFriendList(name) {
+        var group = groups[name];
+        if(group == null){
+            group = createGroup(name);
+            groups[name] = group;
+        }
+        group.find('ul').html("");
+    }
+
     function createPresence(data) {
         var newDate=new Date(parseInt(data.timestamp) * 1000);
         //var html = '<li class="item"> \
