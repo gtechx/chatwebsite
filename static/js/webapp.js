@@ -64,12 +64,12 @@ function enterChat(strid) {
 function onEnterChat(errcode){
   console.info("onEnterChat errcode:" + errcode);
   if(errcode == 0) {
-    myapp.requserdata("0", onUserData);
+    myapp.requserdata("0", onMyData);
   }
 }
 
-function onUserData(errcode, jsondata) {
-  console.info("onUserData errcode:" + errcode);
+function onMyData(errcode, jsondata) {
+  console.info("onMyData errcode:" + errcode);
   if(errcode == 0) {
     console.info(jsondata);
     userdata = jsondata;
@@ -80,6 +80,17 @@ function onUserData(errcode, jsondata) {
     reqFriendList();
     reqPresenceList();
     myapp.reqofflinemsglist();
+  }
+}
+
+function reqUserData(idstr) {
+  myapp.requserdata(idstr, onUserData);
+}
+
+function onUserData(errcode, jsondata) {
+  console.info("onUserData errcode:" + errcode);
+  if(errcode == 0) {
+    console.info(jsondata);
   }
 }
 
