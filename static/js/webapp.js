@@ -145,6 +145,25 @@ function onFriendList(errcode, data) {
   }
 }
 
+function reqBlackList() {
+  myapp.reqblacklist(onBlackList);
+}
+
+function onBlackList(errcode, data) {
+  console.info("onBlackList errcode:" + errcode);
+  console.info("onBlackList data length:" + data.length);
+  // clearFriendList();
+  // frienddata = data;
+  // for(var group in data){
+  //   console.info("onFriendList group:" + group);
+  //   createGroup(group);
+  //   for(var i in data[group]){
+  //     console.info("onFriendList item:" + JSON.stringify(data[group][i]));
+  //     addFriendItem(data[group][i]);
+  //   }
+  // }
+}
+
 function onPresenceResult(errcode) {
   console.info("onPresenceResult errcode:" + errcode);
   reqFriendList();
@@ -203,6 +222,10 @@ function renameGroup(oldname, newname) {
   myapp.renamegroup(oldname, newname, onGroupResult);
 }
 
+function moveToGroup(idstr, name) {
+  myapp.movetogroup(idstr, name, onGroupResult);
+}
+
 function onGroupResult(errcode) {
   console.info("onGroupResult errcode:" + errcode);
 }
@@ -224,3 +247,17 @@ function onRefreshGroupResult(errcode, jsondata) {
   }
 }
 //group end
+
+//black start
+function addBlack(idstr) {
+  myapp.addblack(idstr, onBlackResult);
+}
+
+function removeBlack(idstr) {
+  myapp.removeblack(idstr, onBlackResult);
+}
+
+function onBlackResult(errcode) {
+  console.info("onBlackResult errcode:" + errcode);
+}
+//black end

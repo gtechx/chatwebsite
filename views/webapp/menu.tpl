@@ -10,6 +10,7 @@
         </ul>
     </li>
     <li onclick="if (confirm('确认要该好友吗？')==false){return;};delFriend($(this).parent().data('user').who);removeFriendItem($(this).parent().data('user'));"><div>Delete</div></li>
+    <li onclick="addBlack($(this).parent().data('user').who);"><div>Add To Black</div></li>
 </ul>
 
 <ul id="gmenu" class="hide" style="position:absolute;z-index:9999;">

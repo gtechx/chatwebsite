@@ -306,6 +306,14 @@ var App = {
       sendMsg(MsgType.ReqFrame, sendstream.length, 1014, sendstream.getBuffer(), onDataList);
     }
 
+    var blacklistcb = null;
+    app.reqblacklist = function (cb) {
+      blacklistcb = cb;
+      sendstream.reset();
+      sendstream.writeUint8(DataType.DataType_Black);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1014, sendstream.getBuffer(), onDataList);
+    }
+
     var offlinemsglistcb = null;
     app.reqofflinemsglist = function (cb) {
       offlinemsglistcb = cb;
@@ -367,6 +375,14 @@ var App = {
           var datalist = JSON.parse(jsonstr);
           offlinemsglistcb(errcode, datalist);
         }
+      } else if(datatype == DataType.DataType_Black) {
+        if(blacklistcb != null)
+        {
+          var jsonstr = bs.readStringAll();
+          console.info(jsonstr);
+          var datalist = JSON.parse(jsonstr);
+          blacklistcb(errcode, datalist);
+        }
       }
     }
 
@@ -416,6 +432,15 @@ var App = {
       sendMsg(MsgType.ReqFrame, sendstream.length, 1015, sendstream.getBuffer(), onGroupResult);
     }
 
+    app.movetogroup = function (idstr, name, cb) {
+      groupcb = cb;
+      sendstream.reset();
+      var appdataid = Long.fromString(idstr, true, 10);
+      sendstream.writeUint64(appdataid);
+      sendstream.writeString(name);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1019, sendstream.getBuffer(), onGroupResult);
+    }
+
     function onGroupResult(buffer) {
       var bs = readstream.reset(buffer);
       var errcode = bs.readUint16();
@@ -423,6 +448,32 @@ var App = {
       groupcb(errcode);
     }
     //group msg end
+
+    //black msg start
+    var blackcb = null;
+    app.addblack = function (idstr, cb) {
+      blackcb = cb;
+      sendstream.reset();
+      var appdataid = Long.fromString(idstr, true, 10);
+      sendstream.writeUint64(appdataid);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1017, sendstream.getBuffer(), onBlackResult);
+    }
+
+    app.removeblack = function (idstr, cb) {
+      blackcb = cb;
+      sendstream.reset();
+      var appdataid = Long.fromString(idstr, true, 10);
+      sendstream.writeUint64(appdataid);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1018, sendstream.getBuffer(), onBlackResult);
+    }
+
+    function onBlackResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(blackcb != null)
+      blackcb(errcode);
+    }
+    //black msg end
 
     function onMessage(buffer) {
       var bs = readstream.reset(buffer);
