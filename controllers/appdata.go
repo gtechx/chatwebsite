@@ -176,9 +176,13 @@ func (c *AppDataController) Update() {
 		//blankt := reflect.TypeOf(old_account)
 		blankv := reflect.ValueOf(blank_appdata).Elem()
 
-		if err != nil {
-			fmt.Println("error:", err.Error())
-			c.Data["error"] = "数据库错误:" + err.Error()
+		if nickname == "" {
+			c.Data["error"] = "nickname must not be empty"
+			goto end
+		}
+
+		if sex ！= "男" || sex != "女" {
+			c.Data["error"] = "sex must be 男 or 女"
 			goto end
 		}
 
