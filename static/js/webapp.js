@@ -135,12 +135,12 @@ function onFriendList(errcode, data) {
   console.info("onFriendList data length:" + data.length);
   clearFriendList();
   frienddata = data;
-  for(var group in data){
-    console.info("onFriendList group:" + group);
-    createGroup(group);
-    for(var i in data[group]){
-      console.info("onFriendList item:" + JSON.stringify(data[group][i]));
-      addFriendItem(data[group][i]);
+  for(var groupname in data){
+    console.info("onFriendList group:" + groupname);
+    createGroup(groupname);
+    for(var i in data[groupname]){
+      console.info("onFriendList item:" + JSON.stringify(data[groupname][i]));
+      addFriendItem(data[groupname][i]);
     }
   }
 }

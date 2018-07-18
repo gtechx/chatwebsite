@@ -181,7 +181,7 @@ func (c *AppDataController) Update() {
 			goto end
 		}
 
-		if sex ！= "男" || sex != "女" {
+		if sex != "男" || sex != "女" {
 			c.Data["error"] = "sex must be 男 or 女"
 			goto end
 		}

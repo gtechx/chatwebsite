@@ -139,16 +139,16 @@
 
     var groups = {};
     function addFriendItem(data) {
-        var group = groups[data.group];
+        var group = groups[data.groupname];
         if(group == null){
-            group = createGroup(data.group);
-            groups[data.group] = group;
+            group = createGroup(data.groupname);
+            groups[data.groupname] = group;
         }
         group.find('ul').append(createContactItem(data));
     }
 
     function removeFriendItem(data) {
-        var group = groups[data.group];
+        var group = groups[data.groupname];
         if(group == null){
             return;
         }
@@ -242,9 +242,9 @@
         $("#presencelist").prepend(presence);
     }
 
-    addFriendItem({nickname:"WYQ", desc:"How are you?", group:"GroupC"});
-    addFriendItem({nickname:"WLN", desc:"How are you?", group:"GroupC"});
-    addFriendItem({"dataid":4, "nickname":"WLN", "desc":"How are you?", "group":"GroupC1","comment":""});
+    addFriendItem({nickname:"WYQ", desc:"How are you?", groupname:"GroupC"});
+    addFriendItem({nickname:"WLN", desc:"How are you?", groupname:"GroupC"});
+    addFriendItem({"dataid":4, "nickname":"WLN", "desc":"How are you?", "groupname":"GroupC1","comment":""});
 
     addPresence({presencetype:0, who:"123456", nickname:"wyq", timestamp:"1529994598", message:"Hello, friend please"});
     addPresence({presencetype:1, who:"523455", nickname:"wln", timestamp:"1529994598", message:"Hello, friend please"});

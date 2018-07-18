@@ -117,7 +117,7 @@ func (c *MyAppDataController) List() {
 		return
 	}
 
-	appdatalist, err := dataManager.GetAppDataList(appname, zonename, account, index*pagesize, index*pagesize+pagesize-1, appdatafilter)
+	appdatalist, err := dataManager.GetMyAppDataList(appname, zonename, account, index*pagesize, index*pagesize+pagesize-1, appdatafilter)
 
 	if err != nil {
 		println(err.Error())
