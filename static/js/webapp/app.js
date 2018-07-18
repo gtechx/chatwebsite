@@ -475,6 +475,23 @@ var App = {
     }
     //black msg end
 
+    //appdata update
+    var updateappdatacb = null;
+    function updateappdata(jsondata, cb) {
+      updateappdatacb = cb;
+      sendstream.reset();
+      sendstream.writeString(JSON.stringify(jsondata));
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1020, sendstream.getBuffer(), onUpdateAppdataResult);
+    }
+
+    function onUpdateAppdataResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(updateappdatacb != null)
+      updateappdatacb(errcode);
+    }
+    //appdata update end
+
     function onMessage(buffer) {
       var bs = readstream.reset(buffer);
       

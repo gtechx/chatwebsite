@@ -14,14 +14,14 @@
 </ul>
 
 <ul id="gmenu" class="hide" style="position:absolute;z-index:9999;">
-    <li onclick=""><div>Create New Group</div></li>
-    <li onclick=""><div>Rename Group</div></li>
+    <li onclick="showAddGroupPanel();"><div>Create New Group</div></li>
+    <li onclick="showRenameGroupPanel($(this).parent().data('group'));"><div>Rename Group</div></li>
 
-    <li onclick="if (confirm('确认要该分组吗？')==false){return;};delFriend($(this).parent().data('user').who);removeFriendItem($(this).parent().data('user'));"><div>Delete Group</div></li>
+    <li onclick="if (confirm('确认要该分组吗？')==false){return;};reqDeleteGroup($(this).parent().data('group'));"><div>Delete Group</div></li>
 </ul>
 
 <ul id="bodymenu" class="hide" style="position:absolute;z-index:9999;">
-    <li onclick=""><div>Create New Group</div></li>
+    <li onclick="showAddGroupPanel();"><div>Create New Group</div></li>
     <li onclick="reqFriendList();"><div>Refresh Friend List</div></li>
 </ul>
 

@@ -264,7 +264,6 @@
                     <input id="ID" type="text" value="3" class="form-control" placeholder="Enter id...">
                     <label>Message</label>
                     <input id="message" type="text" value="hello!" class="form-control" placeholder="Enter message...">
-                    </div>
                     
                     <button onclick='addFriend($("#ID").val(), $("#message").val());$("#modal-add").modal("hide");' type="button" class="btn btn-primary">Add</button>
                 </div>

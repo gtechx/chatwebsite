@@ -206,11 +206,11 @@ function quitChat() {
 }
 
 //group start
-function createGroup(name) {
+function reqCreateGroup(name) {
   myapp.creategroup(name, onGroupResult);
 }
 
-function deleteGroup(name) {
+function reqDeleteGroup(name) {
   if(frienddata[name].length > 0){
     alert("can't delete group that not empty!");
     return;
@@ -218,19 +218,20 @@ function deleteGroup(name) {
   myapp.deletegroup(name, onGroupResult);
 }
 
-function renameGroup(oldname, newname) {
+function reqRenameGroup(oldname, newname) {
   myapp.renamegroup(oldname, newname, onGroupResult);
 }
 
-function moveToGroup(idstr, name) {
+function reqMoveToGroup(idstr, name) {
   myapp.movetogroup(idstr, name, onGroupResult);
 }
 
 function onGroupResult(errcode) {
   console.info("onGroupResult errcode:" + errcode);
+  reqFriendList();
 }
 
-function refreshGroup(name) {
+function reqRefreshGroup(name) {
   myapp.refreshgroup(name, onRefreshGroupResult);
 }
 
@@ -261,3 +262,13 @@ function onBlackResult(errcode) {
   console.info("onBlackResult errcode:" + errcode);
 }
 //black end
+
+//appdata update
+function updateAppdata(jsondata) {
+  myapp.updateappdata(jsondata, onUpdateAppdataResult);
+}
+
+function onUpdateAppdataResult(errcode) {
+  console.info("onUpdateAppdataResult errcode:" + errcode);
+}
+//appdata update end
