@@ -222,9 +222,6 @@ var App = {
     app.sendmessage = function (msg, cb) {
       msgcb = cb;
       sendstream.reset();
-      // sendstream.writeUint64(Long.fromString(msg.id, true));
-      // sendstream.writeint64(Long.fromString(msg.timestamp, false));
-      // sendstream.writeString(msg.message);
       sendstream.writeString(JSON.stringify(msg))
       sendMsg(MsgType.ReqFrame, sendstream.length, 1008, sendstream.getBuffer(), onMsgResult);
     }
@@ -258,6 +255,23 @@ var App = {
       var errcode = bs.readUint16();
       if(presencecb != null)
       presencecb(errcode);
+    }
+
+    var modifycommentcb = null;
+    app.modifyfriendcomment = function (idstr, comment, cb) {
+      modifycommentcb = cb;
+      sendstream.reset();
+      var appdataid = Long.fromString(idstr, true, 10);
+      sendstream.writeUint64(appdataid);
+      sendstream.writeString(comment)
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1021, sendstream.getBuffer(), onModifyCommentResult);
+    }
+
+    function onModifyCommentResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(modifycommentcb != null)
+      modifycommentcb(errcode);
     }
 
     app.delfriend = function (idstr, cb) {

@@ -7,8 +7,9 @@ var ThisInt = '1529994598312'
 console.info(parseInt(ThisInt))
 
 var messagelist = {};
-var userdata = null;
-var frienddata = null;
+var userdata = {};
+var frienddata = {};
+var frienddatabyid = {};
 var myapp = App.new();
 function login(account, password, appname, zonename) {
   myapp.onlogined = onLogined
@@ -76,6 +77,10 @@ function onMyData(errcode, jsondata) {
     $("#idselect").addClass('hide');
     $("#fpanel").removeClass('hide');
     $("#fpanelheader .box-title").html(jsondata.nickname);
+    $("#fpanelheader .box-title").css("cursor", "hand");
+    $("#fpanelheader .box-title").click(function(e){
+      reqUserData(jsondata.id);
+    });
 
     reqFriendList();
     reqPresenceList();
@@ -91,6 +96,18 @@ function onUserData(errcode, jsondata) {
   console.info("onUserData errcode:" + errcode);
   if(errcode == 0) {
     console.info(jsondata);
+    showUserInfoPanel(jsondata);
+  }
+}
+
+function modifyFriendComment(idstr, comment) {
+  myapp.modifyfriendcomment(idstr, comment, onModifyCommentResult)
+}
+
+function onModifyCommentResult(errcode) {
+  console.info("onModifyCommentResult errcode:" + errcode);
+  if(errcode == 0) {
+    reqFriendList();
   }
 }
 
@@ -139,6 +156,7 @@ function onFriendList(errcode, data) {
     console.info("onFriendList group:" + groupname);
     createGroup(groupname);
     for(var i in data[groupname]){
+      frienddatabyid[data[groupname][i].who] = data[groupname][i];
       console.info("onFriendList item:" + JSON.stringify(data[groupname][i]));
       addFriendItem(data[groupname][i]);
     }
@@ -237,24 +255,25 @@ function reqRefreshGroup(name) {
 
 function onRefreshGroupResult(errcode, jsondata) {
   console.info("onRefreshGroupResult errcode:" + errcode);
-  for(var name in jsondata){
-    clearGroupFriendList(name)
-    frienddata[name] = jsondata[name];
-    console.info("onRefreshGroupResult group:" + name);
-    for(var i in jsondata[name]){
-      console.info("onRefreshGroupResult item:" + JSON.stringify(jsondata[name][i]));
-      addFriendItem(jsondata[name][i]);
+  for(var groupname in jsondata){
+    clearGroupFriendList(groupname)
+    frienddata[groupname] = jsondata[groupname];
+    console.info("onRefreshGroupResult group:" + groupname);
+    for(var i in jsondata[groupname]){
+      console.info("onRefreshGroupResult item:" + JSON.stringify(jsondata[groupname][i]));
+      frienddatabyid[jsondata[groupname][i].who] = jsondata[groupname][i];
+      addFriendItem(jsondata[groupname][i]);
     }
   }
 }
 //group end
 
 //black start
-function addBlack(idstr) {
+function reqAddBlack(idstr) {
   myapp.addblack(idstr, onBlackResult);
 }
 
-function removeBlack(idstr) {
+function reqRemoveBlack(idstr) {
   myapp.removeblack(idstr, onBlackResult);
 }
 

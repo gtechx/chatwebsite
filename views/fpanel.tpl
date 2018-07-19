@@ -4,7 +4,7 @@
       <i class="fa fa-refresh fa-spin"></i>
     </div>
     <div class="box-header with-border" id="fpanelheader">
-      <h3 class="box-title">Collapsable</h3>
+      <a><h3 class="box-title">Collapsable</h3></a>
 
       
       <!-- /.box-tools -->
@@ -126,7 +126,12 @@
             <img class="contacts-list-img" src="static/dist/img/user1-128x128.jpg" alt="User Image">\
             <div class="contacts-list-info">\
                     <span class="contacts-list-name text-black">';
-        html += data.nickname;//     Count Dracula
+        if(data.comment != ""){
+            html += data.comment;
+            html += "(" + data.nickname + ")";
+        } else {
+            html += data.nickname;//     Count Dracula
+        }
         html +=     '</span>\
                 <span class="contacts-list-msg">';
         html += data.desc + '</span>\

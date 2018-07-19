@@ -1,16 +1,16 @@
 <ul id="fmenu" class="hide" style="position:absolute;z-index:9999;">
     <li onclick="openChatPanel($(this).parent().data('user'));"><div>Send Message</div></li>
-    <li onclick=""><div>Show Data</div></li>
-    <li onclick=""><div>Modify Comment</div></li>
+    <li onclick="reqUserData($(this).parent().data('user').who);"><div>Show Info</div></li>
+    <li onclick="showModifyCommentPanel($(this).parent().data('user').who);"><div>Modify Comment</div></li>
     
     <li><div>Move To Group</div>
-        <ul>
-            <li onclick=""><div>Car Hifi</div></li>
+        <ul id="movetogrouplist">
+            <li onclick=""><div>秦时明月</div></li>
             <li onclick=""><div>Utilities</div></li>
         </ul>
     </li>
     <li onclick="if (confirm('确认要该好友吗？')==false){return;};delFriend($(this).parent().data('user').who);removeFriendItem($(this).parent().data('user'));"><div>Delete</div></li>
-    <li onclick="addBlack($(this).parent().data('user').who);"><div>Add To Black</div></li>
+    <li onclick="reqAddBlack($(this).parent().data('user').who);"><div>Add To Black</div></li>
 </ul>
 
 <ul id="gmenu" class="hide" style="position:absolute;z-index:9999;">
@@ -25,6 +25,10 @@
     <li onclick="reqFriendList();"><div>Refresh Friend List</div></li>
 </ul>
 
+<style>
+  .ui-menu { width: 150px; }
+</style>
+
 <script>
     $( function() {
         $( "#fmenu" ).menu();
@@ -38,6 +42,14 @@
         menu.data("user", data);
         menu.css("top", e.clientY);
         menu.css("left", e.clientX);
+
+        $("#movetogrouplist").html("");
+        for(var group in frienddata) {
+            if(group != data.groupname) {
+                $("#movetogrouplist").append('<li onclick="reqMoveToGroup(\'' + data.who + '\', \'' + group + '\');"><div>' + group + '</div></li>');
+            }
+        }
+        $( "#fmenu" ).menu("refresh");
     }
 
     function showGroupMenu(e, data) {

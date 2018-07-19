@@ -59,7 +59,11 @@ function openChatPanel(data) {
     newchatpanel.find(".direct-chat").boxWidget();
     newchatpanel.attr("id", "chatpanel-" + data.nickname);
     newchatpanel.removeClass("hide");
-    newchatpanel.find(".direct-chat .box-header h3").html(data.nickname);
+    if(data.comment != ""){
+        newchatpanel.find(".direct-chat .box-header h3").html(data.comment + "(" + data.nickname + ")");
+    } else {
+        newchatpanel.find(".direct-chat .box-header h3").html(data.nickname);
+    }
     newchatpanel.draggable({handle: ".direct-chat .box-header", cursor: "move"});
     newchatpanel.css("z-index", curz);
     curz++;
@@ -102,9 +106,12 @@ function addMessage(msg) {
         chatpanel = openChatPanel(msg);
     }
     var html = '<div class="direct-chat-msg">' +
-        '<div class="direct-chat-info clearfix">' +
-            '<span class="direct-chat-name pull-left">' + msg.nickname + '</span>' +
-            '<span class="direct-chat-timestamp pull-right">' + new Date(parseInt(msg.timestamp) * 1000).Format() + '</span>' +
+        '<div class="direct-chat-info clearfix">';
+            if(frienddatabyid[msg.who] && frienddatabyid[msg.who].comment != "")
+                html += '<span class="direct-chat-name pull-left">' + frienddatabyid[msg.who].comment + '(' + msg.nickname + ')' + '</span>';
+            else
+                html += '<span class="direct-chat-name pull-left">' + msg.nickname + '</span>';
+            html += '<span class="direct-chat-timestamp pull-right">' + new Date(parseInt(msg.timestamp) * 1000).Format() + '</span>' +
         '</div>' +
         '<img class="direct-chat-img" src="static/dist/img/user1-128x128.jpg" alt="Message User Image">' +
         '<div class="direct-chat-text">'+
