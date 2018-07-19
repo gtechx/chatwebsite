@@ -491,7 +491,7 @@ var App = {
 
     //appdata update
     var updateappdatacb = null;
-    function updateappdata(jsondata, cb) {
+    app.updateappdata = function (jsondata, cb) {
       updateappdatacb = cb;
       sendstream.reset();
       sendstream.writeString(JSON.stringify(jsondata));

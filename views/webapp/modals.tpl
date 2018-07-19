@@ -90,7 +90,7 @@
                 <label>Country</label>
                 <input id="info-country" type="text" class="form-control">
                 
-                <button onclick='' type="button" class="btn btn-primary">Save</button>
+                <button onclick='doUpdateAppData();' type="button" class="btn btn-primary">Save</button>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
@@ -102,6 +102,11 @@
 </div>
 
 <script>
+$( function() {
+    $( "#info-birthday" ).datepicker();
+    $("#info-country").countrySelect();
+} );
+
 function doAddGroup(){
     var groupname = $("#groupname").val();
     if(groupname == "") {
@@ -130,6 +135,40 @@ function doModifyComment(){
     }
     modifyFriendComment($("#modifycomment").data('id'), modifycomment);
     $("#modal-modifycomment").modal("hide");
+}
+
+function doUpdateAppData(){
+    var nickname = $("#info-nickname").val();
+    if(nickname == "") {
+        alert("nickname should not be empty!");
+        return;
+    }
+    var desc = $("#info-desc").val();
+    var birthday = $("#info-birthday").val();
+    var country = $("#info-country").val();
+
+    var udata = $("#modal-info").data("user");
+
+    var flag = false;
+    var jsondata = {};
+    if(udata.nickname != nickname){
+        jsondata["nickname"] = nickname;
+        flag = true;
+    }
+    if(udata.desc != desc){
+        jsondata["desc"] = desc;
+        flag = true;
+    }
+    if(udata.birthday != birthday){
+        jsondata["birthday"] = birthday;
+        flag = true;
+    }
+    if(udata.country != country){
+        jsondata["country"] = country;
+        flag = true;
+    }
+    updateAppdata(jsondata);
+    $("#modal-info").modal("hide");
 }
 
 function showAddGroupPanel() {
@@ -164,6 +203,8 @@ function showUserInfoPanel(jsondata) {
         $("#info-birthday").attr("disabled", false);
         $("#info-country").attr("disabled", false);
     }
+    $("#info-country").countrySelect("refresh");
+    $("#modal-info").data("user", jsondata);
     $("#modal-info").modal("show");
 }
 </script>

@@ -29,6 +29,7 @@
 <script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://cdn.bootcss.com/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js"></script>
 <script src="https://cdn.bootcss.com/dragscroll/0.0.8/dragscroll.min.js"></script>
+<script src="https://cdn.bootcss.com/country-select-js/2.0.1/js/countrySelect.min.js"></script>
 
 <!-- Bootstrap 3.3.7 -->
 <script src="static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
