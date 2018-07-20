@@ -34,6 +34,9 @@ var App = {
     app.onclose = null;
     app.onpresence = null;
     app.onmessage = null;
+    app.onkickout = null;
+
+    app.platform = "web";
 
     var ws = null;
     var sendstream = BinaryStream.new();
@@ -68,13 +71,17 @@ var App = {
       if(app.onerror != null)
         app.onerror();
     }
+
+    app.setplatform = function (platform){
+      app.platform = platform;
+    }
     
     app.login = function (account, password, appname, zonename){
       var accountbytes = stringToBytes(account);
       var passwordbytes = stringToBytes(password);
       var appnamebytes = stringToBytes(appname);
       var zonenamebytes = stringToBytes(zonename);
-      var platformbytes = stringToBytes("web");
+      var platformbytes = stringToBytes(app.platform);
 
       sendstream.reset();
       sendstream.writeUint8(accountbytes.byteLength);
@@ -570,6 +577,8 @@ var App = {
               onPresence(header.databuff);
             } else if(header.msgid == 1008){
               onMessage(header.databuff);
+            } else if(header.msgid == 1022 && app.onkickout != null){
+              app.onkickout();
             }
           }
       }

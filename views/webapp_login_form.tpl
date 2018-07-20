@@ -23,6 +23,15 @@
     </select>
   </div>
   <div class="form-group">
+    <label for="platform">选择平台：</label>
+    <select class="form-control" name="platform" id="platform">
+        <option>web</option>
+        <option>web1</option>
+        <option>web2</option>
+        <option>web2</option>
+    </select>
+  </div>
+  <div class="form-group">
     <label for="account">账号：</label>
     <input type="text" class="form-control" name="account" id="account" placeholder="Account" value="{{if .appaccount}}{{.appaccount}}{{else}}wyq{{end}}" />
   </div>
@@ -59,6 +68,7 @@
     };
 
     function dologin() {
+      setPlatform($('#platform').val());
       login($('#account').val(), $('#password').val(), $('#appname').val(), $('#zonename').val());
     }
   </script>

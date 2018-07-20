@@ -25,9 +25,16 @@ function login(account, password, appname, zonename) {
   myapp.onerror = function(evt) {
     console.info("error:"+evt.data);
   };
+  myapp.onkickout = function() {
+    console.info("you have been kicked out from server.");
+  };
   myapp.onpresence = onPresence;
   myapp.onmessage = onMessage;
   myapp.connect("127.0.0.1:9090");
+}
+
+function setPlatform(platform) {
+  myapp.setplatform(platform);
 }
 
 function onLogined(idlist) {

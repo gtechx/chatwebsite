@@ -103,7 +103,7 @@ function getChatId() {
 function addMessage(msg) {
     var chatpanel = chatpanellist["chatpanel-" + msg.nickname];
     if(chatpanel == null){
-        chatpanel = openChatPanel(msg);
+        chatpanel = openChatPanel(frienddatabyid[msg.who]);
     }
     var html = '<div class="direct-chat-msg">' +
         '<div class="direct-chat-info clearfix">';
