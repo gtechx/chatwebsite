@@ -63,6 +63,11 @@
             </a>
           </li>
           <li class="nav-item">
+            <a href="/user/online/index" class="nav-link {{if compare .nav "useronline"}}active{{end}}">
+            应用在线玩家
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="/user/myappdata/index" class="nav-link {{if compare .nav "usermyappdata"}}active{{end}}">
             我的应用数据
             </a>
@@ -92,7 +97,7 @@
           {{if .priv.Adminappdata}}
           <li class="nav-item">
             <a href="/admin/appdata/index" class="nav-link {{if compare .nav "adminappdata"}}active{{end}}">
-            数据管理
+            应用数据管理
             </a>
           </li>
           {{end}}

@@ -32,6 +32,7 @@ func init() {
 		beego.NSAutoRouter(&controllers.ZoneController{}),
 		beego.NSAutoRouter(&controllers.AppDataController{}),
 		beego.NSAutoRouter(&controllers.MyAppDataController{}),
+		beego.NSAutoRouter(&controllers.OnlineController{}),
 	)
 	beego.AddNamespace(ns)
 	ns = beego.NewNamespace("/admin",

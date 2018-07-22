@@ -7,6 +7,8 @@
   <div class="overlay hide">
     <i class="fa fa-refresh fa-spin"></i>
   </div>
+<div class="login-box">
+<div class="login-box-body">
 <form class="animated" onsubmit="return false;">
   <div class="form-group">
     <label for="appname">选择应用：</label>
@@ -42,6 +44,8 @@
   </div>
   <button onclick="dologin(); return false;" class="btn btn-outline-primary btn-lg btn-block">登录</button>
 </form>
+</div>
+</div>
 
   <script type="text/javascript">
     $(function () {

@@ -20,7 +20,7 @@
 
   <link href="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.css" rel="stylesheet">
 </head>
-<body>
+<body style="background: #d2d6de;">
 
 <!-- REQUIRED JS SCRIPTS -->
 
