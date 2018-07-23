@@ -20,9 +20,9 @@
             <label for="id">ID：</label>
             <input type="text" class="rounded" style="width:100px" name="id" id="id" placeholder="">
         </div>
-        <div class="p-1" {{if not .isadmin}}style="display:none"{{end}}>
+        <div class="p-1">
             <label for="account">账号：</label>
-            <input type="text" class="rounded" style="width:100px" name="account" {{if not .isadmin}}value="{{.account}}"{{end}} id="account" placeholder="">
+            <input type="text" class="rounded" style="width:100px" name="account" id="account" placeholder="">
         </div>
         <div class="p-1">
             <label for="nickname">昵称：</label>

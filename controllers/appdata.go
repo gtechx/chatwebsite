@@ -300,6 +300,20 @@ func (c *AppDataController) List() {
 		return
 	}
 
+	appowner, err := dataManager.GetAppOwner(appname)
+
+	if err != nil {
+		println(err.Error())
+		c.Ctx.Output.Body([]byte(pagenone))
+		return
+	}
+
+	if appowner != c.account {
+		println("have no privilege to access app:" + appname)
+		c.Ctx.Output.Body([]byte(pagenone))
+		return
+	}
+
 	if appname == "" {
 		println("appname must not null")
 		c.Ctx.Output.Body([]byte(pagenone))

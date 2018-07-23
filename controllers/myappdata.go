@@ -104,7 +104,7 @@ func (c *MyAppDataController) List() {
 		return
 	}
 
-	totalcount, err := dataManager.GetAppDataCount(appname, zonename, account, appdatafilter)
+	totalcount, err := dataManager.GetMyAppDataCount(appname, zonename, account, appdatafilter)
 
 	if err != nil {
 		println(err.Error())
