@@ -37,44 +37,32 @@
             </select>
         </div>
         <div class="p-1">
-            <label for="desc">描述：</label>
-            <input type="text" class="rounded" style="width:150px" name="desc" id="desc" placeholder="">
-        </div>
-        <div class="p-1">
-            <label for="email">Email：</label>
-            <input type="text" class="rounded" style="width:100px" name="email" id="email" placeholder="">
-        </div>
-        <div class="p-1">
-            <label for="ip">IP：</label>
-            <input type="text" class="rounded" style="width:120px" name="ip" id="ip" placeholder="">
-        </div>
-        <div class="p-1">
             <label for="country">国家：</label>
             <input type="text" class="rounded" style="width:80px" name="country" id="country" placeholder="">
         </div>
         <div class="p-1">
-            <label for="birthdaybegindate">生日起始：</label>
-            <input type="text" class="rounded" style="width:100px" name="birthdaybegindate" id="birthdaybegindate" placeholder="">
+            <label for="platform">平台：</label>
+            <select class="rounded" style="width:50px" name="platform" id="platform">
+                <option></option>
+                <option>web</option>
+                <option>web1</option>
+                <option>web2</option>
+            </select>
         </div>
         <div class="p-1">
-            <label for="birthdayenddate">生日最终：</label>
-            <input type="text" class="rounded" style="width:100px" name="birthdayenddate" id="birthdayenddate" placeholder="">
+            <label for="serveraddr">服务器：</label>
+            <select class="rounded" style="width:50px" name="serveraddr" id="serveraddr">
+                <option></option>
+                <option>127.0.0.1</option>
+            </select>
         </div>
         <div class="p-1">
-            <label for="lastloginbegindate">登录起始：</label>
-            <input type="text" class="rounded" style="width:100px" name="lastloginbegindate" id="lastloginbegindate" placeholder="">
+            <label for="onlinebegindate">登录起始日期：</label>
+            <input type="text" class="rounded" style="width:100px" name="onlinebegindate" id="onlinebegindate" placeholder="">
         </div>
         <div class="p-1">
-            <label for="lastloginenddate">登录最终：</label>
-            <input type="text" class="rounded" style="width:100px" name="lastloginenddate" id="lastloginenddate" placeholder="">
-        </div>
-        <div class="p-1">
-            <label for="begindate">起始日期：</label>
-            <input type="text" class="rounded" style="width:100px" name="begindate" id="begindate" placeholder="">
-        </div>
-        <div class="p-1">
-            <label for="enddate">最终日期：</label>
-            <input type="text" class="rounded" style="width:100px" name="enddate" id="enddate" placeholder="">
+            <label for="onlineenddate">登录最终日期：</label>
+            <input type="text" class="rounded" style="width:100px" name="onlineenddate" id="onlineenddate" placeholder="">
         </div>
         <div class="p-1">
         <button id="btn_filter" onclick="$('#table').bootstrapTable('refresh');" type="button" class="btn btn-info btn-sm">
@@ -84,17 +72,14 @@
     </div>
 
     <div id="toolbar" class="btn-group">
-        <button id="btn_add" onclick="window.location.href='create';" type="button" class="btn btn-info btn-sm rightSize">
-            <span class="oi oi-plus"></span>新增
-        </button>
-        <button id="btn_delete" onclick="delAppData();" type="button" class="btn btn-info btn-sm rightSize">
-            <span class="oi oi-x"></span>删除
-        </button>
         <button id="btn_ban" onclick="banAppDatas();" type="button" class="btn btn-info btn-sm rightSize">
             <span class="oi oi-ban"></span>封禁
         </button>
+        <button id="btn_ban" onclick="banAppDatas();" type="button" class="btn btn-info btn-sm rightSize">
+            <span class="oi oi-ban"></span>禁言
+        </button>
         <button id="btn_ban" onclick="unbanAppDatas();" type="button" class="btn btn-info btn-sm rightSize">
-            <span class="oi oi-circle-check"></span>解除封禁
+            <span class="oi oi-circle-check"></span>解除禁言
         </button>
     </div>
     <table id="table">
@@ -103,12 +88,9 @@
 
 <script type="text/javascript">
   $( function() {
-    $( "#begindate" ).datepicker();
-    $( "#enddate" ).datepicker();
-    $( "#birthdaybegindate" ).datepicker();
-    $( "#birthdayenddate" ).datepicker();
-    $( "#lastloginbegindate" ).datepicker();
-    $( "#lastloginenddate" ).datepicker();
+    $( "#onlinebegindate" ).datepicker();
+    $( "#onlineenddate" ).datepicker();
+    //$("#country").countrySelect();
     onAppnameChange(document.getElementsByName( "appname" )[0]);
   } );
 
@@ -134,37 +116,6 @@
         }
         $('#zonename').html(html);
         });
-  }
-
-  function checkEmail(email) {
-    var reg = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$"); //正则表达式
-
-    if(email === ""){ //输入不能为空
-        alert("邮箱不能为空!");
-　　　　return false;
-　　}else if(!reg.test(email)){ //正则验证不通过，格式不对
-　　　　alert("邮箱格式不对!");
-　　　　return false;
-　　}
-    return true;
-  }
-
-  function delAppData(){
-    if (confirm("确认要删除吗？这将删除账号相关的所有数据！")==false){ 
-        return; 
-    }
-    var selects = $('#table').bootstrapTable('getSelections');
-    if(selects.length == 0)
-        return;
-    var strdata = new Array()
-    for(i in selects){
-      strdata[i] = selects[i].id
-    }
-    console.info("del appdata "+strdata)
-    $.post("del", { 'appdata[]': strdata },
-    function(data) {
-      $('#table').bootstrapTable('refresh');
-    });
   }
 
   function banAppDatas(){
@@ -241,16 +192,11 @@
               zonename: $("#zonename").val(),
               nickname: $("#nickname").val(),
               sex: $("#sex").val(),
-              desc: $("#desc").val(),
-              email: $("#email").val(),
-              ip: $("#ip").val(),
               country: $("#country").val(),
-              birthdaybegindate: $("#birthdaybegindate").val(),
-              birthdayenddate: $("#birthdayenddate").val(),
-              lastloginbegindate: $("#lastloginbegindate").val(),
-              lastloginenddate: $("#lastloginenddate").val(),
-              begindate: $("#begindate").val(),
-              enddate: $("#enddate").val(),
+              platform: $("#platform").val(),
+              serveraddr: $("#serveraddr").val(),
+              begindate: $("#onlinebegindate").val(),
+              enddate: $("#onlineenddate").val(),
               pageSize: params.pageSize, // 每页要显示的数据条数
               //offset: params.offset, // 每页显示数据的开始行号
               pageNumber: params.pageNumber
@@ -290,27 +236,10 @@
               field: 'nickname',
               title: '昵称',
               align: 'center',
-              valign: 'middle',
-              formatter: function (value, row, index) {
-                  {{if .isreadonly}}
-                  return value;
-                  {{else}}
-                  return '<a class="" href="update?id='+row.id+'">'+value+'</a>';
-                  {{end}}
-              }
-          }, {
-              field: 'desc',
-              title: '描述',
-              align: 'center',
               valign: 'middle'
           }, {
               field: 'sex',
               title: '性别',
-              align: 'center',
-              valign: 'middle'
-          }, {
-              field: 'birthday',
-              title: '出生日期',
               align: 'center',
               valign: 'middle'
           }, {
@@ -319,23 +248,18 @@
               align: 'center',
               valign: 'middle'
           }, {
-              field: 'regip',
-              title: '注册ip',
+              field: 'platform',
+              title: '平台',
               align: 'center',
               valign: 'middle'
           }, {
-              field: 'lastip',
-              title: '上次登录ip',
-              align: 'center',
-              valign: 'middle'
-          }, {
-              field: 'lastlogin',
-              title: '上次登录日期',
+              field: 'serveraddr',
+              title: '服务器',
               align: 'center',
               valign: 'middle'
           }, {
               field: 'createdate',
-              title: '注册日期',
+              title: '登录日期',
               align: 'center',
               valign: 'middle'
           }{{if not .isreadonly}}, {
@@ -345,10 +269,15 @@
               valign: 'middle',
               width: 160, // 定义列的宽度，单位为像素px
               formatter: function (value, row, index) {
-                  if(value)
-                    return '<button class="btn btn-primary btn-sm" onclick="unbanAppData('+index+');">解除封禁</button>';
+                  var html = '';
+                  if(!value)
+                    html += '<button class="btn btn-primary btn-sm" onclick="banAppData('+index+');">封禁</button>';
+                if(row.isjinyan)
+                    html += '<button class="btn btn-primary btn-sm" onclick="unbanAppData('+index+');">解除禁言</button>';
                   else
-                    return '<button class="btn btn-primary btn-sm" onclick="banAppData('+index+');">封禁</button>';
+                    html += '<button class="btn btn-primary btn-sm" onclick="banAppData('+index+');">禁言</button>';
+
+                return html;
               }
           }{{end}}
       ],

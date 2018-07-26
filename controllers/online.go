@@ -31,46 +31,37 @@ func (c *OnlineController) List() {
 	id, _ := c.GetUint64("id", 0)
 	appname := c.GetString("appname")
 	zonename := c.GetString("zonename")
-	account := c.GetString("account")
+	//account := c.GetString("account")
 	// if account != c.account {
 	// 	account = c.account
 	// }
 
-	appdatafilter := &gtdb.AppDataFilter{}
+	appdatafilter := &gtdb.OnlineAppDataFilter{}
 	appdatafilter.Nickname = c.GetString("nickname")
-	appdatafilter.Desc = c.GetString("desc")
+	appdatafilter.Account = c.GetString("account")
 	appdatafilter.Sex = c.GetString("sex")
 	appdatafilter.Country = c.GetString("country")
-	appdatafilter.Regip = c.GetString("regip")
-	appdatafilter.Lastip = c.GetString("lastip")
+	appdatafilter.Serveraddr = c.GetString("serveraddr")
+	appdatafilter.Platform = c.GetString("platform")
+	appdatafilter.Isjinyan = Int(c.GetString("jinyan"))
+
+	// appdatafilter.Desc = c.GetString("desc")
+	// appdatafilter.Sex = c.GetString("sex")
+	// appdatafilter.Country = c.GetString("country")
+	// appdatafilter.Regip = c.GetString("regip")
+	// appdatafilter.Lastip = c.GetString("lastip")
 	// lastloginbegindate := c.GetString("lastloginbegindate")
 	// lastloginenddate := c.GetString("lastloginenddate")
 	// createbegindate := c.GetString("createbegindate")
 	// createenddate := c.GetString("createenddate")
 
-	bbdate, err := time.Parse("01/02/2006", c.GetString("birthdaybegindate"))
+	obdate, err := time.Parse("01/02/2006", c.GetString("onlinebegindate"))
 	if err == nil {
-		appdatafilter.Birthdaybegindate = &bbdate
+		appdatafilter.Onlinebegindate = &obdate
 	}
-	bedate, err := time.Parse("01/02/2006", c.GetString("birthdayenddate"))
+	oedate, err := time.Parse("01/02/2006", c.GetString("onlineenddate"))
 	if err == nil {
-		appdatafilter.Birthdayenddate = &bedate
-	}
-	lbdate, err := time.Parse("01/02/2006", c.GetString("lastloginbegindate"))
-	if err == nil {
-		appdatafilter.Lastloginbegindate = &lbdate
-	}
-	ledate, err := time.Parse("01/02/2006", c.GetString("lastloginenddate"))
-	if err == nil {
-		appdatafilter.Lastloginenddate = &ledate
-	}
-	cbdate, err := time.Parse("01/02/2006", c.GetString("createbegindate"))
-	if err == nil {
-		appdatafilter.Createbegindate = &cbdate
-	}
-	cedate, err := time.Parse("01/02/2006", c.GetString("createenddate"))
-	if err == nil {
-		appdatafilter.Createenddate = &cedate
+		appdatafilter.Onlineenddate = &oedate
 	}
 
 	println("pageNumber:", index, " pageSize:", pagesize)
@@ -79,7 +70,7 @@ func (c *OnlineController) List() {
 	pagenone := "{\"total\":0, \"rows\":[]}"
 
 	if id != 0 {
-		appdata, err := dataManager.GetAppData(id)
+		appdata, err := dataManager.GetOnlineAppData(id)
 
 		if err != nil {
 			println(err.Error())
@@ -87,7 +78,7 @@ func (c *OnlineController) List() {
 			return
 		}
 
-		pageapp := PageData{Total: 1, Rows: []*gtdb.AppData{appdata}}
+		pageapp := PageData{Total: 1, Rows: []*gtdb.OnlineAppData{appdata}}
 		retjson, err := json.Marshal(pageapp)
 		if err != nil {
 			println(err.Error())
@@ -105,7 +96,7 @@ func (c *OnlineController) List() {
 		return
 	}
 
-	totalcount, err := dataManager.GetAppDataCount(appname, zonename, account, appdatafilter)
+	totalcount, err := dataManager.GetOnlineAppDataCount(appname, zonename, appdatafilter)
 
 	if err != nil {
 		println(err.Error())
@@ -118,7 +109,7 @@ func (c *OnlineController) List() {
 		return
 	}
 
-	appdatalist, err := dataManager.GetAppDataList(appname, zonename, account, index*pagesize, index*pagesize+pagesize-1, appdatafilter)
+	appdatalist, err := dataManager.GetOnlineAppDataList(appname, zonename, index*pagesize, index*pagesize+pagesize-1, appdatafilter)
 
 	if err != nil {
 		println(err.Error())
@@ -174,4 +165,58 @@ func (c *OnlineController) ZoneList() {
 	}
 
 	c.Ctx.Output.Body(retjson)
+}
+
+func (c *OnlineController) Ban() {
+	strappdatas := c.GetStrings("appdata[]")
+	appdatas := make([]uint64, len(strappdatas))
+
+	for i, strappdata := range strappdatas {
+		appdatas[i] = Uint64(strappdata)
+	}
+
+	errtext := ""
+	err := gtdb.Manager().BanAppDatas(appdatas, &gtdb.AppDataBaned{Dateline: time.Date(2099, 1, 1, 0, 0, 0, 0, time.Local), Bandate: time.Now()})
+
+	if err != nil {
+		errtext = "数据库错误:" + err.Error()
+	}
+
+	c.Ctx.Output.Body([]byte("{\"error\":\"" + errtext + "\"}"))
+}
+
+func (c *OnlineController) Jinyan() {
+	strappdatas := c.GetStrings("appdata[]")
+	appdatas := make([]uint64, len(strappdatas))
+
+	for i, strappdata := range strappdatas {
+		appdatas[i] = Uint64(strappdata)
+	}
+
+	errtext := ""
+	err := gtdb.Manager().JinyanAppDatas(appdatas, &gtdb.AppDataJinyan{Dateline: time.Date(2099, 1, 1, 0, 0, 0, 0, time.Local), Jinyandate: time.Now()})
+
+	if err != nil {
+		errtext = "数据库错误:" + err.Error()
+	}
+
+	c.Ctx.Output.Body([]byte("{\"error\":\"" + errtext + "\"}"))
+}
+
+func (c *OnlineController) UnJinyan() {
+	strappdatas := c.GetStrings("appdata[]")
+	appdatas := make([]uint64, len(strappdatas))
+
+	for i, strappdata := range strappdatas {
+		appdatas[i] = Uint64(strappdata)
+	}
+
+	errtext := ""
+	err := gtdb.Manager().UnJinyanAppDatas(appdatas)
+
+	if err != nil {
+		errtext = "数据库错误:" + err.Error()
+	}
+
+	c.Ctx.Output.Body([]byte("{\"error\":\"" + errtext + "\"}"))
 }

@@ -400,7 +400,7 @@ func (c *AppDataController) Ban() {
 	}
 
 	errtext := ""
-	err := gtdb.Manager().BanAppDatas(appdatas)
+	err := gtdb.Manager().BanAppDatas(appdatas, &gtdb.AppDataBaned{Dateline: time.Date(2099, 1, 1, 0, 0, 0, 0, time.Local), Bandate: time.Now()})
 
 	if err != nil {
 		errtext = "数据库错误:" + err.Error()

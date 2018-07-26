@@ -83,7 +83,7 @@
           {{if .priv.Adminuser}}
           <li class="nav-item">
             <a href="/admin/account/index" class="nav-link {{if compare .nav "adminaccount"}}active{{end}}">
-            用户管理
+            账号管理
             </a>
           </li>
           {{end}}
