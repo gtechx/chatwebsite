@@ -8,8 +8,8 @@ function bytesToString(buffer) {
 }
 
 Date.prototype.Format = function (fmt) { // author: meizz
-  if(fmt == "" || fmt == undefined)
-      fmt = "yyyy/MM/dd hh:mm:ss";
+  if(fmt == "" || fmt == undefined || fmt == null)
+      fmt = "yyyy-MM-ddTh:m:s.S+th:tm";
   var o = {
       "M+": this.getMonth() + 1, // 月份
       "d+": this.getDate(), // 日
@@ -17,7 +17,9 @@ Date.prototype.Format = function (fmt) { // author: meizz
       "m+": this.getMinutes(), // 分
       "s+": this.getSeconds(), // 秒
       "q+": Math.floor((this.getMonth() + 3) / 3), // 季度
-      "S": this.getMilliseconds() // 毫秒
+      "S": this.getMilliseconds(), // 毫秒
+      "th+": this.getTimezoneOffset() / -60, //时区
+		  "tm+": 0 //时区的分
   };
   if (/(y+)/.test(fmt))
       fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));

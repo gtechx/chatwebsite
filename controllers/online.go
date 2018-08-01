@@ -176,7 +176,7 @@ func (c *OnlineController) Ban() {
 	}
 
 	errtext := ""
-	err := gtdb.Manager().BanAppDatas(appdatas, &gtdb.AppDataBaned{Dateline: time.Date(2099, 1, 1, 0, 0, 0, 0, time.Local), Bandate: time.Now()})
+	err := gtdb.Manager().BanAppDatas(appdatas, &gtdb.AppDataBaned{Dateline: time.Date(2099, 1, 1, 0, 0, 0, 0, time.Local)})
 
 	if err != nil {
 		errtext = "数据库错误:" + err.Error()
@@ -194,7 +194,7 @@ func (c *OnlineController) Jinyan() {
 	}
 
 	errtext := ""
-	err := gtdb.Manager().JinyanAppDatas(appdatas, &gtdb.AppDataJinyan{Dateline: time.Date(2099, 1, 1, 0, 0, 0, 0, time.Local), Jinyandate: time.Now()})
+	err := gtdb.Manager().JinyanAppDatas(appdatas, &gtdb.AppDataJinyan{Dateline: time.Date(2099, 1, 1, 0, 0, 0, 0, time.Local)})
 
 	if err != nil {
 		errtext = "数据库错误:" + err.Error()
