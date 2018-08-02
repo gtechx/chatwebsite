@@ -36,7 +36,7 @@ func (c *OnlineController) List() {
 	// 	account = c.account
 	// }
 
-	appdatafilter := &gtdb.OnlineAppDataFilter{}
+	appdatafilter := &gtdb.OnlineFilter{}
 	appdatafilter.Nickname = c.GetString("nickname")
 	appdatafilter.Account = c.GetString("account")
 	appdatafilter.Sex = c.GetString("sex")
@@ -70,7 +70,7 @@ func (c *OnlineController) List() {
 	pagenone := "{\"total\":0, \"rows\":[]}"
 
 	if id != 0 {
-		appdata, err := dataManager.GetOnlineAppData(id)
+		appdata, err := dataManager.GetOnline(id)
 
 		if err != nil {
 			println(err.Error())
@@ -78,7 +78,7 @@ func (c *OnlineController) List() {
 			return
 		}
 
-		pageapp := PageData{Total: 1, Rows: []*gtdb.OnlineAppData{appdata}}
+		pageapp := PageData{Total: 1, Rows: []*gtdb.Online{appdata}}
 		retjson, err := json.Marshal(pageapp)
 		if err != nil {
 			println(err.Error())
@@ -96,7 +96,7 @@ func (c *OnlineController) List() {
 		return
 	}
 
-	totalcount, err := dataManager.GetOnlineAppDataCount(appname, zonename, appdatafilter)
+	totalcount, err := dataManager.GetOnlineCount(appname, zonename, appdatafilter)
 
 	if err != nil {
 		println(err.Error())
@@ -109,7 +109,7 @@ func (c *OnlineController) List() {
 		return
 	}
 
-	appdatalist, err := dataManager.GetOnlineAppDataList(appname, zonename, index*pagesize, index*pagesize+pagesize-1, appdatafilter)
+	appdatalist, err := dataManager.GetOnlineList(appname, zonename, index*pagesize, index*pagesize+pagesize-1, appdatafilter)
 
 	if err != nil {
 		println(err.Error())

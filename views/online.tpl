@@ -213,7 +213,7 @@
               checkbox: true, // 显示一个勾选框
               align: 'center' // 居中显示
           },{{end}} {
-              field: 'id',
+              field: 'dataid',
               title: 'ID',
               align: 'center',
               valign: 'middle'
