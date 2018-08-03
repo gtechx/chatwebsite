@@ -73,9 +73,11 @@
             </a>
           </li>
 
+          <li class="nav-item mt-4">
+          </li>
           {{if .priv.Adminadmin}}
           <li class="nav-item">
-            <a href="/admin/admin/index" class="nav-link mt-4 {{if compare .nav "adminadmin"}}active{{end}}">
+            <a href="/admin/admin/index" class="nav-link {{if compare .nav "adminadmin"}}active{{end}}">
             管理员管理
             </a>
           </li>

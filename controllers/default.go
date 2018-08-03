@@ -116,6 +116,15 @@ func (c *MainController) Login() {
 
 		c.SetSession("account", account)
 
+		flag, _ = gtdb.Manager().IsAdmin(account)
+
+		if flag {
+			tbl_admin, err := gtdb.Manager().GetAdmin(account)
+			if err == nil {
+				c.SetSession("admin", tbl_admin)
+			}
+		}
+
 		c.Redirect("/user/index", 302)
 		return
 	}

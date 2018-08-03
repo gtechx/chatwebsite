@@ -15,7 +15,7 @@ type ZoneController struct {
 
 func (c *ZoneController) Prepare() {
 	account := String(c.GetSession("account"))
-	if account == "" || !c.checkPrivilege() {
+	if account == "" || !c.checkPrivilege() || !c.tbl_admin.Adminapp {
 		c.Redirect("/", 302)
 		return
 	}

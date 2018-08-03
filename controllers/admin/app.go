@@ -16,7 +16,7 @@ type AppController struct {
 
 func (c *AppController) Prepare() {
 	account := String(c.GetSession("account"))
-	if account == "" || !c.checkPrivilege() {
+	if account == "" || !c.checkPrivilege() || !c.tbl_admin.Adminapp {
 		c.Redirect("/", 302)
 		return
 	}

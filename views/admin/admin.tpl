@@ -12,8 +12,8 @@
             </label>
         </div>
         <div class="p-1">
-            <label for="adminuser" class="checkbox-inline">
-                <input type="checkbox" class="" name="adminuser" id="adminuser" placeholder="">adminuser
+            <label for="adminaccount" class="checkbox-inline">
+                <input type="checkbox" class="" name="adminaccount" id="adminaccount" placeholder="">adminaccount
             </label>
         </div>
         <div class="p-1">
@@ -165,7 +165,7 @@
           return {
               account: $("#account").val(),
               adminadmin: $("#adminadmin").prop("checked") ? "on" : "",
-              adminuser: $("#adminuser").prop("checked") ? "on" : "",
+              adminaccount: $("#adminaccount").prop("checked") ? "on" : "",
               adminapp: $("#adminapp").prop("checked") ? "on" : "",
               adminappdata: $("#adminappdata").prop("checked") ? "on" : "",
               adminonline: $("#adminonline").prop("checked") ? "on" : "",
@@ -201,8 +201,8 @@
               align: 'center',
               valign: 'middle'
           }, {
-              field: 'adminuser',
-              title: 'adminuser',
+              field: 'adminaccount',
+              title: 'adminaccount',
               align: 'center',
               valign: 'middle'
           }, {

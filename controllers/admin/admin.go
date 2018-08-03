@@ -12,21 +12,32 @@ import (
 
 type AdminBaseController struct {
 	beego.Controller
+	tbl_admin *gtdb.Admin
 }
 
 func (c *AdminBaseController) checkPrivilege() bool {
-	account := String(c.GetSession("account"))
-	tbl_admin, err := gtdb.Manager().GetAdmin(account)
+	// account := String(c.GetSession("account"))
+	// tbl_admin, err := gtdb.Manager().GetAdmin(account)
 
-	if err != nil {
-		fmt.Println("error:", err.Error())
-		c.Data["error"] = "数据库错误:" + err.Error()
-		return false
+	// if err != nil {
+	// 	fmt.Println("error:", err.Error())
+	// 	c.Data["error"] = "数据库错误:" + err.Error()
+	// 	return false
+	// }
+
+	// c.Data["priv"] = tbl_admin
+
+	adminsess := c.GetSession("admin")
+	if adminsess != nil {
+		tbl_admin, ok := c.GetSession("admin").(*gtdb.Admin)
+		if ok {
+			c.Data["priv"] = tbl_admin
+			c.tbl_admin = tbl_admin
+			return true
+		}
 	}
 
-	c.Data["priv"] = tbl_admin
-
-	return tbl_admin.Adminadmin
+	return false
 }
 
 type AdminController struct {
@@ -35,7 +46,7 @@ type AdminController struct {
 
 func (c *AdminController) Prepare() {
 	account := String(c.GetSession("account"))
-	if account == "" || !c.checkPrivilege() {
+	if account == "" || !c.checkPrivilege() || !c.tbl_admin.Adminadmin {
 		c.Redirect("/", 302)
 		return
 	}
@@ -54,7 +65,7 @@ func (c *AdminController) Create() {
 		c.Data["post"] = true
 		account := c.GetString("account")
 		adminadmin := c.GetString("adminadmin") == "on"
-		adminuser := c.GetString("adminuser") == "on"
+		adminaccount := c.GetString("adminaccount") == "on"
 		adminapp := c.GetString("adminapp") == "on"
 		adminappdata := c.GetString("adminappdata") == "on"
 		adminonline := c.GetString("adminonline") == "on"
@@ -77,7 +88,7 @@ func (c *AdminController) Create() {
 		// 	goto end
 		// }
 
-		if !adminadmin && !adminuser && !adminapp && !adminappdata && !adminonline && !adminmessage {
+		if !adminadmin && !adminaccount && !adminapp && !adminappdata && !adminonline && !adminmessage {
 			c.Data["error"] = "不能所有权限都为空"
 			goto end
 		}
@@ -118,7 +129,7 @@ func (c *AdminController) Create() {
 			goto end
 		}
 
-		tbl_admin = &gtdb.Admin{Account: account, Adminadmin: adminadmin, Adminuser: adminuser, Adminapp: adminapp, Adminappdata: adminappdata, Adminonline: adminonline, Adminmessage: adminmessage, Expire: expire}
+		tbl_admin = &gtdb.Admin{Account: account, Adminadmin: adminadmin, Adminaccount: adminaccount, Adminapp: adminapp, Adminappdata: adminappdata, Adminonline: adminonline, Adminmessage: adminmessage, Expire: expire}
 		err = dbManager.CreateAdmin(tbl_admin)
 
 		if err != nil {
@@ -162,7 +173,7 @@ func (c *AdminController) Update() {
 	if c.Ctx.Request.Method == "POST" {
 		c.Data["post"] = true
 		old_admin.Adminadmin = c.GetString("adminadmin") == "on"
-		old_admin.Adminuser = c.GetString("adminuser") == "on"
+		old_admin.Adminaccount = c.GetString("adminaccount") == "on"
 		old_admin.Adminapp = c.GetString("adminapp") == "on"
 		old_admin.Adminappdata = c.GetString("adminappdata") == "on"
 		old_admin.Adminonline = c.GetString("adminonline") == "on"
@@ -170,14 +181,14 @@ func (c *AdminController) Update() {
 		strexpire := c.GetString("expire")
 		expire, exerr := time.Parse("01/02/2006", strexpire)
 
-		if !old_admin.Adminadmin && !old_admin.Adminuser && !old_admin.Adminapp && !old_admin.Adminappdata && !old_admin.Adminonline && !old_admin.Adminmessage {
+		if !old_admin.Adminadmin && !old_admin.Adminaccount && !old_admin.Adminapp && !old_admin.Adminappdata && !old_admin.Adminonline && !old_admin.Adminmessage {
 			c.Data["error"] = "不能所有权限都为空"
 			goto end
 		}
 
 		// blank_admin := &gtdb.Admin{}
 
-		// new_admin := &gtdb.Admin{Adminadmin: adminadmin, Adminuser: adminuser, Adminapp: adminapp, Adminappdata: adminappdata, Adminonline: adminonline, Adminmessage: adminmessage, Expire: expire}
+		// new_admin := &gtdb.Admin{Adminadmin: adminadmin, Adminaccount: adminaccount, Adminapp: adminapp, Adminappdata: adminappdata, Adminonline: adminonline, Adminmessage: adminmessage, Expire: expire}
 
 		// if strexpire == "" {
 		// 	new_admin.Expire = time.Date(2099, 1, 1, 0, 0, 0, 0, time.Local)
@@ -262,7 +273,7 @@ func (c *AdminController) List() {
 
 	adminfilter.Account = c.GetString("account")
 	adminfilter.Adminadmin = c.GetString("adminadmin") == "on"
-	adminfilter.Adminuser = c.GetString("adminuser") == "on"
+	adminfilter.Adminaccount = c.GetString("adminaccount") == "on"
 	adminfilter.Adminapp = c.GetString("adminapp") == "on"
 	adminfilter.Adminappdata = c.GetString("adminappdata") == "on"
 	adminfilter.Adminonline = c.GetString("adminonline") == "on"
