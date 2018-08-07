@@ -40,8 +40,8 @@
                 <label class="form-check-label" for="adminadmin">管理员管理</label>
             </div>
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="adminuser" name="adminuser" {{if .admin.Adminuser}}checked{{end}}>
-                <label class="form-check-label" for="adminuser">用户管理</label>
+                <input type="checkbox" class="form-check-input" id="adminaccount" name="adminaccount" {{if .admin.Adminaccount}}checked{{end}}>
+                <label class="form-check-label" for="adminaccount">用户管理</label>
             </div>
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" id="adminapp" name="adminapp" {{if .admin.Adminapp}}checked{{end}}>

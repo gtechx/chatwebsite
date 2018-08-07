@@ -407,16 +407,6 @@ var App = {
       }
     }
 
-    function onPresence(buffer) {
-      var bs = readstream.reset(buffer);
-      
-      if(app.onpresence != null)
-      {
-        var presence = JSON.parse(bs.readStringAll());
-        app.onpresence(presence);
-      }
-    }
-
     //group msg start
     var groupcb = null;
     app.creategroup = function (name, cb) {
@@ -512,6 +502,79 @@ var App = {
       updateappdatacb(errcode);
     }
     //appdata update end
+
+    //room msg start
+    var createroomcb = null;
+    app.createroom = function (jsondata, cb) {
+      createroomcb = cb;
+      sendstream.reset();
+      sendstream.writeString(JSON.stringify(jsondata));
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1100, sendstream.getBuffer(), onCreateRoomResult);
+    }
+
+    function onCreateRoomResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(createroomcb != null)
+      createroomcb(errcode);
+    }
+
+    var deleteroomcb = null;
+    app.deleteroom = function (strrid, cb) {
+      deleteroomcb = cb;
+      sendstream.reset();
+      var rid = Long.fromString(strrid, true, 10);
+      sendstream.writeUint64(rid);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1101, sendstream.getBuffer(), onDeleteRoomResult);
+    }
+
+    function onDeleteRoomResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(deleteroomcb != null)
+      deleteroomcb(errcode);
+    }
+
+    var updateroomsettingcb = null;
+    app.updateroomsetting = function (jsondata, cb) {
+      updateroomsettingcb = cb;
+      sendstream.reset();
+      sendstream.writeString(JSON.stringify(jsondata));
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1102, sendstream.getBuffer(), onUpdateRoomSettingResult);
+    }
+
+    function onUpdateRoomSettingResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(updateroomsettingcb != null)
+      updateroomsettingcb(errcode);
+    }
+
+    var joinroomcb = null;
+    app.joinroom = function (jsondata, cb) {
+      joinroomcb = cb;
+      sendstream.reset();
+      sendstream.writeString(JSON.stringify(jsondata));
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1102, sendstream.getBuffer(), onUpdateRoomSettingResult);
+    }
+
+    function onUpdateRoomSettingResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(updateroomsettingcb != null)
+      updateroomsettingcb(errcode);
+    }
+    //room msg end
+
+    function onPresence(buffer) {
+      var bs = readstream.reset(buffer);
+      
+      if(app.onpresence != null)
+      {
+        var presence = JSON.parse(bs.readStringAll());
+        app.onpresence(presence);
+      }
+    }
 
     function onMessage(buffer) {
       var bs = readstream.reset(buffer);

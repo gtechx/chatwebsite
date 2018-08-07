@@ -17,7 +17,7 @@ type AccountController struct {
 
 func (c *AccountController) Prepare() {
 	account := String(c.GetSession("account"))
-	if account == "" || !c.checkPrivilege() || !c.tbl_admin.Adminuser {
+	if account == "" || !c.checkPrivilege() || !c.tbl_admin.Adminaccount {
 		c.Redirect("/", 302)
 		return
 	}
