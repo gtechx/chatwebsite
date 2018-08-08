@@ -18,10 +18,8 @@ var PresenceType = {
 var DataType = {
   DataType_Friend: 0,
   DataType_Presence: 1,
-  DataType_Room: 2,
-  DataType_Black: 3,
-  DataType_Offline_Message: 4,
-  DataType_RoomMessage: 5,
+  DataType_Black: 2,
+  DataType_Offline_Message: 3,
 }
 
 var App = {
