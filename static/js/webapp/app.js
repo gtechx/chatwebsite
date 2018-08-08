@@ -549,18 +549,239 @@ var App = {
     }
 
     var joinroomcb = null;
-    app.joinroom = function (jsondata, cb) {
+    app.joinroom = function (strrid, message, cb) {
       joinroomcb = cb;
       sendstream.reset();
-      sendstream.writeString(JSON.stringify(jsondata));
-      sendMsg(MsgType.ReqFrame, sendstream.length, 1102, sendstream.getBuffer(), onUpdateRoomSettingResult);
+      var jsondata = {}
+      jsondata.presencetype = PresenceType.PresenceType_Subscribe;
+      jsondata.rid = strrid;
+      jsondata.message = message;
+      console.info(JSON.stringify(jsondata));
+      sendstream.writeString(JSON.stringify(jsondata))
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1103, sendstream.getBuffer(), onJoinRoomResult);
     }
 
-    function onUpdateRoomSettingResult(buffer) {
+    app.joinroomwithpassword = function (strrid, password, cb) {
+      joinroomcb = cb;
+      sendstream.reset();
+      var jsondata = {}
+      jsondata.presencetype = PresenceType.PresenceType_Subscribe;
+      jsondata.rid = strrid;
+      jsondata.password = password;
+      console.info(JSON.stringify(jsondata));
+      sendstream.writeString(JSON.stringify(jsondata))
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1103, sendstream.getBuffer(), onJoinRoomResult);
+    }
+
+    function onJoinRoomResult(buffer) {
       var bs = readstream.reset(buffer);
       var errcode = bs.readUint16();
-      if(updateroomsettingcb != null)
-      updateroomsettingcb(errcode);
+      if(joinroomcb != null)
+      joinroomcb(errcode);
+    }
+
+    var quitroomcb = null;
+    app.quitroom = function (strrid, cb) {
+      quitroomcb = cb;
+      sendstream.reset();
+      var jsondata = {}
+      jsondata.presencetype = PresenceType.PresenceType_UnSubscribe;
+      jsondata.rid = strrid;
+      console.info(JSON.stringify(jsondata));
+      sendstream.writeString(JSON.stringify(jsondata))
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1103, sendstream.getBuffer(), onQuitRoomResult);
+    }
+
+    function onQuitRoomResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(quitroomcb != null)
+      quitroomcb(errcode);
+    }
+
+    var agreeroomjoincb = null;
+    app.agreeroomjoin = function (strrid, strid, cb) {
+      agreeroomjoincb = cb;
+      sendstream.reset();
+      var jsondata = {}
+      jsondata.presencetype = PresenceType.PresenceType_Subscribed;
+      jsondata.rid = strrid;
+      jsondata.who = strid;
+      console.info(JSON.stringify(jsondata));
+      sendstream.writeString(JSON.stringify(jsondata))
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1103, sendstream.getBuffer(), onAgreeRoomJoinResult);
+    }
+
+    function onAgreeRoomJoinResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(agreeroomjoincb != null)
+      agreeroomjoincb(errcode);
+    }
+
+    var refuseroomjoincb = null;
+    app.refuseroomjoin = function (strrid, strid, cb) {
+      refuseroomjoincb = cb;
+      sendstream.reset();
+      var jsondata = {}
+      jsondata.presencetype = PresenceType.PresenceType_UnSubscribed;
+      jsondata.rid = strrid;
+      jsondata.who = strid;
+      console.info(JSON.stringify(jsondata));
+      sendstream.writeString(JSON.stringify(jsondata))
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1103, sendstream.getBuffer(), onRefustRoomJoinResult);
+    }
+
+    function onRefustRoomJoinResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(refuseroomjoincb != null)
+      refuseroomjoincb(errcode);
+    }
+
+    var banroomusercb = null;
+    app.banroomuser = function (strrid, strid, cb) {
+      banroomusercb = cb;
+      sendstream.reset();
+      var rid = Long.fromString(strrid, true, 10);
+      var id = Long.fromString(strid, true, 10);
+      sendstream.writeUint64(rid);
+      sendstream.writeUint64(id);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1105, sendstream.getBuffer(), onBanRoomUserResult);
+    }
+
+    function onBanRoomUserResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(banroomusercb != null)
+      banroomusercb(errcode);
+    }
+
+    var jinyanroomusercb = null;
+    app.jinyanroomuser = function (strrid, strid, cb) {
+      jinyanroomusercb = cb;
+      sendstream.reset();
+      var rid = Long.fromString(strrid, true, 10);
+      var id = Long.fromString(strid, true, 10);
+      sendstream.writeUint64(rid);
+      sendstream.writeUint64(id);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1106, sendstream.getBuffer(), onJinyanRoomUserResult);
+    }
+
+    function onJinyanRoomUserResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(jinyanroomusercb != null)
+      jinyanroomusercb(errcode);
+    }
+
+    var unjinyanroomusercb = null;
+    app.unjinyanroomuser = function (strrid, strid, cb) {
+      unjinyanroomusercb = cb;
+      sendstream.reset();
+      var rid = Long.fromString(strrid, true, 10);
+      var id = Long.fromString(strid, true, 10);
+      sendstream.writeUint64(rid);
+      sendstream.writeUint64(id);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1107, sendstream.getBuffer(), onUnJinyanRoomUserResult);
+    }
+
+    function onUnJinyanRoomUserResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(unjinyanroomusercb != null)
+      unjinyanroomusercb(errcode);
+    }
+
+    var addroomadmincb = null;
+    app.addroomadmin = function (strrid, strid, cb) {
+      addroomadmincb = cb;
+      sendstream.reset();
+      var rid = Long.fromString(strrid, true, 10);
+      var id = Long.fromString(strid, true, 10);
+      sendstream.writeUint64(rid);
+      sendstream.writeUint64(id);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1108, sendstream.getBuffer(), onAddRoomAdminResult);
+    }
+
+    function onAddRoomAdminResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(addroomadmincb != null)
+      addroomadmincb(errcode);
+    }
+
+    var removeroomadmincb = null;
+    app.removeroomadmin = function (strrid, strid, cb) {
+      removeroomadmincb = cb;
+      sendstream.reset();
+      var rid = Long.fromString(strrid, true, 10);
+      var id = Long.fromString(strid, true, 10);
+      sendstream.writeUint64(rid);
+      sendstream.writeUint64(id);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1109, sendstream.getBuffer(), onRemoveRoomAdminResult);
+    }
+
+    function onRemoveRoomAdminResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(removeroomadmincb != null)
+      removeroomadmincb(errcode);
+    }
+
+    var sendroommessagecb = null;
+    app.sendroommessage = function (strrid, message, cb) {
+      sendroommessagecb = cb;
+      sendstream.reset();
+      var jsondata = {}
+      jsondata.rid = strrid;
+      jsondata.message = message;
+      sendstream.writeString(JSON.stringify(jsondata))
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1110, sendstream.getBuffer(), onSendRoomMessageResult);
+    }
+
+    function onSendRoomMessageResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(sendroommessagecb != null)
+      sendroommessagecb(errcode);
+    }
+
+    var reqroomlistcb = null;
+    app.reqroomlist = function (cb) {
+      reqroomlistcb = cb;
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1111, null, onReqRoomListResult);
+    }
+
+    function onReqRoomListResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(reqroomlistcb != null)
+      {
+        var jsonstr = bs.readStringAll();
+        var datalist = JSON.parse(jsonstr);
+        reqroomlistcb(errcode, datalist);
+      }
+    }
+
+    var reqroompresencelistcb = null;
+    app.reqroompresencelist = function (strrid, cb) {
+      reqroompresencelistcb = cb;
+      sendstream.reset();
+      var rid = Long.fromString(strrid, true, 10);
+      sendstream.writeUint64(rid);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1112, null, onReqRoomPresenceListResult);
+    }
+
+    function onReqRoomPresenceListResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(reqroompresencelistcb != null)
+      {
+        var jsonstr = bs.readStringAll();
+        var datalist = JSON.parse(jsonstr);
+        reqroompresencelistcb(errcode, datalist);
+      }
     }
     //room msg end
 
