@@ -101,6 +101,43 @@
     <!-- /.modal-dialog -->
 </div>
 
+<div class="modal fade" id="modal-createroom" style="display: none;">
+    <div class="modal-dialog" style="position:absolute;top:40%;left:50%; transform:translate(-50%, -50%);">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span></button>
+            <h6 class="modal-title">Create Room</h6>
+            </div>
+            <div class="modal-body">
+                <label>Room Name</label>
+                <input id="createroom-roomname" type="text" class="form-control">
+                
+                <label>Jieshao</label>
+                <input id="createroom-jieshao" type="text" class="form-control">
+                <label>Notice</label>
+                <input id="createroom-notice" type="text" class="form-control">
+
+                <label>Room Type</label>
+                <select id="createroom-roomtype" class="form-control" onchange="if(this.value == 3){$('#createroom-password').removeClass('hide');$('#createroom-password-lb').removeClass('hide');}else {$('#createroom-password').addClass('hide');$('#createroom-password-lb').addClass('hide');}" style="width:100px">
+                    <option value="1">所有人</option>
+                    <option value="2">审核加入</option>
+                    <option value="3">密码</option>
+                </select>
+                <label id="createroom-password-lb" class="hide">Password</label>
+                <input id="createroom-password" type="text" class="form-control hide">
+                
+                <button onclick='doCreateRoom();' type="button" class="btn btn-primary">Save</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
 <script>
 $( function() {
     $( "#info-birthday" ).datepicker();
@@ -206,5 +243,36 @@ function showUserInfoPanel(jsondata) {
     $("#info-country").countrySelect("refresh");
     $("#modal-info").data("user", jsondata);
     $("#modal-info").modal("show");
+}
+
+function showCreateRoomPanel() {
+    $("#modal-createroom").modal("show");
+}
+
+function doCreateRoom() {
+    var roomname = $("#createroom-roomname").val();
+    if(roomname == "") {
+        alert("roomname should not be empty!");
+        return;
+    }
+
+    var roomtype = $("#createroom-roomtype").val();
+    var password = $("#createroom-password").val();
+    if(roomtype == 3 && password == "") {
+        alert("password should not be empty!");
+        return;
+    }
+
+    var jsondata = {};
+    jsondata["roomname"] = roomname;
+    jsondata["roomtype"] = roomtype;
+    if(roomtype == 3) {
+        jsondata["password"] = password;
+    }
+    jsondata["jieshao"] = $("#createroom-jieshao").val();
+    jsondata["notice"] = $("#createroom-notice").val();
+
+    reqCreateRoom(jsondata);
+    $("#modal-createroom").modal("hide");
 }
 </script>

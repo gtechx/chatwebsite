@@ -14,11 +14,14 @@
         <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
         <!-- Custom Tabs -->
         <div style="width:100%;margin-bottom:2px;" class="btn-group" data-toggle="buttons">
-        <button style="width:50%;" class="btn btn-primary active" id="btn_friend" onclick="$('#tab_presence').hide('slide', {direction:'right'});$('#tab_friend').show('slide', {direction:'left'});">
-            <span>6</span><input type="radio" autocomplete="off" checked /> <i class="fa fa-users"></i>
+        <button style="width:33%;" class="btn btn-primary active" id="btn_friend" onclick="$('.tab-pane').hide();$('#tab_friend').show();">
+            <span>6</span><input type="radio" autocomplete="off" checked /> <i class="fa fa-user"></i>
         </button>
-        <button style="width:50%;" class="btn btn-primary" id="btn_presence" onclick="$('#tab_friend').hide('slide', {direction:'left'});$('#tab_presence').show('slide', {direction:'right'});">
+        <button style="width:33%;" class="btn btn-primary" id="btn_presence" onclick="$('.tab-pane').hide();$('#tab_presence').show();">
             <span>6</span><input type="radio" autocomplete="off" /> <i class="fa fa-comments"></i>
+        </button>
+        <button style="width:33%;" class="btn btn-primary" id="btn_room" onclick="$('.tab-pane').hide();$('#tab_room').show();">
+            <span>6</span><input type="radio" autocomplete="off" /> <i class="fa fa-group"></i>
         </button>
       </div>
 
@@ -31,12 +34,15 @@
                         
                     </ul>
                 </div>
+
+                {{template "roompanel.tpl" .}}
                 <!-- /.tab-pane -->
     </div>
   <!-- /.box-body -->
     <div class="bg-yellow-gradient" style="width:100%;position:absolute;bottom:0;">
-        <button type="button" class="btn btn-box-tool" data-toggle="modal" data-target="#modal-add"><i class="fa fa-plus"></i></button>
+        <button type="button" class="btn btn-box-tool" data-toggle="modal" data-target="#modal-add"><i class="fa fa-user-plus"></i></button>
         <button type="button" class="btn btn-box-tool"><i class="fa fa-search"></i></button>
+        <button type="button" class="btn btn-box-tool" data-toggle="modal" data-target="#modal-createroom"><i class="fa fa-group">group</i></button>
     </div>
   </div>
   
@@ -48,6 +54,7 @@
         $("#fpanelpart").resizable({handles: "se", minWidth: 250, maxWidth:500, minHeight:500, maxHeight:650});
         $("#fpanelpart").css("height", 500).css("width", 250);
         $('#tab_presence').hide();
+        $('#tab_room').hide();
         $('#tab_friend').show('slide');
         //$('#btn_friend').addClass('active');
         $( "#radio" ).controlgroup();
@@ -231,7 +238,7 @@
                 <button onclick="refuseFriend(\''+data.who+'\');$(this).parent().html(\'refused\');">refuse</button></span>';
         }
             
-        html += '<span class="label label-warning pull-left">' + newDate.Format() + '</span></a>';
+        html += '<span class="label label-warning pull-left">' + newDate.format() + '</span></a>';
         //</li>';
 
         var li = $(document.createElement("li"));

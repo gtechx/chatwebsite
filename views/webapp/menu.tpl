@@ -9,7 +9,7 @@
             <li onclick=""><div>Utilities</div></li>
         </ul>
     </li>
-    <li onclick="if (confirm('确认要该好友吗？')==false){return;};delFriend($(this).parent().data('user').who);removeFriendItem($(this).parent().data('user'));"><div>Delete</div></li>
+    <li onclick="if (confirm('确认要删除该好友吗？')==false){return;};delFriend($(this).parent().data('user').who);removeFriendItem($(this).parent().data('user'));"><div>Delete</div></li>
     <li onclick="reqAddBlack($(this).parent().data('user').who);"><div>Add To Black</div></li>
 </ul>
 
@@ -25,15 +25,29 @@
     <li onclick="reqFriendList();"><div>Refresh Friend List</div></li>
 </ul>
 
+<ul id="roommenu" class="hide" style="position:absolute;z-index:9999;">
+    <li onclick="openRoomChatPanel($(this).parent().data('room'));"><div>Send Message</div></li>
+    <li onclick="reqUserData($(this).parent().data('user').who);"><div>Show Info</div></li>
+    <li onclick="showModifyCommentPanel($(this).parent().data('user').who);"><div>Modify Comment</div></li>
+    
+    <li onclick="if (confirm('确认要删除该房间？这将移除房间所有成员')==false){return;};reqDeleteRoom($(this).parent().data('room').rid);"><div>Delete</div></li>
+    <li onclick="reqRoomList();"><div>Refresh Room List</div></li>
+</ul>
+
 <style>
   .ui-menu { width: 150px; }
 </style>
 
 <script>
+    var allMenus = ["fmenu", "gmenu", "bodymenu", "roommenu"];
     $( function() {
-        $( "#fmenu" ).menu();
-        $( "#gmenu" ).menu();
-        $( "#bodymenu" ).menu();
+        // $( "#fmenu" ).menu();
+        // $( "#gmenu" ).menu();
+        // $( "#bodymenu" ).menu();
+        // $( "#roommenu" ).menu();
+        for(var i in allMenus) {
+            $('#'+allMenus[i]).menu();
+        }
     } );
 
     function showFriendMenu(e, data) {
@@ -67,11 +81,32 @@
         menu.css("left", e.clientX);
     }
 
+    function showRoomMenu(e, data) {
+        var menu = $( "#roommenu" );
+        menu.data("room", data);
+        menu.removeClass("hide");
+        menu.css("top", e.clientY);
+        menu.css("left", e.clientX);
+    }
+
     function stopPropagation(e) {
         if (e.stopPropagation) 
             e.stopPropagation();//停止冒泡  非ie
         else 
             e.cancelBubble = true;//停止冒泡 ie
+    }
+
+    function hideAllMenus() {
+        for(var i in allMenus) {
+            $('#'+allMenus[i]).addClass("hide");
+        }
+    }
+
+    function isMenu(eid) {
+        for(var i in allMenus) {
+            if(allMenus[i] == eid)
+                return true;
+        }
     }
 
     $(document).bind('mousedown',function(e){
@@ -81,15 +116,13 @@
         //console.info(e);
         var elem = e.target || e.srcElement;
         while (elem) { //循环判断至跟节点，防止点击的是div子元素
-            if (elem.id && (elem.id=='fmenu' || elem.id=='gmenu' || elem.id=='bodymenu')) {
+            if (elem.id && isMenu(elem.id)) {
                 return;
             }
 
             elem = elem.parentNode;
         }
-        $('#fmenu').addClass("hide"); //点击的不是div或其子元素
-        $('#gmenu').addClass("hide");
-        $('#bodymenu').addClass("hide");
+        hideAllMenus();
     });
     $(document).bind('click',function(e){
         //$('#fmenu').addClass("hide");
@@ -97,10 +130,8 @@
         var e = e || window.event; //浏览器兼容性
         var elem = e.target || e.srcElement;
         while (elem) { //循环判断至跟节点，防止点击的是div子元素
-            if (elem.id && (elem.id=='fmenu' || elem.id=='gmenu' || elem.id=='bodymenu')) {
-                $('#fmenu').addClass("hide");
-                $('#gmenu').addClass("hide");
-                $('#bodymenu').addClass("hide");
+            if (elem.id && isMenu(elem.id)) {
+                hideAllMenus();
                 return;
             }
 

@@ -3,13 +3,13 @@
     <div class="box box-primary direct-chat direct-chat-primary">
         <div class="box-header with-border">
             <h2 class="box-id hide">Direct Chat</h2>
-            <h3 class="box-title">Direct Chat</h3>
+            <i class="fa fa-group hide"><h3 class="box-title"></i>Direct Chat</h3>
 
             <div class="box-tools pull-right">
                 <span data-toggle="tooltip" title="" class="badge bg-light-blue hide" data-original-title="3 New Messages">3</span>
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                 </button>
-                <button type="button" class="btn btn-box-tool hide" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Contacts">
+                <button type="button" class="btn btn-box-tool roomuser hide" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Contacts">
                     <i class="fa fa-comments"></i>
                 </button>
                 <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
@@ -21,6 +21,28 @@
             <div class="direct-chat-messages">
             </div>
             <!--/.direct-chat-messages-->
+
+            <!-- Contacts are loaded here -->
+            <div class="direct-chat-contacts">
+                <ul class="contacts-list">
+                    <li>
+                    <a href="#">
+                        <img class="contacts-list-img" src="static/dist/img/user1-128x128.jpg" alt="User Image">
+
+                        <div class="contacts-list-info">
+                            <span class="contacts-list-name">
+                                Count Dracula
+                                <small class="contacts-list-date pull-right">2/28/2015</small>
+                            </span>
+                        <span class="contacts-list-msg">How have you been? I was...</span>
+                        </div>
+                        <!-- /.contacts-list-info -->
+                    </a>
+                    </li>
+                    <!-- End Contact Item -->
+                </ul>
+            <!-- /.contatcts-list -->
+            </div>
         </div>
         <!-- /.box-body -->
         <div class="box-footer">
@@ -92,6 +114,51 @@ function openChatPanel(data) {
     // $(".direct-chat .box-header h3").html(data.nickname);
 }
 
+function openRoomChatPanel(data) {
+    //onclick="$('#chatpanel').addClass('hide');"
+    if(chatpanellist["chatpanel-" + data.rid] != null){
+        chatpanellist["chatpanel-" + data.rid].css("z-index", curz);
+        curz++;
+        return chatpanellist["chatpanel-" + data.rid];
+    }
+    var newchatpanel = $( "#chatpanel" ).clone();
+    newchatpanel.find(".direct-chat").directChat();
+    newchatpanel.find(".direct-chat").boxWidget();
+    newchatpanel.attr("id", "chatpanel-" + data.rid);
+    newchatpanel.removeClass("hide");
+    newchatpanel.find(".direct-chat .box-header h3").html(data.roomname);
+
+    newchatpanel.find(".direct-chat .box-header .fa").removeClass("hide");
+    newchatpanel.find(".roomuser").removeClass("hide");
+
+    newchatpanel.draggable({handle: ".direct-chat .box-header", cursor: "move"});
+    newchatpanel.css("z-index", curz);
+    curz++;
+    chatpanellist["chatpanel-" + data.rid] = newchatpanel;
+
+    newchatpanel.mousedown(function(){
+        newchatpanel.css("z-index", curz);
+        curz++;
+    });
+
+    newchatpanel.find(".box-footer button").click(function(){
+        var msginput = newchatpanel.find(".box-footer input");
+        startSendMessage(data, msginput.val());
+        msginput.val('');
+    });
+
+    newchatpanel.on('removed.boxwidget', function (event) {
+      newchatpanel.remove();
+      delete chatpanellist["chatpanel-" + data.rid];
+      return true;
+    });
+
+    $( "#chatpanel" ).parent().append(newchatpanel);
+    return newchatpanel;
+    // $( "#chatpanel" ).removeClass("hide");
+    // $(".direct-chat .box-header h3").html(data.nickname);
+}
+
 function getChatTitle() {
     return $(".direct-chat .box-header h3").html();
 }
@@ -111,7 +178,7 @@ function addMessage(msg) {
                 html += '<span class="direct-chat-name pull-left">' + frienddatabyid[msg.who].comment + '(' + msg.nickname + ')' + '</span>';
             else
                 html += '<span class="direct-chat-name pull-left">' + msg.nickname + '</span>';
-            html += '<span class="direct-chat-timestamp pull-right">' + new Date(parseInt(msg.timestamp) * 1000).Format() + '</span>' +
+            html += '<span class="direct-chat-timestamp pull-right">' + new Date(parseInt(msg.timestamp) * 1000).format() + '</span>' +
         '</div>' +
         '<img class="direct-chat-img" src="static/dist/img/user1-128x128.jpg" alt="Message User Image">' +
         '<div class="direct-chat-text">'+
@@ -127,7 +194,7 @@ function addSendMessage(msg) {
     var html = '<div class="direct-chat-msg right">' +
         '<div class="direct-chat-info clearfix">' +
             '<span class="direct-chat-name pull-right">' + msg.from + '</span>' +
-            '<span class="direct-chat-timestamp pull-left">' + new Date().Format("yyyy/MM/dd hh:mm:ss") + '</span>' +
+            '<span class="direct-chat-timestamp pull-left">' + new Date().format("yyyy/MM/dd hh:mm:ss") + '</span>' +
         '</div>' +
         '<img class="direct-chat-img" src="static/dist/img/user1-128x128.jpg" alt="Message User Image">' +
         '<div class="direct-chat-text">'+
@@ -146,7 +213,7 @@ function addSendMessage(msg) {
 function startSendMessage(data, message) {
     var msg = {};
     //msg.nickname = userdata.nickname;
-    //msg.timestamp = new Date().getTime() / 1000;//new Date().Format("yyyy/MM/dd hh:mm:ss");
+    //msg.timestamp = new Date().getTime() / 1000;//new Date().format("yyyy/MM/dd hh:mm:ss");
     msg.message = message;
     msg.who = data.who;
 

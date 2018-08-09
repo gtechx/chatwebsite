@@ -7,7 +7,7 @@ function bytesToString(buffer) {
   return new TextEncoder("utf-8").decode(buffer);
 }
 
-Date.prototype.Format = function (fmt) { // author: meizz
+Date.prototype.format = function (fmt) { // author: meizz
   if(fmt == "" || fmt == undefined || fmt == null)
       fmt = "yyyy-MM-ddThh:mm:ss.SSS+th:tm";
   var date = {
@@ -17,15 +17,17 @@ Date.prototype.Format = function (fmt) { // author: meizz
       "m+": this.getMinutes(), // 分
       "s+": this.getSeconds(), // 秒
       "q+": Math.floor((this.getMonth() + 3) / 3), // 季度
-      "S": this.getMilliseconds(), // 毫秒
+      "S+": this.getMilliseconds(), // 毫秒
       "th+": this.getTimezoneOffset() / -60, //时区
 		  "tm+": 0 //时区的分
   };
-  if (/(y+)/.test(fmt))
+  if (/(y+)/i.test(fmt))
       fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
   for (var k in date)
-      if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (date[k]) : (("000" + date[k]).substr(-RegExp.$1.length)));
-          return fmt;
+      if (new RegExp("(" + k + ")").test(fmt)) {
+        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? date[k] : ("000" + date[k]).substr(-RegExp.$1.length));
+      }
+      return fmt;
 }
 
 var BinaryStream = {

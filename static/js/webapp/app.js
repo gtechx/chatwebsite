@@ -13,6 +13,8 @@ var PresenceType = {
   PresenceType_Available: 4,
   PresenceType_Unavailable: 5,
   PresenceType_Invisible: 6,
+
+  PresenceType_Dismiss: 7,
 }
 
 var DataType = {
@@ -31,6 +33,7 @@ var App = {
     app.onerror = null;
     app.onclose = null;
     app.onpresence = null;
+    app.onroompresence = null;
     app.onmessage = null;
     app.onkickout = null;
 
@@ -750,7 +753,7 @@ var App = {
     var reqroomlistcb = null;
     app.reqroomlist = function (cb) {
       reqroomlistcb = cb;
-      sendMsg(MsgType.ReqFrame, sendstream.length, 1111, null, onReqRoomListResult);
+      sendMsg(MsgType.ReqFrame, 0, 1111, null, onReqRoomListResult);
     }
 
     function onReqRoomListResult(buffer) {
@@ -770,7 +773,7 @@ var App = {
       sendstream.reset();
       var rid = Long.fromString(strrid, true, 10);
       sendstream.writeUint64(rid);
-      sendMsg(MsgType.ReqFrame, sendstream.length, 1112, null, onReqRoomPresenceListResult);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1112, sendstream.getBuffer(), onReqRoomPresenceListResult);
     }
 
     function onReqRoomPresenceListResult(buffer) {
@@ -783,6 +786,26 @@ var App = {
         reqroompresencelistcb(errcode, datalist);
       }
     }
+
+    var reqroomuserlistcb = null;
+    app.reqroomuserlist = function (strrid, cb) {
+      reqroomuserlistcb = cb;
+      sendstream.reset();
+      var rid = Long.fromString(strrid, true, 10);
+      sendstream.writeUint64(rid);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1113, sendstream.getBuffer(), onReqRoomUserListResult);
+    }
+
+    function onReqRoomUserListResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(reqroomuserlistcb != null)
+      {
+        var jsonstr = bs.readStringAll();
+        var datalist = JSON.parse(jsonstr);
+        reqroomuserlistcb(errcode, datalist);
+      }
+    }
     //room msg end
 
     function onPresence(buffer) {
@@ -792,6 +815,16 @@ var App = {
       {
         var presence = JSON.parse(bs.readStringAll());
         app.onpresence(presence);
+      }
+    }
+
+    function onRoomPresence(buffer) {
+      var bs = readstream.reset(buffer);
+      
+      if(app.onroompresence != null)
+      {
+        var presence = JSON.parse(bs.readStringAll());
+        app.onroompresence(presence);
       }
     }
 
@@ -857,6 +890,8 @@ var App = {
           } else {
             if(header.msgid == 1007){
               onPresence(header.databuff);
+            } else if(header.msgid == 1103){
+              onRoomPresence(header.databuff);
             } else if(header.msgid == 1008){
               onMessage(header.databuff);
             } else if(header.msgid == 1022 && app.onkickout != null){

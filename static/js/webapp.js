@@ -29,6 +29,7 @@ function login(account, password, appname, zonename) {
     console.info("you have been kicked out from server.");
   };
   myapp.onpresence = onPresence;
+  myapp.onroompresence = onRoomPresence;
   myapp.onmessage = onMessage;
   myapp.connect("127.0.0.1:9090");
 }
@@ -92,6 +93,7 @@ function onMyData(errcode, jsondata) {
     reqFriendList();
     reqPresenceList();
     myapp.reqofflinemsglist();
+    reqRoomList();
   }
 }
 
@@ -298,3 +300,162 @@ function onUpdateAppdataResult(errcode) {
   console.info("onUpdateAppdataResult errcode:" + errcode);
 }
 //appdata update end
+
+//room start
+function reqCreateRoom(jsondata) {
+  console.info(jsondata);
+  myapp.createroom(jsondata, onCreateRoomResult);
+}
+
+function onCreateRoomResult(errcode) {
+  console.info("onCreateRoomResult errcode:" + errcode);
+  if(errcode == 0)
+  reqRoomList();
+}
+
+function reqDeleteRoom(strrid) {
+  myapp.deleteroom(strrid, onDeleteRoomResult);
+}
+
+function onDeleteRoomResult(errcode) {
+  console.info("onDeleteRoomResult errcode:" + errcode);
+  if(errcode == 0)
+  reqRoomList();
+}
+
+function reqUpdateRoomSeting(jsondata) {
+  myapp.updateroomsetting(jsondata, onUpdateRoomSetingResult);
+}
+
+function onUpdateRoomSetingResult(errcode) {
+  console.info("onUpdateRoomSetingResult errcode:" + errcode);
+}
+
+function reqJoinRoom(strrid, message) {
+  myapp.joinroom(strrid, message, onJoinRoomResult);
+}
+
+function onJoinRoomResult(errcode) {
+  console.info("onJoinRoomResult errcode:" + errcode);
+  if(errcode == 0)
+  reqRoomList();
+}
+
+function reqJoinRoomWithPassword(strrid, password) {
+  myapp.joinroomwithpassword(strrid, password, onJoinRoomWithPasswordResult);
+}
+
+function onJoinRoomWithPasswordResult(errcode) {
+  console.info("onJoinRoomWithPasswordResult errcode:" + errcode);
+}
+
+function reqQuitRoom(strrid) {
+  myapp.quitroom(strrid, onQuitRoomResult);
+}
+
+function onQuitRoomResult(errcode) {
+  console.info("onQuitRoomResult errcode:" + errcode);
+}
+
+function reqAgreeRoomJoin(ridstr, idstr) {
+  myapp.agreeroomjoin(ridstr, idstr, onAgreeRoomJoinResult);
+}
+
+function onAgreeRoomJoinResult(errcode) {
+  console.info("onAgreeRoomJoinResult errcode:" + errcode);
+}
+
+function reqRefuseRoomJoin(ridstr, idstr) {
+  myapp.refuseroomjoin(ridstr, idstr, onRefuseRoomJoinResult);
+}
+
+function onRefuseRoomJoinResult(errcode) {
+  console.info("onRefuseRoomJoinResult errcode:" + errcode);
+}
+
+function reqBanRoomUser(ridstr, idstr) {
+  myapp.banroomuser(ridstr, idstr, onBanRoomUserResult);
+}
+
+function onBanRoomUserResult(errcode) {
+  console.info("onBanRoomUserResult errcode:" + errcode);
+}
+
+function reqJinyanRoomUser(ridstr, idstr) {
+  myapp.jinyanroomuser(ridstr, idstr, onJinyanRoomUserResult);
+}
+
+function onJinyanRoomUserResult(errcode) {
+  console.info("onJinyanRoomUserResult errcode:" + errcode);
+}
+
+function reqUnJinyanRoomUser(ridstr, idstr) {
+  myapp.unjinyanroomuser(ridstr, idstr, onUnJinyanRoomUserResult);
+}
+
+function onUnJinyanRoomUserResult(errcode) {
+  console.info("onUnJinyanRoomUserResult errcode:" + errcode);
+}
+
+function reqAddRoomAdmin(ridstr, idstr) {
+  myapp.addroomadmin(ridstr, idstr, onAddRoomAdminResult);
+}
+
+function onAddRoomAdminResult(errcode) {
+  console.info("onAddRoomAdminResult errcode:" + errcode);
+}
+
+function reqRemoveRoomAdmin(ridstr, idstr) {
+  myapp.removeroomadmin(ridstr, idstr, onRemoveRoomAdminResult);
+}
+
+function onRemoveRoomAdminResult(errcode) {
+  console.info("onRemoveRoomAdminResult errcode:" + errcode);
+}
+
+function reqSendRoomMessage(ridstr, message) {
+  myapp.sendroommessage(ridstr, message, onSendRoomMessageResult);
+}
+
+function onSendRoomMessageResult(errcode) {
+  console.info("onSendRoomMessageResult errcode:" + errcode);
+}
+
+function reqRoomList() {
+  myapp.reqroomlist(onRoomListResult);
+}
+
+function onRoomListResult(errcode, data) {
+  console.info("onRoomListResult errcode:" + errcode);
+  console.info("data:" + data);
+  clearRoomList();
+  for(var i = 0; i < data.length; i ++) {
+    console.info("onRoomListResult data:" + JSON.stringify(data[i]));
+    addRoom(data[i]);
+  }
+}
+
+function reqRoomPresenceList(ridstr) {
+  myapp.reqroompresencelist(ridstr, onRoomPresenceListResult);
+}
+
+function onRoomPresenceListResult(errcode, data) {
+  console.info("onRoomPresenceListResult errcode:" + errcode);
+  console.info("data:" + data);
+  for(var i = 0; i < data.length; i ++) {
+    console.info("onRoomPresenceListResult data:" + JSON.stringify(data[i]));
+    addRoom(data[i]);
+  }
+}
+
+function onRoomPresence(jsondata) {
+  console.info("onRoomPresence jsondata:" + jsondata);
+  // addPresence(jsondata);
+  // if(jsondata.presencetype == PresenceType.PresenceType_Unsubscribe){
+  //   console.info("PresenceType_Unsubscribe " + jsondata.who)
+  //   removeFriendItemById(jsondata.who);
+  // } else if(jsondata.presencetype == PresenceType.PresenceType_Subscribed){
+  //   reqFriendList();
+  // }
+}
+//room end
