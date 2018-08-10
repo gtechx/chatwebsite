@@ -10,6 +10,7 @@ var messagelist = {};
 var userdata = {};
 var frienddata = {};
 var frienddatabyid = {};
+var roomdata = {};
 var myapp = App.new();
 function login(account, password, appname, zonename) {
   myapp.onlogined = onLogined
@@ -429,9 +430,11 @@ function onRoomListResult(errcode, data) {
   console.info("onRoomListResult errcode:" + errcode);
   console.info("data:" + data);
   clearRoomList();
+  roomdata = {};
   for(var i = 0; i < data.length; i ++) {
     console.info("onRoomListResult data:" + JSON.stringify(data[i]));
     addRoom(data[i]);
+    roomdata[data[i].rid] = data[i];
   }
 }
 
@@ -459,3 +462,50 @@ function onRoomPresence(jsondata) {
   // }
 }
 //room end
+
+//search start
+function reqSearchUserById(idstr) {
+  myapp.reqsearchuserbyid(idstr, onSearchUserByIdResult);
+}
+
+function onSearchUserByIdResult(errcode, data) {
+  console.info("onSearchUserByIdResult errcode:" + errcode);
+  console.info("data:" + JSON.stringify(data));
+  if(errcode == 0 && data) {
+    clearSearchUserById();
+    // for(var i = 0; i < data.length; i ++) {
+    //   console.info("onSearchUserByIdResult data:" + JSON.stringify(data[i]));
+    //   addSearchUserById(data[i]);
+    // }
+    addSearchUserById(data);
+  }
+}
+
+function reqSearchUserByNickname(nickname) {
+  myapp.reqsearchuserbynickname(nickname, onSearchUserByNicknameResult);
+}
+
+function onSearchUserByNicknameResult(errcode, data) {
+  console.info("onSearchUserByNicknameResult errcode:" + errcode);
+  console.info("data:" + JSON.stringify(data));
+  clearSearchUserByNickname();
+  for(var i = 0; i < data.length; i ++) {
+    console.info("onSearchUserByNicknameResult data:" + JSON.stringify(data[i]));
+    addSearchUserByNickname(data[i]);
+  }
+}
+
+function reqSearchRoom(idstr) {
+  myapp.reqsearchroom(idstr, onSearchRoomResult);
+}
+
+function onSearchRoomResult(errcode, data) {
+  console.info("onSearchRoomResult errcode:" + errcode);
+  console.info("data:" + JSON.stringify(data));
+  clearSearchRoom();
+  for(var i = 0; i < data.length; i ++) {
+    console.info("onSearchRoomResult data:" + JSON.stringify(data[i]));
+    addSearchRoom(data[i]);
+  }
+}
+//search end

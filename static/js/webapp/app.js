@@ -808,6 +808,69 @@ var App = {
     }
     //room msg end
 
+    //search start
+    var reqsearchuserbyidcb = null;
+    app.reqsearchuserbyid = function (strid, cb) {
+      reqsearchuserbyidcb = cb;
+      sendstream.reset();
+      var rid = Long.fromString(strid, true, 10);
+      sendstream.writeUint64(rid);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1023, sendstream.getBuffer(), onReqSearchUserByIdResult);
+    }
+
+    function onReqSearchUserByIdResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(reqsearchuserbyidcb != null)
+      {
+        var jsonstr = bs.readStringAll();
+        var datalist = null;
+        if(jsonstr != ""){
+          datalist = JSON.parse(jsonstr);
+        }
+        reqsearchuserbyidcb(errcode, datalist);
+      }
+    }
+
+    var reqsearchuserbynicknamecb = null;
+    app.reqsearchuserbynickname = function (nickname, cb) {
+      reqsearchuserbynicknamecb = cb;
+      sendstream.reset();
+      sendstream.writeString(nickname);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1024, sendstream.getBuffer(), onReqSearchUserByNicknameResult);
+    }
+
+    function onReqSearchUserByNicknameResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(reqsearchuserbynicknamecb != null)
+      {
+        var jsonstr = bs.readStringAll();
+        var datalist = JSON.parse(jsonstr);
+        reqsearchuserbynicknamecb(errcode, datalist);
+      }
+    }
+
+    var reqsearchroomcb = null;
+    app.reqsearchroom = function (roomname, cb) {
+      reqsearchroomcb = cb;
+      sendstream.reset();
+      sendstream.writeString(roomname);
+      sendMsg(MsgType.ReqFrame, sendstream.length, 1025, sendstream.getBuffer(), onReqSearchRoomResult);
+    }
+
+    function onReqSearchRoomResult(buffer) {
+      var bs = readstream.reset(buffer);
+      var errcode = bs.readUint16();
+      if(reqsearchroomcb != null)
+      {
+        var jsonstr = bs.readStringAll();
+        var datalist = JSON.parse(jsonstr);
+        reqsearchroomcb(errcode, datalist);
+      }
+    }
+    //search end
+
     function onPresence(buffer) {
       var bs = readstream.reset(buffer);
       
