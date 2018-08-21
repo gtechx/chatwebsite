@@ -8,10 +8,10 @@ var MsgType = {
 var PresenceType = {
   PresenceType_Subscribe: 0,
   PresenceType_Subscribed: 1,
-  PresenceType_Unsubscribe: 2,
-  PresenceType_Unsubscribed: 3,
+  PresenceType_UnSubscribe: 2,
+  PresenceType_UnSubscribed: 3,
   PresenceType_Available: 4,
-  PresenceType_Unavailable: 5,
+  PresenceType_UnAvailable: 5,
   PresenceType_Invisible: 6,
 
   PresenceType_Dismiss: 7,
@@ -286,7 +286,7 @@ var App = {
       presencecb = cb;
       sendstream.reset();
       var jsondata = {}
-      jsondata.presencetype = PresenceType.PresenceType_Unsubscribe;
+      jsondata.presencetype = PresenceType.PresenceType_UnSubscribe;
       jsondata.who = idstr;
       sendstream.writeString(JSON.stringify(jsondata))
       sendMsg(MsgType.ReqFrame, sendstream.length, 1007, sendstream.getBuffer(), onPresenceResult);
@@ -306,7 +306,7 @@ var App = {
       presencecb = cb;
       sendstream.reset();
       var jsondata = {}
-      jsondata.presencetype = PresenceType.PresenceType_Unsubscribed;
+      jsondata.presencetype = PresenceType.PresenceType_UnSubscribed;
       jsondata.who = idstr;
       sendstream.writeString(JSON.stringify(jsondata))
       sendMsg(MsgType.ReqFrame, sendstream.length, 1007, sendstream.getBuffer(), onPresenceResult);
@@ -590,6 +590,7 @@ var App = {
       var jsondata = {}
       jsondata.presencetype = PresenceType.PresenceType_UnSubscribe;
       jsondata.rid = strrid;
+      console.info(jsondata);
       console.info(JSON.stringify(jsondata));
       sendstream.writeString(JSON.stringify(jsondata))
       sendMsg(MsgType.ReqFrame, sendstream.length, 1103, sendstream.getBuffer(), onQuitRoomResult);

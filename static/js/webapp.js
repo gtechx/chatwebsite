@@ -356,6 +356,8 @@ function reqQuitRoom(strrid) {
 
 function onQuitRoomResult(errcode) {
   console.info("onQuitRoomResult errcode:" + errcode);
+  if(errcode == 0)
+  reqRoomList();
 }
 
 function reqAgreeRoomJoin(ridstr, idstr) {
