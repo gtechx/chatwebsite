@@ -29,6 +29,7 @@
     <li onclick="openRoomChatPanel($(this).parent().data('room'));"><div>Send Message</div></li>
     <li onclick="reqUserData($(this).parent().data('user').who);"><div>Show Info</div></li>
     <li onclick="showModifyCommentPanel($(this).parent().data('user').who);"><div>Modify Comment</div></li>
+    <li class="quitroom" onclick="reqQuitRoom($(this).parent().data('room').rid);"><div>Quit Room</div></li>
     
     <li onclick="if (confirm('确认要删除该房间？这将移除房间所有成员')==false){return;};reqDeleteRoom($(this).parent().data('room').rid);"><div>Delete</div></li>
     <li onclick="reqRoomList();"><div>Refresh Room List</div></li>
@@ -87,6 +88,11 @@
         menu.removeClass("hide");
         menu.css("top", e.clientY);
         menu.css("left", e.clientX);
+        if(data.ownerid == userdata.id){
+            menu.find(".quitroom").addClass("hide");
+        } else {
+            menu.find(".quitroom").removeClass("hide");
+        }
     }
 
     function stopPropagation(e) {
