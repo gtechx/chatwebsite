@@ -437,6 +437,8 @@ function onRoomListResult(errcode, data) {
     console.info("onRoomListResult data:" + JSON.stringify(data[i]));
     addRoom(data[i]);
     roomdata[data[i].rid] = data[i];
+
+    reqRoomPresenceList(data[i].rid);
   }
 }
 
@@ -446,15 +448,16 @@ function reqRoomPresenceList(ridstr) {
 
 function onRoomPresenceListResult(errcode, data) {
   console.info("onRoomPresenceListResult errcode:" + errcode);
-  console.info("data:" + data);
+  console.info("data:" + JSON.stringify(data));
   for(var i = 0; i < data.length; i ++) {
     console.info("onRoomPresenceListResult data:" + JSON.stringify(data[i]));
-    addRoom(data[i]);
+    addPresence(data[i]);
   }
 }
 
 function onRoomPresence(jsondata) {
-  console.info("onRoomPresence jsondata:" + jsondata);
+  console.info("onRoomPresence jsondata:" + JSON.stringify(jsondata));
+  addPresence(jsondata);
   // addPresence(jsondata);
   // if(jsondata.presencetype == PresenceType.PresenceType_Unsubscribe){
   //   console.info("PresenceType_Unsubscribe " + jsondata.who)

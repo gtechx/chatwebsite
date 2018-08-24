@@ -29,11 +29,7 @@
                             
                 </div>
                 <!-- /.tab-pane -->
-                <div class="tab-pane" id="tab_presence" style="max-height:390px;overflow-y:auto;position:absolute;width:245px;">
-                    <ul id="presencelist" class="products-list product-list-in-box">
-                        
-                    </ul>
-                </div>
+                {{template "presencepanel.tpl" .}}
 
                 {{template "roompanel.tpl" .}}
                 <!-- /.tab-pane -->
@@ -53,7 +49,7 @@
         $( "#fpanel" ).draggable({handle: "#fpanelheader", cursor: "move"});
         $("#fpanelpart").resizable({handles: "se", minWidth: 250, maxWidth:500, minHeight:500, maxHeight:650});
         $("#fpanelpart").css("height", 500).css("width", 250);
-        $('#tab_presence').hide();
+        
         $('#tab_room').hide();
         $('#tab_friend').show('slide');
         //$('#btn_friend').addClass('active');
@@ -206,60 +202,9 @@
         group.find('ul').html("");
     }
 
-    function createPresence(data) {
-        var newDate=new Date(parseInt(data.timestamp) * 1000);
-        //var html = '<li class="item"> \
-        var html = '';
-        if(data.presencetype == PresenceType.PresenceType_Subscribe)
-            html += '<div>friend request:</div>';
-        else if(data.presencetype == PresenceType.PresenceType_Subscribed)
-            html += '<div>friend agree:</div>';
-        else if(data.presencetype == PresenceType.PresenceType_Unsubscribe)
-            html += '<div>friend delete:</div>';
-        else if(data.presencetype == PresenceType.PresenceType_Unsubscribed)
-            html += '<div>friend refuse:</div>';
-        else if(data.presencetype == PresenceType.PresenceType_Available)
-            html += '<div>friend online:</div>';
-        else if(data.presencetype == PresenceType.PresenceType_Unavailable)
-            html += '<div>friend offline:</div>';
-        else if(data.presencetype == PresenceType.PresenceType_Invisible)
-            html += '<div>friend hidden:</div>';
-        else
-            return null;
-        html += '<a href="javascript:void(0)" class="product-title">';
-        html += 'ID:' + data.who + ' nickname:' + data.nickname;
-        html += '</a>';
-        
-        if(data.presencetype == PresenceType.PresenceType_Subscribe){
-            html += '<span class="product-description">';
-            html += data.message;
-            html += '</span> <span>\
-                <button onclick="agreeFriend(\''+data.who+'\');$(this).parent().html(\'agreed\');">add</button> \
-                <button onclick="refuseFriend(\''+data.who+'\');$(this).parent().html(\'refused\');">refuse</button></span>';
-        }
-            
-        html += '<span class="label label-warning pull-left">' + newDate.format() + '</span></a>';
-        //</li>';
-
-        var li = $(document.createElement("li"));
-        li.data("user", data);
-        li.addClass("item");
-        li.append(html);
-
-        return li;
-    }
-
-    function addPresence(data) {
-        var presence = createPresence(data);
-        $("#presencelist").prepend(presence);
-    }
-
     addFriendItem({nickname:"WYQ", desc:"How are you?", groupname:"GroupC"});
     addFriendItem({nickname:"WLN", desc:"How are you?", groupname:"GroupC"});
-    addFriendItem({"dataid":4, "nickname":"WLN", "desc":"How are you?", "groupname":"GroupC1","comment":""});
-
-    addPresence({presencetype:0, who:"123456", nickname:"wyq", timestamp:"1529994598", message:"Hello, friend please"});
-    addPresence({presencetype:1, who:"523455", nickname:"wln", timestamp:"1529994598", message:"Hello, friend please"});
+    addFriendItem({"dataid":4, "nickname":"WLN", "desc":"How are you?", "groupname":"GroupC1","comment":""});    
 </script>
 
 <div class="modal fade" id="modal-add" style="display: none;">

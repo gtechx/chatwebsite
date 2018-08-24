@@ -208,7 +208,8 @@
                 <label id="createroom-password-lb" class="hide">Password</label>
                 <input id="createroom-password" type="text" class="form-control hide">
                 
-                <button onclick='doCreateRoom();' type="button" class="btn btn-primary">Save</button>
+                <button onclick='doCreateRoom();' type="button" class="create btn btn-primary">Create</button>
+                <button onclick='doSaveRoom();' type="button" class="save hide btn btn-primary">Save</button>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
@@ -436,6 +437,57 @@ function showUserInfoPanel(jsondata) {
 }
 
 function showCreateRoomPanel() {
+    $("#createroom-roomname").attr("disabled", false);
+    $("#createroom-jieshao").attr("disabled", false);
+    $("#createroom-notice").attr("disabled", false);
+    $("#createroom-roomtype").attr("disabled", false);
+
+    // $("#createroom-password").addClass("hide");
+    // $('#createroom-password-lb').addClass('hide');
+
+    $("#createroom-roomname").val("");
+    $("#createroom-jieshao").val("");
+    $("#createroom-notice").val("");
+    $("#createroom-password").val("");
+    $("#createroom-roomtype option[index='0']").attr("selected",true);
+    //$("#select_id option:last")
+
+    $("#modal-createroom").find(".save").addClass("hide");
+    $("#modal-createroom").find(".create").removeClass("hide");
+
+    $("#modal-createroom").modal("show");
+}
+
+function showRoomInfoPanel(roomdata) {
+    $("#modal-createroom").data("room", roomdata);
+
+    $("#createroom-roomname").val("");
+    $("#createroom-jieshao").val("");
+    $("#createroom-notice").val("");
+    $("#createroom-password").val("");
+    $("#createroom-roomtype option[index='0']").attr("selected",true);
+    //$("#select_id option:last")
+
+    if(roomdata.ownerid != userdata.id){
+        $("#createroom-roomname").attr("disabled", true);
+        $("#createroom-jieshao").attr("disabled", true);
+        $("#createroom-notice").attr("disabled", true);
+        $("#createroom-roomtype").attr("disabled", true);
+        $("#createroom-password").addClass("hide");
+        $('#createroom-password-lb').addClass('hide');
+
+        $("#modal-createroom").find(".save").removeClass("hide");
+        $("#modal-createroom").find(".create").addClass("hide");
+    }else{
+        if(roomdata.roomtype == 3) {
+            $("#createroom-password").removeClass("hide");
+            $('#createroom-password-lb').removeClass('hide');
+        }
+        
+        $("#modal-createroom").find(".save").addClass("hide");
+        $("#modal-createroom").find(".create").addClass("hide");
+    } 
+
     $("#modal-createroom").modal("show");
 }
 
