@@ -38,7 +38,7 @@
     <div class="bg-yellow-gradient" style="width:100%;position:absolute;bottom:0;">
         <button type="button" class="btn btn-box-tool" data-toggle="modal" data-target="#modal-add"><i class="fa fa-user-plus"></i></button>
         <button type="button" class="btn btn-box-tool" data-toggle="modal" data-target="#modal-search"><i class="fa fa-search"></i></button>
-        <button type="button" class="btn btn-box-tool" data-toggle="modal" data-target="#modal-createroom"><i class="fa fa-group">group</i></button>
+        <button type="button" class="btn btn-box-tool" onclick="showCreateRoomPanel();"><i class="fa fa-group">group</i></button>
     </div>
   </div>
   

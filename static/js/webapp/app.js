@@ -782,8 +782,11 @@ var App = {
       var errcode = bs.readUint16();
       if(reqroompresencelistcb != null)
       {
-        var jsonstr = bs.readStringAll();
-        var datalist = JSON.parse(jsonstr);
+        var datalist = null;
+        if(errcode == 0) {
+          var jsonstr = bs.readStringAll();
+          datalist = JSON.parse(jsonstr);
+        }
         reqroompresencelistcb(errcode, datalist);
       }
     }

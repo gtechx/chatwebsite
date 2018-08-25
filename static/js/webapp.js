@@ -147,7 +147,7 @@ function onPresenceList(errcode, data) {
   for(var i = 0; i < data.length; i ++) {
     console.info("onPresenceList data:" + JSON.stringify(data[i]));
     addPresence(data[i]);
-    if(data[i].presencetype == PresenceType.PresenceType_Unsubscribe){
+    if(data[i].presencetype == PresenceType.PresenceType_UnSubscribe){
       removeFriendItemById(data[i].who);
     }
   }
@@ -200,8 +200,8 @@ function onPresenceResult(errcode) {
 function onPresence(jsondata) {
   console.info("onPresence jsondata:" + jsondata);
   addPresence(jsondata);
-  if(jsondata.presencetype == PresenceType.PresenceType_Unsubscribe){
-    console.info("PresenceType_Unsubscribe " + jsondata.who)
+  if(jsondata.presencetype == PresenceType.PresenceType_UnSubscribe){
+    console.info("PresenceType_UnSubscribe " + jsondata.who)
     removeFriendItemById(jsondata.who);
   } else if(jsondata.presencetype == PresenceType.PresenceType_Subscribed){
     reqFriendList();
@@ -449,22 +449,19 @@ function reqRoomPresenceList(ridstr) {
 function onRoomPresenceListResult(errcode, data) {
   console.info("onRoomPresenceListResult errcode:" + errcode);
   console.info("data:" + JSON.stringify(data));
-  for(var i = 0; i < data.length; i ++) {
-    console.info("onRoomPresenceListResult data:" + JSON.stringify(data[i]));
-    addPresence(data[i]);
-  }
+  if(errcode == 0)
+    for(var i = 0; i < data.length; i ++) {
+      console.info("onRoomPresenceListResult data:" + JSON.stringify(data[i]));
+      addPresence(data[i]);
+    }
 }
 
 function onRoomPresence(jsondata) {
   console.info("onRoomPresence jsondata:" + JSON.stringify(jsondata));
   addPresence(jsondata);
-  // addPresence(jsondata);
-  // if(jsondata.presencetype == PresenceType.PresenceType_Unsubscribe){
-  //   console.info("PresenceType_Unsubscribe " + jsondata.who)
-  //   removeFriendItemById(jsondata.who);
-  // } else if(jsondata.presencetype == PresenceType.PresenceType_Subscribed){
-  //   reqFriendList();
-  // }
+  if(jsondata.presencetype == PresenceType.PresenceType_Subscribed){
+    reqRoomList();
+  }
 }
 //room end
 

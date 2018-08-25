@@ -461,11 +461,11 @@ function showCreateRoomPanel() {
 function showRoomInfoPanel(roomdata) {
     $("#modal-createroom").data("room", roomdata);
 
-    $("#createroom-roomname").val("");
-    $("#createroom-jieshao").val("");
-    $("#createroom-notice").val("");
+    $("#createroom-roomname").val(roomdata.roomname);
+    $("#createroom-jieshao").val(roomdata.jieshao);
+    $("#createroom-notice").val(roomdata.notice);
     $("#createroom-password").val("");
-    $("#createroom-roomtype option[index='0']").attr("selected",true);
+    $("#createroom-roomtype option[index='"+(roomdata.roomtype - 1) + "']").attr("selected",true);
     //$("#select_id option:last")
 
     if(roomdata.ownerid != userdata.id){

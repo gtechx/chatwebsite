@@ -20,8 +20,8 @@
             <a href="javascript:void(0)" class="product-title">ID:123456 nickname:wyq</a>
             <span class="product-description">Hello, friend please</span> 
             <span>                
-            <button onclick="reqAgreeRoomJoin($(this).parent().data('data').rid, $(this).parent().data('data').who);$(this).parent().html('agreed');">agree</button>                 
-            <button onclick="reqRefuseRoomJoin($(this).parent().data('data').rid, $(this).parent().data('data').who);$(this).parent().html('refused');">refuse</button>
+            <button onclick="reqAgreeRoomJoin($(this).parent().parent().data('data').rid, $(this).parent().parent().data('data').who);$(this).parent().html('agreed');">agree</button>                 
+            <button onclick="reqRefuseRoomJoin($(this).parent().parent().data('data').rid, $(this).parent().parent().data('data').who);$(this).parent().html('refused');">refuse</button>
             </span>
             <span class="label label-warning pull-left">2018-06-26T14:29:58.000+08:00</span>
         </li>
@@ -65,9 +65,12 @@ function createPresence(data) {
         reqtype += 'request:';
     else if(data.presencetype == PresenceType.PresenceType_Subscribed)
         reqtype += 'agreed:';
-    else if(data.presencetype == PresenceType.PresenceType_Unsubscribe)
-        reqtype += 'delete:';
-    else if(data.presencetype == PresenceType.PresenceType_Unsubscribed)
+    else if(data.presencetype == PresenceType.PresenceType_UnSubscribe)
+        if(data.rid)
+            reqtype += 'quit:';
+        else
+            reqtype += 'delete:';
+    else if(data.presencetype == PresenceType.PresenceType_UnSubscribed)
         reqtype += 'refuse:';
     else if(data.presencetype == PresenceType.PresenceType_Available)
         reqtype += 'online:';
