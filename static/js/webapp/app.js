@@ -35,6 +35,7 @@ var App = {
     app.onpresence = null;
     app.onroompresence = null;
     app.onmessage = null;
+    app.onroommessage = null;
     app.onkickout = null;
 
     app.platform = "web";
@@ -905,6 +906,16 @@ var App = {
       }
     }
 
+    function onRoomMessage(buffer) {
+      var bs = readstream.reset(buffer);
+      
+      if(app.onroommessage != null)
+      {
+        var msg = JSON.parse(bs.readStringAll());
+        app.onroommessage(msg);
+      }
+    }
+
     function packageMsg(type, id, size, msgid, databuff) {
       sendstream.reset();
       sendstream.writeUint8(type);
@@ -961,6 +972,8 @@ var App = {
               onRoomPresence(header.databuff);
             } else if(header.msgid == 1008){
               onMessage(header.databuff);
+            } else if(header.msgid == 1110){
+              onRoomMessage(header.databuff);
             } else if(header.msgid == 1022 && app.onkickout != null){
               app.onkickout();
             }

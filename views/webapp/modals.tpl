@@ -449,7 +449,11 @@ function showCreateRoomPanel() {
     $("#createroom-jieshao").val("");
     $("#createroom-notice").val("");
     $("#createroom-password").val("");
-    $("#createroom-roomtype option[index='0']").attr("selected",true);
+    //$("#createroom-roomtype option[index='0']").attr("selected",true);
+    //$('#createroom-roomtype').get(0).selectedIndex=0;
+    //$("#createroom-roomtype option:first").prop("selected", 'selected'); 
+    //$("#createroom-roomtype option[value='1']").attr("selected","selected");
+    $('#createroom-roomtype').val('1');
     //$("#select_id option:last")
 
     $("#modal-createroom").find(".save").addClass("hide");
@@ -460,12 +464,14 @@ function showCreateRoomPanel() {
 
 function showRoomInfoPanel(roomdata) {
     $("#modal-createroom").data("room", roomdata);
+    console.info("index="+(roomdata.roomtype - 1));
 
     $("#createroom-roomname").val(roomdata.roomname);
     $("#createroom-jieshao").val(roomdata.jieshao);
     $("#createroom-notice").val(roomdata.notice);
     $("#createroom-password").val("");
-    $("#createroom-roomtype option[index='"+(roomdata.roomtype - 1) + "']").attr("selected",true);
+    //$("#createroom-roomtype option[value='"+(roomdata.roomtype)+"']").attr("selected","selected");
+    $('#createroom-roomtype').val(roomdata.roomtype);
     //$("#select_id option:last")
 
     if(roomdata.ownerid != userdata.id){
@@ -476,7 +482,7 @@ function showRoomInfoPanel(roomdata) {
         $("#createroom-password").addClass("hide");
         $('#createroom-password-lb').addClass('hide');
 
-        $("#modal-createroom").find(".save").removeClass("hide");
+        $("#modal-createroom").find(".save").addClass("hide");
         $("#modal-createroom").find(".create").addClass("hide");
     }else{
         if(roomdata.roomtype == 3) {
@@ -484,7 +490,7 @@ function showRoomInfoPanel(roomdata) {
             $('#createroom-password-lb').removeClass('hide');
         }
         
-        $("#modal-createroom").find(".save").addClass("hide");
+        $("#modal-createroom").find(".save").removeClass("hide");
         $("#modal-createroom").find(".create").addClass("hide");
     } 
 

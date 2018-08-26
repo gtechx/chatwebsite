@@ -68,6 +68,7 @@ $( function() {
 } );
 
 var chatpanellist = {};
+var chatpanelroomlist = {};
 var curz = 10;
 function openChatPanel(data) {
     //onclick="$('#chatpanel').addClass('hide');"
@@ -116,15 +117,15 @@ function openChatPanel(data) {
 
 function openRoomChatPanel(data) {
     //onclick="$('#chatpanel').addClass('hide');"
-    if(chatpanellist["chatpanel-" + data.rid] != null){
-        chatpanellist["chatpanel-" + data.rid].css("z-index", curz);
+    if(chatpanelroomlist["chatpanel-room-" + data.rid] != null){
+        chatpanelroomlist["chatpanel-room-" + data.rid].css("z-index", curz);
         curz++;
-        return chatpanellist["chatpanel-" + data.rid];
+        return chatpanelroomlist["chatpanel-room-" + data.rid];
     }
     var newchatpanel = $( "#chatpanel" ).clone();
     newchatpanel.find(".direct-chat").directChat();
     newchatpanel.find(".direct-chat").boxWidget();
-    newchatpanel.attr("id", "chatpanel-" + data.rid);
+    newchatpanel.attr("id", "chatpanel-room-" + data.rid);
     newchatpanel.removeClass("hide");
     newchatpanel.find(".direct-chat .box-header h3").html(data.roomname);
 
@@ -134,7 +135,7 @@ function openRoomChatPanel(data) {
     newchatpanel.draggable({handle: ".direct-chat .box-header", cursor: "move"});
     newchatpanel.css("z-index", curz);
     curz++;
-    chatpanellist["chatpanel-" + data.rid] = newchatpanel;
+    chatpanelroomlist["chatpanel-room-" + data.rid] = newchatpanel;
 
     newchatpanel.mousedown(function(){
         newchatpanel.css("z-index", curz);
@@ -143,13 +144,13 @@ function openRoomChatPanel(data) {
 
     newchatpanel.find(".box-footer button").click(function(){
         var msginput = newchatpanel.find(".box-footer input");
-        startSendMessage(data, msginput.val());
+        startSendRoomMessage(data, msginput.val());
         msginput.val('');
     });
 
     newchatpanel.on('removed.boxwidget', function (event) {
       newchatpanel.remove();
-      delete chatpanellist["chatpanel-" + data.rid];
+      delete chatpanelroomlist["chatpanel-room-" + data.rid];
       return true;
     });
 
@@ -219,5 +220,60 @@ function startSendMessage(data, message) {
 
     addSendMessage({from:userdata.nickname, to:data.nickname, message: message});
     sendMessage(msg);
+}
+
+function addRoomMessage(msg) {
+    var chatpanel = chatpanelroomlist["chatpanel-room-" + msg.rid];
+    if(chatpanel == null){
+        chatpanel = openRoomChatPanel(roomdata[msg.rid]);
+    }
+    var html = '<div class="direct-chat-msg">' +
+        '<div class="direct-chat-info clearfix">';
+            // if(frienddatabyid[msg.who] && frienddatabyid[msg.who].comment != "")
+            //     html += '<span class="direct-chat-name pull-left">' + frienddatabyid[msg.who].comment + '(' + msg.nickname + ')' + '</span>';
+            // else
+                html += '<span class="direct-chat-name pull-left">' + msg.nickname + '</span>';
+            html += '<span class="direct-chat-timestamp pull-right">' + new Date(parseInt(msg.timestamp) * 1000).format() + '</span>' +
+        '</div>' +
+        '<img class="direct-chat-img" src="static/dist/img/user1-128x128.jpg" alt="Message User Image">' +
+        '<div class="direct-chat-text">'+
+            msg.message + 
+        '</div>'+
+    '</div>';
+
+    chatpanel.find(".direct-chat-messages").append(html);
+    chatpanel.find(".direct-chat-messages").scrollTop(9999);
+}
+
+function addRoomSendMessage(msg) {
+    var html = '<div class="direct-chat-msg right">' +
+        '<div class="direct-chat-info clearfix">' +
+            '<span class="direct-chat-name pull-right">' + msg.from + '</span>' +
+            '<span class="direct-chat-timestamp pull-left">' + new Date().format() + '</span>' +
+        '</div>' +
+        '<img class="direct-chat-img" src="static/dist/img/user1-128x128.jpg" alt="Message User Image">' +
+        '<div class="direct-chat-text">'+
+            msg.message + 
+        '</div>'+
+    '</div>';
+
+    chatpanelroomlist["chatpanel-room-" + msg.rid].find(".direct-chat-messages").append(html);
+
+    //console.info($(".direct-chat-msg:last").scrollTop());
+    chatpanelroomlist["chatpanel-room-" + msg.rid].find(".direct-chat-messages").scrollTop(9999);
+}
+//addMessage({nickname:"WYQ", timestamp:"2018/6/11", message:"Hello, How are you?"});
+//addSendMessage({nickname:"WLN", timestamp:"2018/6/11", message:"Hello, I'm fine."});
+
+function startSendRoomMessage(data, message) {
+    // var msg = {};
+    // //msg.nickname = userdata.nickname;
+    // //msg.timestamp = new Date().getTime() / 1000;//new Date().format("yyyy/MM/dd hh:mm:ss");
+    // msg.message = message;
+    // //msg.who = data.who;
+    // msg.rid = data.rid;
+
+    addRoomSendMessage({rid:data.rid, from:userdata.nickname, to:data.nickname, message: message});
+    reqSendRoomMessage(data.rid, message);
 }
 </script>

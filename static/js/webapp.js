@@ -32,6 +32,7 @@ function login(account, password, appname, zonename) {
   myapp.onpresence = onPresence;
   myapp.onroompresence = onRoomPresence;
   myapp.onmessage = onMessage;
+  myapp.onroommessage = onRoomMessage;
   myapp.connect("127.0.0.1:9090");
 }
 
@@ -462,6 +463,18 @@ function onRoomPresence(jsondata) {
   if(jsondata.presencetype == PresenceType.PresenceType_Subscribed){
     reqRoomList();
   }
+}
+
+function onRoomMessage(jsondata) {
+  console.info("onRoomMessage jsondata:" + JSON.stringify(jsondata));
+  // var msgarray = messagelist[jsondata.who];
+  // if(msgarray == null){
+  //   msgarray = new Array();
+  //   messagelist[jsondata.who] = msgarray;
+  // }
+  // msgarray[msgarray.length] = jsondata;
+  if(jsondata.who != userdata.id)
+  addRoomMessage(jsondata);
 }
 //room end
 
