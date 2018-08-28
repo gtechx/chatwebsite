@@ -11,6 +11,7 @@ var userdata = {};
 var frienddata = {};
 var frienddatabyid = {};
 var roomdata = {};
+var roomuserdata = {};
 var myapp = App.new();
 function login(account, password, appname, zonename) {
   myapp.onlogined = onLogined
@@ -475,6 +476,26 @@ function onRoomMessage(jsondata) {
   // msgarray[msgarray.length] = jsondata;
   if(jsondata.who != userdata.id)
   addRoomMessage(jsondata);
+}
+
+function reqRoomUserList(strrid) {
+  myapp.reqroomuserlist(strrid, onRoomUserList);
+}
+
+function onRoomUserList(errcode, jsondata) {
+  console.info("onRoomUserList errcode:" + errcode);
+  if(errcode == 0){
+    console.info(JSON.stringify(jsondata));
+    for(var i = 0; i < jsondata.length; i ++) {
+      console.info("onRoomUserList data:" + JSON.stringify(jsondata[i]));
+      addRoomUser(jsondata[i]);
+      var tmp = roomuserdata[jsondata[i].rid];
+      if(tmp == null)
+        tmp = {};
+      tmp[jsondata[i].dataid] = jsondata[i];
+      roomuserdata[jsondata[i].rid] = tmp;
+    }
+  }
 }
 //room end
 

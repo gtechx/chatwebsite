@@ -34,12 +34,20 @@
     <li onclick="reqRoomList();"><div>Refresh Room List</div></li>
 </ul>
 
+<ul id="roomuserlistmenu" class="hide" style="position:absolute;z-index:9999;">
+    <li onclick="reqUserData($(this).parent().data('user').dataid);"><div>Show Info</div></li>
+    <li class="kickout" onclick="reqBanRoomUser($(this).parent().data('user').rid, $(this).parent().data('user').dataid);"><div>Kick Out</div></li>
+    <li class="jinyan" onclick="reqJinyanRoomUser($(this).parent().data('user').rid, $(this).parent().data('user').dataid);"><div>Jin Yan</div></li>
+    <li class="setadmin" onclick="reqAddRoomAdmin($(this).parent().data('user').rid, $(this).parent().data('user').dataid);"><div>Set Room Admin</div></li>
+    <li class="removeadmin" onclick="reqRemoveRoomAdmin($(this).parent().data('user').rid, $(this).parent().data('user').dataid);"><div>Cancel Room Admin</div></li>
+</ul>
+
 <style>
   .ui-menu { width: 150px; }
 </style>
 
 <script>
-    var allMenus = ["fmenu", "gmenu", "bodymenu", "roommenu"];
+    var allMenus = ["fmenu", "gmenu", "bodymenu", "roommenu", "roomuserlistmenu"];
     $( function() {
         // $( "#fmenu" ).menu();
         // $( "#gmenu" ).menu();
@@ -91,6 +99,36 @@
             menu.find(".quitroom").addClass("hide");
         } else {
             menu.find(".quitroom").removeClass("hide");
+        }
+    }
+
+    function showRoomUserListMenu(e, user) {
+        var menu = $( "#roomuserlistmenu" );
+        menu.data("user", user);
+        menu.removeClass("hide");
+        menu.css("top", e.clientY);
+        menu.css("left", e.clientX);
+        if(roomuserdata[user.rid][userdata.id].isowner){
+            if(roomuserdata[user.rid][user.dataid].isadmin) {
+                menu.find(".setadmin").addClass("hide");
+                menu.find(".removeadmin").removeClass("hide");
+            } else {
+                menu.find(".setadmin").removeClass("hide");
+                menu.find(".removeadmin").addClass("hide");
+            }
+
+            menu.find(".kickout").removeClass("hide");
+            menu.find(".jinyan").removeClass("hide");
+        } else {
+            if(roomuserdata[user.rid][userdata.id].isadmin) {
+                menu.find(".kickout").removeClass("hide");
+                menu.find(".jinyan").removeClass("hide");
+            } else {
+                menu.find(".kickout").addClass("hide");
+                menu.find(".jinyan").addClass("hide");
+            }
+            menu.find(".setadmin").addClass("hide");
+            menu.find(".removeadmin").addClass("hide");
         }
     }
 

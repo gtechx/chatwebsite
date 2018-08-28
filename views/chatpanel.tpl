@@ -25,19 +25,19 @@
             <!-- Contacts are loaded here -->
             <div class="direct-chat-contacts">
                 <ul class="contacts-list">
-                    <li>
-                    <a href="#">
-                        <img class="contacts-list-img" src="static/dist/img/user1-128x128.jpg" alt="User Image">
+                    <li id="contacts-list-item" class="hide">
+                        <a href="#">
+                            <img class="contacts-list-img" src="static/dist/img/user1-128x128.jpg" alt="User Image">
 
-                        <div class="contacts-list-info">
-                            <span class="contacts-list-name">
-                                Count Dracula
-                                <small class="contacts-list-date pull-right">2/28/2015</small>
-                            </span>
-                        <span class="contacts-list-msg">How have you been? I was...</span>
-                        </div>
-                        <!-- /.contacts-list-info -->
-                    </a>
+                            <div class="contacts-list-info">
+                                <span class="contacts-list-name">
+                                    Count Dracula
+                                    <small class="contacts-list-date pull-right">2/28/2015</small>
+                                </span>
+                            <span class="contacts-list-msg">How have you been? I was...</span>
+                            </div>
+                            <!-- /.contacts-list-info -->
+                        </a>
                     </li>
                     <!-- End Contact Item -->
                 </ul>
@@ -155,6 +155,7 @@ function openRoomChatPanel(data) {
     });
 
     $( "#chatpanel" ).parent().append(newchatpanel);
+    reqRoomUserList(data.rid);
     return newchatpanel;
     // $( "#chatpanel" ).removeClass("hide");
     // $(".direct-chat .box-header h3").html(data.nickname);
@@ -275,5 +276,36 @@ function startSendRoomMessage(data, message) {
 
     addRoomSendMessage({rid:data.rid, from:userdata.nickname, to:data.nickname, message: message});
     reqSendRoomMessage(data.rid, message);
+}
+
+// <li id="contacts-list-item" class="hide">
+//     <a href="#">
+//         <img class="contacts-list-img" src="static/dist/img/user1-128x128.jpg" alt="User Image">
+
+//         <div class="contacts-list-info">
+//             <span class="contacts-list-name">
+//                 Count Dracula
+//                 <small class="contacts-list-date pull-right">2/28/2015</small>
+//             </span>
+//         <span class="contacts-list-msg">How have you been? I was...</span>
+//         </div>
+//         <!-- /.contacts-list-info -->
+//     </a>
+// </li>
+function addRoomUser(user) {
+    var newitem = $( "#contacts-list-item" ).clone();
+
+    newitem.mouseup(function(e){
+        if(e.button===2){
+            showRoomUserListMenu(e, user);
+            stopPropagation(e);//调用停止冒泡方法,阻止document方法的执行
+        }
+    });
+
+    newitem.find(".contacts-list-name").html(user.nickname);
+    newitem.attr("id", "contacts-list-item-" + user.dataid);
+    newitem.removeClass("hide");
+
+    $( ".contacts-list" ).append(newitem);
 }
 </script>
