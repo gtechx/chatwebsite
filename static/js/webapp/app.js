@@ -78,44 +78,55 @@ var App = {
       app.platform = platform;
     }
     
-    app.login = function (account, password, appname, zonename){
-      var accountbytes = stringToBytes(account);
-      var passwordbytes = stringToBytes(password);
-      var appnamebytes = stringToBytes(appname);
-      var zonenamebytes = stringToBytes(zonename);
-      var platformbytes = stringToBytes(app.platform);
+    app.login = function (token){
+      var loginjson = {};
+      loginjson.token = token;
+      loginjson.platform = app.platform;
 
       sendstream.reset();
-      sendstream.writeUint8(accountbytes.byteLength);
-      sendstream.writeArray(accountbytes);
-      sendstream.writeUint8(passwordbytes.byteLength);
-      sendstream.writeArray(passwordbytes);
-      sendstream.writeUint8(appnamebytes.byteLength);
-      sendstream.writeArray(appnamebytes);
-      sendstream.writeUint8(zonenamebytes.byteLength);
-      sendstream.writeArray(zonenamebytes);
-      sendstream.writeUint8(platformbytes.byteLength);
-      sendstream.writeArray(platformbytes);
-      //console.info(sendstream.length);
-      //console.info(sendstream.getBuffer());
+      sendstream.writeString(JSON.stringify(loginjson))
       sendMsg(MsgType.ReqFrame, sendstream.length, 1001, sendstream.getBuffer(), onLogined);
-    };
+    }
+    // app.login = function (account, password, appname, zonename){
+    //   var accountbytes = stringToBytes(account);
+    //   var passwordbytes = stringToBytes(password);
+    //   var appnamebytes = stringToBytes(appname);
+    //   var zonenamebytes = stringToBytes(zonename);
+    //   var platformbytes = stringToBytes(app.platform);
+
+    //   sendstream.reset();
+    //   sendstream.writeUint8(accountbytes.byteLength);
+    //   sendstream.writeArray(accountbytes);
+    //   sendstream.writeUint8(passwordbytes.byteLength);
+    //   sendstream.writeArray(passwordbytes);
+    //   sendstream.writeUint8(appnamebytes.byteLength);
+    //   sendstream.writeArray(appnamebytes);
+    //   sendstream.writeUint8(zonenamebytes.byteLength);
+    //   sendstream.writeArray(zonenamebytes);
+    //   sendstream.writeUint8(platformbytes.byteLength);
+    //   sendstream.writeArray(platformbytes);
+    //   //console.info(sendstream.length);
+    //   //console.info(sendstream.getBuffer());
+    //   sendMsg(MsgType.ReqFrame, sendstream.length, 1001, sendstream.getBuffer(), onLogined);
+    // };
 
     function onLogined(buffer) {
       var bs = readstream.reset(buffer);
       var errcode = bs.readUint16();
-      if(errcode == 0) {
-        var idcount = (bs.length - 2) / 8;
-        var idlist = new Array();
-        for(var i = 0; i < idcount; i++){
-          idlist[i] = bs.readUint64().toString();
-        }
-        if(app.onlogined != null)
-          app.onlogined(idlist);
-      } else {
-        if(app.onloginfailed != null)
-          app.onloginfailed(errcode);
-      }
+      if(app.onlogined != null)
+        app.onlogined(errcode);
+      // if(errcode == 0) {
+      //   var idcount = (bs.length - 2) / 8;
+      //   var idlist = new Array();
+      //   for(var i = 0; i < idcount; i++){
+      //     idlist[i] = bs.readUint64().toString();
+      //   }
+      //   if(app.onlogined != null)
+      //     app.onlogined(idlist);
+      // } else {
+      //   if(app.onloginfailed != null)
+      //     app.onloginfailed(errcode);
+      // }
     }
 
     var appdatacreatecb = null;

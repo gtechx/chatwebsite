@@ -14,52 +14,71 @@ var roomdata = {};
 var roomuserdata = {};
 var myapp = App.new();
 function login(account, password, appname, zonename) {
-  myapp.onlogined = onLogined
-  myapp.onloginfailed = function(errcode) {
-    console.info("login failed, errcode:" + errcode)
-  };
-  myapp.onconnected = function(){
-    myapp.login(account, password, appname, zonename);
-  };
-  myapp.onclose = function() {
-    console.info("disconnect from server");
-  };
-  myapp.onerror = function(evt) {
-    console.info("error:"+evt.data);
-  };
-  myapp.onkickout = function() {
-    console.info("you have been kicked out from server.");
-  };
-  myapp.onpresence = onPresence;
-  myapp.onroompresence = onRoomPresence;
-  myapp.onmessage = onMessage;
-  myapp.onroommessage = onRoomMessage;
-  myapp.connect("127.0.0.1:9090");
+  $.post("/webapp/chatlogin", { 'account': account, 'password': password, 'appname': appname },
+    function(data) {
+      console.info(data);
+      var retjson = JSON.parse(data);
+      if(retjson.errcode == 0) {
+        myapp.onlogined = onLogined
+        myapp.onloginfailed = function(errcode) {
+          console.info("login failed, errcode:" + errcode)
+        };
+        myapp.onconnected = function(){
+          //var loginjson = {};
+          //loginjson.token = retjson.token;
+          myapp.login(retjson.token);
+        };
+        myapp.onclose = function() {
+          console.info("disconnect from server");
+        };
+        myapp.onerror = function(evt) {
+          console.info("error:"+evt.data);
+        };
+        myapp.onkickout = function() {
+          console.info("you have been kicked out from server.");
+        };
+        myapp.onpresence = onPresence;
+        myapp.onroompresence = onRoomPresence;
+        myapp.onmessage = onMessage;
+        myapp.onroommessage = onRoomMessage;
+        myapp.connect(retjson.serveraddr);//"127.0.0.1:9090");
+      } else {
+        console.error(retjson.errordesc)
+      }
+  });
 }
 
 function setPlatform(platform) {
   myapp.setplatform(platform);
 }
 
-function onLogined(idlist) {
-  console.info(idlist);
-  if(idlist.length == 0){
-    myapp.createappdata("testnickname", onAppDataCreated);
-  } else {
-    var html = '';
-    for(var i = 0; i < idlist.length; i++) {
-      var appdataid = idlist[i];
-      console.info("appdataid:" + appdataid.toString());
-      html += '<button type="button" onclick="enterChat(\''+appdataid.toString()+'\');" style="min-width:200px;" class="btn btn-default btn-block">';
-      html += 'Sign in with ID: ' + appdataid;
-      html += '</button>';
-    }
-    $("#idlist").html(html);
-
-    $("#idselect").removeClass('hide');
-    $("#loginpanel").addClass('hide');
+function onLogined(errcode) {
+  if(errcode == 0) {
+    console.info("login success");
+    myapp.requserdata("0", onMyData);
+  }else{
+    console.info("login failed errcode:" + errcode);
   }
 }
+// function onLogined(idlist) {
+//   console.info(idlist);
+//   if(idlist.length == 0){
+//     myapp.createappdata("testnickname", onAppDataCreated);
+//   } else {
+//     var html = '';
+//     for(var i = 0; i < idlist.length; i++) {
+//       var appdataid = idlist[i];
+//       console.info("appdataid:" + appdataid.toString());
+//       html += '<button type="button" onclick="enterChat(\''+appdataid.toString()+'\');" style="min-width:200px;" class="btn btn-default btn-block">';
+//       html += 'Sign in with ID: ' + appdataid;
+//       html += '</button>';
+//     }
+//     $("#idlist").html(html);
+
+//     $("#idselect").removeClass('hide');
+//     $("#loginpanel").addClass('hide');
+//   }
+// }
 
 function onAppDataCreated(errcode, appdataid) {
   console.info("onAppDataCreated errcode:" + errcode);
