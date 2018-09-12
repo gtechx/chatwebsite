@@ -306,6 +306,6 @@ function addRoomUser(user) {
     newitem.attr("id", "contacts-list-item-" + user.dataid);
     newitem.removeClass("hide");
 
-    $( ".contacts-list" ).append(newitem);
+    $( ".direct-chat-contacts .contacts-list" ).append(newitem);
 }
 </script>

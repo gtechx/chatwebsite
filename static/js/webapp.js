@@ -55,6 +55,7 @@ function setPlatform(platform) {
 function onLogined(errcode) {
   if(errcode == 0) {
     console.info("login success");
+    $("#loginpanel").addClass('hide');
     myapp.requserdata("0", onMyData);
   }else{
     console.info("login failed errcode:" + errcode);
@@ -219,7 +220,7 @@ function onPresenceResult(errcode) {
 }
 
 function onPresence(jsondata) {
-  console.info("onPresence jsondata:" + jsondata);
+  console.info("onPresence jsondata:" + JSON.stringify(jsondata));
   addPresence(jsondata);
   if(jsondata.presencetype == PresenceType.PresenceType_UnSubscribe){
     console.info("PresenceType_UnSubscribe " + jsondata.who)

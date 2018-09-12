@@ -10,8 +10,8 @@
             <a href="javascript:void(0)" class="product-title">ID:123456 nickname:wyq</a>
             <span class="product-description">Hello, friend please</span> 
             <span>                
-            <button onclick="agreeFriend($(this).parent().data('data').who);$(this).parent().html('agreed');">add</button>                 
-            <button onclick="refuseFriend($(this).parent().data('data').who);$(this).parent().html('refused');">refuse</button>
+                <button onclick="agreeFriend($(this).parent().parent().data('data').who);$(this).parent().html('agreed');">add</button>                 
+                <button onclick="refuseFriend($(this).parent().parent().data('data').who);$(this).parent().html('refused');">refuse</button>
             </span>
             <span class="label label-warning pull-left">2018-06-26T14:29:58.000+08:00</span>
         </li>
@@ -51,7 +51,7 @@ function createPresence(data) {
     }
 
     item.removeClass("hide");
-    item.data("data", data);
+    item.data('data', data);
     var newDate=new Date(parseInt(data.timestamp) * 1000);
     //var html = '<li class="item"> \
     var prestype = "";

@@ -159,6 +159,7 @@ var App = {
 
     app.quitchat = function (){
       sendMsg(MsgType.ReqFrame, 0, 1003, null, null);
+      console.info("quitchat")
       ws.close();
     }
 
