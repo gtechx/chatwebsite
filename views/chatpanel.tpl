@@ -247,9 +247,13 @@ function addRoomMessage(msg) {
 }
 
 function addRoomSendMessage(msg) {
+    var chatpanel = chatpanelroomlist["chatpanel-room-" + msg.rid];
+    if(chatpanel == null){
+        chatpanel = openRoomChatPanel(roomdata[msg.rid]);
+    }
     var html = '<div class="direct-chat-msg right">' +
         '<div class="direct-chat-info clearfix">' +
-            '<span class="direct-chat-name pull-right">' + msg.from + '</span>' +
+            '<span class="direct-chat-name pull-right">' + msg.nickname + '</span>' +
             '<span class="direct-chat-timestamp pull-left">' + new Date().format() + '</span>' +
         '</div>' +
         '<img class="direct-chat-img" src="static/dist/img/user1-128x128.jpg" alt="Message User Image">' +
@@ -258,10 +262,10 @@ function addRoomSendMessage(msg) {
         '</div>'+
     '</div>';
 
-    chatpanelroomlist["chatpanel-room-" + msg.rid].find(".direct-chat-messages").append(html);
+    chatpanel.find(".direct-chat-messages").append(html);
 
     //console.info($(".direct-chat-msg:last").scrollTop());
-    chatpanelroomlist["chatpanel-room-" + msg.rid].find(".direct-chat-messages").scrollTop(9999);
+    chatpanel.find(".direct-chat-messages").scrollTop(9999);
 }
 //addMessage({nickname:"WYQ", timestamp:"2018/6/11", message:"Hello, How are you?"});
 //addSendMessage({nickname:"WLN", timestamp:"2018/6/11", message:"Hello, I'm fine."});
@@ -274,7 +278,7 @@ function startSendRoomMessage(data, message) {
     // //msg.who = data.who;
     // msg.rid = data.rid;
 
-    addRoomSendMessage({rid:data.rid, from:userdata.nickname, to:data.nickname, message: message});
+    addRoomSendMessage({rid:data.rid, nickname:userdata.nickname, to:data.nickname, message: message});
     reqSendRoomMessage(data.rid, message);
 }
 

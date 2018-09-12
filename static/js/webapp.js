@@ -496,6 +496,8 @@ function onRoomMessage(jsondata) {
   // msgarray[msgarray.length] = jsondata;
   if(jsondata.who != userdata.id)
   addRoomMessage(jsondata);
+  else if(jsondata.platform != myapp.platform)
+  addRoomSendMessage(jsondata);
 }
 
 function reqRoomUserList(strrid) {

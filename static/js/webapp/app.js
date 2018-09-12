@@ -242,6 +242,7 @@ var App = {
     var msgcb = null;
     app.sendmessage = function (msg, cb) {
       msgcb = cb;
+      msg.platform = app.platform;
       sendstream.reset();
       sendstream.writeString(JSON.stringify(msg))
       sendMsg(MsgType.ReqFrame, sendstream.length, 1008, sendstream.getBuffer(), onMsgResult);
@@ -753,6 +754,7 @@ var App = {
       var jsondata = {}
       jsondata.rid = strrid;
       jsondata.message = message;
+      jsondata.platform = app.platform;
       sendstream.writeString(JSON.stringify(jsondata))
       sendMsg(MsgType.ReqFrame, sendstream.length, 1110, sendstream.getBuffer(), onSendRoomMessageResult);
     }
