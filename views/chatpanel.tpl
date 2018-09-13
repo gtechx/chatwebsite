@@ -172,12 +172,12 @@ function getChatId() {
 function addMessage(msg) {
     var chatpanel = chatpanellist["chatpanel-" + msg.nickname];
     if(chatpanel == null){
-        chatpanel = openChatPanel(frienddatabyid[msg.who]);
+        chatpanel = openChatPanel(frienddatabyid[msg.from]);
     }
     var html = '<div class="direct-chat-msg">' +
         '<div class="direct-chat-info clearfix">';
-            if(frienddatabyid[msg.who] && frienddatabyid[msg.who].comment != "")
-                html += '<span class="direct-chat-name pull-left">' + frienddatabyid[msg.who].comment + '(' + msg.nickname + ')' + '</span>';
+            if(frienddatabyid[msg.from] && frienddatabyid[msg.from].comment != "")
+                html += '<span class="direct-chat-name pull-left">' + frienddatabyid[msg.from].comment + '(' + msg.nickname + ')' + '</span>';
             else
                 html += '<span class="direct-chat-name pull-left">' + msg.nickname + '</span>';
             html += '<span class="direct-chat-timestamp pull-right">' + new Date(parseInt(msg.timestamp) * 1000).format() + '</span>' +
@@ -193,9 +193,14 @@ function addMessage(msg) {
 }
 
 function addSendMessage(msg) {
+    var chatpanel = chatpanellist["chatpanel-" + msg.nickname];
+    if(chatpanel == null){
+        chatpanel = openChatPanel(frienddatabyid[msg.to]);
+    }
+
     var html = '<div class="direct-chat-msg right">' +
         '<div class="direct-chat-info clearfix">' +
-            '<span class="direct-chat-name pull-right">' + msg.from + '</span>' +
+            '<span class="direct-chat-name pull-right">' + msg.nickname + '</span>' +
             '<span class="direct-chat-timestamp pull-left">' + new Date().format("yyyy/MM/dd hh:mm:ss") + '</span>' +
         '</div>' +
         '<img class="direct-chat-img" src="static/dist/img/user1-128x128.jpg" alt="Message User Image">' +
@@ -204,10 +209,10 @@ function addSendMessage(msg) {
         '</div>'+
     '</div>';
 
-    chatpanellist["chatpanel-" + msg.to].find(".direct-chat-messages").append(html);
+    chatpanel.find(".direct-chat-messages").append(html);
 
     //console.info($(".direct-chat-msg:last").scrollTop());
-    chatpanellist["chatpanel-" + msg.to].find(".direct-chat-messages").scrollTop(9999);
+    chatpanel.find(".direct-chat-messages").scrollTop(9999);
 }
 //addMessage({nickname:"WYQ", timestamp:"2018/6/11", message:"Hello, How are you?"});
 //addSendMessage({nickname:"WLN", timestamp:"2018/6/11", message:"Hello, I'm fine."});
@@ -217,9 +222,9 @@ function startSendMessage(data, message) {
     //msg.nickname = userdata.nickname;
     //msg.timestamp = new Date().getTime() / 1000;//new Date().format("yyyy/MM/dd hh:mm:ss");
     msg.message = message;
-    msg.who = data.who;
+    msg.to = data.who;
 
-    addSendMessage({from:userdata.nickname, to:data.nickname, message: message});
+    addSendMessage({nickname:userdata.nickname, to:data.who, message: message});
     sendMessage(msg);
 }
 

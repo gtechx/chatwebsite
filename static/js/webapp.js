@@ -239,14 +239,18 @@ function onMessageResult(errcode) {
 }
 
 function onMessage(jsondata) {
-  console.info("onMessage jsondata:" + jsondata);
+  console.info("onMessage jsondata:" + JSON.stringify(jsondata));
   var msgarray = messagelist[jsondata.who];
   if(msgarray == null){
     msgarray = new Array();
     messagelist[jsondata.who] = msgarray;
   }
   msgarray[msgarray.length] = jsondata;
-  addMessage(jsondata);
+
+  if(jsondata.from != userdata.id)
+    addMessage(jsondata);
+  else if(jsondata.platform != myapp.platform)
+    addSendMessage(jsondata);
 }
 
 function quitChat() {
